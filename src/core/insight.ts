@@ -7,7 +7,8 @@ import type { World } from "./world";
 
 function joinKo(items: string[]): string {
   if (items.length <= 1) return items[0] ?? "";
-  return `${items.slice(0, -1).join(", ")}와 ${items.at(-1)}`;
+  const head = items.slice(0, -1).join(", ");
+  return `${josa(head, "과", "와")} ${items.at(-1)}`;
 }
 
 function josa(word: string, withBatchim: string, without: string) {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { getBrand } from "@/core/catalog";
 import type { TrackResult } from "@/core/orders/service";
-import { elapsed, minuteRange, percent, TABLE_LEVEL, clockKst, prepText } from "@/lib/format";
+import { elapsed, minuteRange, percent, TABLE_LEVEL, since, prepText } from "@/lib/format";
 import { useNow } from "@/client/hooks";
 import { useStudent } from "./StudentProvider";
 
@@ -56,14 +56,16 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
                 </>
               )}
             </p>
-            <p className="mt-1 text-[12.5px] text-ink-3">예측 시간이 지나도 매장에서 완료를 누르기 전에는 완료로 바꾸지 않아요.</p>
+            {o.prepEstimate && now - o.acceptedAt > o.prepEstimate.p80 * 1000 && (
+              <p className="mt-1 text-[12.5px] text-ink-3">예상보다 늦어지고 있어요. 매장에서 완료를 누르면 바로 알려 드려요.</p>
+            )}
           </div>
         )}
         {isReady && (
           <div className="mt-3">
             <p className="text-[21px] font-bold">준비됐어요</p>
             <p className="mt-0.5 text-[15px]">
-              <strong>{brand?.name} 카운터</strong>에서 받아 가세요. <span className="num opacity-85">{o.readyAt ? clockKst(o.readyAt) : ""} 완료</span>
+              <strong>{brand?.name} 카운터</strong>에서 받아 가세요. <span className="num opacity-85">{o.readyAt ? `${since(o.readyAt, now)} 완료` : ""}</span>
             </p>
           </div>
         )}

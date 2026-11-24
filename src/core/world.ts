@@ -333,3 +333,17 @@ export function prepForMenu(engine: Engine, clock: DemoClock, menuId: string, li
   const i = snapIndex(engine.today, clock.tSec);
   return estimatePrep(engine.prep, bi, m.cookType, 1, engine.today.brandBacklog[bi][i] + liveAhead);
 }
+
+/** Simulated customers' ready numbers (for a lifelike pickup monitor). Range 500–899, labelled as simulated. */
+export function simulatedReadyNumbers(engine: Engine, tSec: number, windowSec = 240): Record<string, { n: number; readyAt: number }[]> {
+  const out: Record<string, { n: number; readyAt: number }[]> = {};
+  const counters = new Array(brands.length).fill(0);
+  for (const o of engine.today.orders) {
+    const ordinal = counters[o.brand]++;
+    if (o.ready < 0 || o.ready > tSec || o.ready <= tSec - windowSec) continue;
+    const id = brands[o.brand].id;
+    (out[id] ??= []).push({ n: 500 + (ordinal % 400), readyAt: o.ready });
+  }
+  for (const k of Object.keys(out)) out[k].sort((a, b) => b.readyAt - a.readyAt);
+  return out;
+}

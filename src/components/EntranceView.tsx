@@ -15,7 +15,7 @@ const LEFT_KX = 116;
 const RIGHT_KX = W - 116 - KIOSK_W;
 const DOT_R = 4.4;
 const DOT_GAP = 10.6;
-const MAX_DOTS = 8;
+const MAX_DOTS = 7;
 
 interface Props {
   kiosks: KioskView[];
@@ -72,8 +72,7 @@ export function EntranceView({ kiosks, selected, onSelect, compact }: Props) {
           const highlight = k.similar && anySimilarOnly < kiosks.length;
           const color = WAIT_LEVEL_HEX[k.level];
           const shown = Math.min(k.people, MAX_DOTS);
-          const extra = k.people - shown;
-          const dir = left ? -1 : 1;
+                  const dir = left ? -1 : 1;
           const dotStart = left ? kx - 12 : kx + KIOSK_W + 12;
           const textX = left ? kx - 10 : kx + KIOSK_W + 10;
           return (
@@ -112,20 +111,16 @@ export function EntranceView({ kiosks, selected, onSelect, compact }: Props) {
               ))}
               {k.people > 0 && (
                 <text
-                  x={dotStart + dir * (shown * DOT_GAP + (extra > 0 ? 22 : 2))}
+                  x={dotStart + dir * (shown * DOT_GAP + 2)}
                   y={cy + 17}
                   textAnchor={left ? "end" : "start"}
                   fontSize="11"
                   className="num fill-ink-3"
                 >
-                  {extra > 0 ? "" : `${k.people}명`}
+                  {`${k.people}명`}
                 </text>
               )}
-              {extra > 0 && (
-                <text x={dotStart + dir * shown * DOT_GAP + dir * 2} y={cy + 17} textAnchor={left ? "end" : "start"} fontSize="11" fontWeight={700} fill={color} className="num">
-                  {k.people}명
-                </text>
-              )}
+
               {k.people === 0 && (
                 <text x={dotStart} y={cy + 17} textAnchor={left ? "end" : "start"} fontSize="11" className="fill-ink-3">
                   줄 없음

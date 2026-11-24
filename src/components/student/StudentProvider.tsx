@@ -5,7 +5,8 @@ import type { TrackResult } from "@/core/orders/service";
 import type { ScenarioId } from "@/core/sim/simulator";
 import type { Engine, World } from "@/core/world";
 import type { BackendInfo, OrderBackend } from "@/client/backend";
-import { liveBacklogOf, useBackend, useDemoContext, useSessionOrders, useTracked, useWorld } from "@/client/hooks";
+import { liveBacklogOf, useBackend, useDemoContext, useNow, useSessionOrders, useTracked, useWorld } from "@/client/hooks";
+import { loadReplay, useVisionLinked, visionOverrides, type Replay } from "@/client/vision";
 import { useMyOrders, type MyOrderRef } from "@/client/my-orders";
 
 export interface ReadyAlert {
@@ -69,7 +70,15 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const tracked = useTracked(backend, tokens);
   const sessionOrders = useSessionOrders(backend, demo?.session);
   const liveBacklog = useMemo(() => liveBacklogOf(sessionOrders.orders), [sessionOrders.orders]);
-  const { world, engine } = useWorld(demo?.scenario, { liveBacklog });
+  const linked = useVisionLinked();
+  const [replays, setReplays] = useState<{ counter: Replay; tables: Replay } | null>(null);
+  useEffect(() => {
+    if (!linked || replays) return;
+    Promise.all([loadReplay("counter"), loadReplay("tables")]).then(([counter, tables]) => setReplays({ counter, tables })).catch(() => {});
+  }, [linked, replays]);
+  const tick = useNow(linked ? 2000 : 60_000);
+  const overrides = linked && replays ? visionOverrides(replays.counter, replays.tables, tick) : {};
+  const { world, engine } = useWorld(demo?.scenario, { liveBacklog, ...overrides });
 
   const [alert, setAlert] = useState<ReadyAlert | null>(null);
   const seen = useRef<Map<string, string>>(new Map());

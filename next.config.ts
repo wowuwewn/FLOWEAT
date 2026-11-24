@@ -14,8 +14,9 @@ const config: NextConfig = {
     return [
       { source: "/ops/:path*", headers: isolation },
       { source: "/ops", headers: isolation },
-      { source: "/models/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=604800, immutable" }] },
-      { source: "/ort/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=604800, immutable" }] },
+      { source: "/models/:path*", headers: [...isolation, { key: "Cache-Control", value: "public, max-age=604800, immutable" }] },
+      { source: "/ort/:path*", headers: [...isolation, { key: "Cross-Origin-Resource-Policy", value: "same-origin" }, { key: "Cache-Control", value: "public, max-age=604800, immutable" }] },
+      { source: "/media/:path*", headers: [{ key: "Cross-Origin-Resource-Policy", value: "same-origin" }] },
     ];
   },
 };

@@ -1,0 +1,383 @@
+{
+"_about": "Claude Code가 2초 간격 프레임을 육안으로 라벨링(사람 검수 필요). inUse=카운터 앞에 서서 이용 중, persons=화면에 보이는 사람 수(가장자리 일부만 보이면 제외).",
+"scene": "counter",
+"step": 2,
+"frames": [
+{
+"t": 0,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 2,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 4,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 6,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 8,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 10,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 12,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 14,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 16,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 18,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 20,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 22,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 24,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 26,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 28,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 30,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 32,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 34,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 36,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 38,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 40,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 42,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 44,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 46,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 48,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 50,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 52,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 54,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 56,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 58,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 60,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 62,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 64,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 66,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 68,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 70,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 72,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 74,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 76,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 78,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 80,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 82,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 84,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 86,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 88,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 90,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 92,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 94,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 96,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 98,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 100,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 102,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 104,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 106,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 108,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 110,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 112,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 114,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 116,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 118,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 120,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 122,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 124,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 126,
+"inUse": 0,
+"persons": 1
+},
+{
+"t": 128,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 130,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 132,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 134,
+"inUse": 1,
+"persons": 1
+},
+{
+"t": 136,
+"inUse": 0,
+"persons": 0
+},
+{
+"t": 138,
+"inUse": 0,
+"persons": 0
+}
+],
+"sessions": [
+[
+7,
+17
+],
+[
+23,
+43
+],
+[
+51,
+67
+],
+[
+75,
+85
+],
+[
+93,
+117
+],
+[
+125,
+133
+]
+]
+}

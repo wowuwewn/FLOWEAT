@@ -54,6 +54,7 @@ function Queue() {
                           <span className="block text-[16px] font-semibold">{k.label.replace(/^(왼|오른)쪽 /, "")}</span>
                           <span className="num block text-[13px] text-ink-3">
                             줄 {k.people}명{k.inService ? ", 주문 중 1팀" : ""}
+                            {k.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">영상 AI 분석</span>}
                           </span>
                         </span>
                         <span className="text-right">

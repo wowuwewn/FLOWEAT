@@ -56,6 +56,9 @@ export default function DiningPage() {
                   <span className={`text-[14px] font-bold ${TABLE_LEVEL[z.level].text}`}>{TABLE_LEVEL[z.level].label}</span>
                 </div>
                 <p className="text-[13px] text-ink-3">{z.description}</p>
+                {z.source !== "simulated" && (
+                  <p className="mt-1 text-[12.5px] font-semibold text-blue-ink">앞 4개 테이블은 {DATA_MODE_LABEL[z.source]} 값이에요</p>
+                )}
                 <div className="mt-2 flex h-3 overflow-hidden rounded-full bg-floor" aria-hidden>
                   <span className="bg-brick" style={{ width: percent(z.occupied / z.tables) }} />
                   <span className="hatch" style={{ width: percent(z.uncertain / z.tables) }} />

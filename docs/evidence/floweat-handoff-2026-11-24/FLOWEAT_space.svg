@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">단국대 죽전 혜당관 1층 1947 Commons 공간 근거도</title>
+  <desc id="desc">정문을 가운데 두고 좌우에 키오스크 3대와 개별 대기열이 있다. 좌석과 수령대의 정확한 위치를 그리지 않는다. 대략적 동선 관계만 보여 주는 근거도이다.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#117170" stroke-width="2"/></marker>
+    <style>
+      text{font-family:"Noto Sans CJK KR",sans-serif;fill:#14283b} .muted{fill:#536577} .cap{fill:#0c6863;font-weight:700;letter-spacing:1px} .mono{font-family:"Noto Sans Mono CJK KR","Noto Sans CJK KR",sans-serif}
+      .units{fill:#d8efec;stroke:#599795;stroke-width:1.5} .queue{fill:none;stroke:#117170;stroke-width:3;stroke-dasharray:4 7;marker-end:url(#arrow)} .unknown{fill:#f0f3f6;stroke:#94a5b7;stroke-width:1.5;stroke-dasharray:6 5}
+    </style>
+  </defs>
+  <rect width="1400" height="820" fill="#edf2f6"/>
+  <rect width="1400" height="139" fill="#122f50"/>
+  <text x="55" y="47" font-size="18" fill="#69d4c3" style="fill:#69d4c3;letter-spacing:3px;font-weight:700">FLOWEAT / FIELD EVIDENCE</text>
+  <text x="55" y="105" font-size="40" style="fill:#fff;font-weight:700">1947 COMMONS · 입구·주문 구역 근거도</text>
+  <text x="1343" y="100" text-anchor="end" font-size="16" style="fill:#c6d6e7">죽전 혜당관 1층 · 2026.11</text>
+  <rect x="47" y="167" width="1306" height="354" rx="22" fill="#fff" stroke="#d7e0ea"/>
+  <text x="77" y="210" font-size="17" class="cap">01 / 사용자 현장 관찰</text>
+  <text x="77" y="245" class="muted" font-size="20">정문을 기준으로 서서 식당 안쪽을 본 방향 · 거리와 기기 각도는 미실측</text>
+  <text x="354" y="291" text-anchor="middle" font-size="21" font-weight="700">정문 왼쪽 · 키오스크 3대</text>
+  <text x="1046" y="291" text-anchor="middle" font-size="21" font-weight="700">정문 오른쪽 · 키오스크 3대</text>
+  <rect x="603" y="319" width="194" height="113" rx="15" fill="#f1f7fc" stroke="#a8bdd3" stroke-width="2"/>
+  <text x="700" y="384" text-anchor="middle" font-size="34" font-weight="700">정문</text>
+  <g class="units">
+    <rect x="273" y="319" width="262" height="34" rx="9"/><rect x="273" y="359" width="262" height="34" rx="9"/><rect x="273" y="399" width="262" height="34" rx="9"/>
+    <rect x="865" y="319" width="262" height="34" rx="9"/><rect x="865" y="359" width="262" height="34" rx="9"/><rect x="865" y="399" width="262" height="34" rx="9"/>
+  </g>
+  <g font-weight="700" font-size="16" text-anchor="middle">
+    <text x="404" y="343">키오스크</text><text x="404" y="383">키오스크</text><text x="404" y="423">키오스크</text>
+    <text x="996" y="343">키오스크</text><text x="996" y="383">키오스크</text><text x="996" y="423">키오스크</text>
+  </g>
+  <path class="queue" d="M258,336 H117"/><path class="queue" d="M258,376 H117"/><path class="queue" d="M258,416 H117"/>
+  <path class="queue" d="M1142,336 H1283"/><path class="queue" d="M1142,376 H1283"/><path class="queue" d="M1142,416 H1283"/>
+  <text x="115" y="457" font-size="16" class="muted">개별 대기열 방향</text><text x="1285" y="457" text-anchor="end" font-size="16" class="muted">개별 대기열 방향</text>
+  <text x="700" y="483" text-anchor="middle" font-size="18" class="muted">모든 기기에서 같은 메뉴 주문 · 현장 기기 번호 없음 · 6대에 무장애 기기가 포함되는지는 미확인</text>
+  <rect x="47" y="543" width="1306" height="210" rx="22" fill="#fff" stroke="#d7e0ea"/>
+  <text x="77" y="585" class="cap" font-size="17">02 / 내부 공간 단서 · 지도 위치 미지정</text>
+  <g font-size="18" font-weight="700">
+    <rect x="77" y="610" width="383" height="96" rx="13" class="unknown"/><text x="98" y="643">좌석 구역</text><text x="98" y="677" font-size="15" font-weight="400" class="muted">부스·긴 테이블·분리 좌석 사진 확인</text>
+    <rect x="509" y="610" width="383" height="96" rx="13" class="unknown"/><text x="530" y="643">브랜드별 수령대</text><text x="530" y="677" font-size="15" font-weight="400" class="muted">예: 값찌개 카운터 사진 · 전체 순서 미확인</text>
+    <rect x="941" y="610" width="383" height="96" rx="13" class="unknown"/><text x="962" y="643">주문번호 모니터</text><text x="962" y="677" font-size="15" font-weight="400" class="muted">운영사 사진에 2개 · 현재 위치·총수 미확인</text>
+  </g>
+  <text x="50" y="789" font-size="16" class="muted">축척·방위·동선 안내용 아님 · 하단 카드 순서는 실제 배치가 아님 · 근거 URL과 확인 상태는 Markdown/JSON 참조</text>
+</svg>

@@ -1,0 +1,51 @@
+{
+  "name": "floweat",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FLOWEAT — AI 기반 실시간 학식 내비게이션 (단국대 죽전 1947 COMMONS, 학생 프로젝트 시제품)",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test --trace off",
+    "data:build": "tsx scripts/build-data.ts",
+    "vision:run": "tsx scripts/vision/run-offline.ts",
+    "vision:bench": "tsx scripts/vision/bench.ts",
+    "vision:eval": "tsx scripts/vision/eval.ts",
+    "postinstall": "node scripts/copy-assets.mjs",
+    "prebuild": "node scripts/copy-assets.mjs"
+  },
+  "dependencies": {
+    "jsqr": "1.4.0",
+    "motion": "14.14.0",
+    "next": "16.4.6",
+    "onnxruntime-web": "1.31.1",
+    "qrcode": "1.5.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "^0.0.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/postcss": "4.3.5",
+    "@types/node": "^22",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "onnxruntime-node": "1.31.1",
+    "pretendard": "1.3.9",
+    "tailwindcss": "4.3.5",
+    "tsx": "^4.20.0",
+    "typescript": "5.9.3",
+    "vitest": "5.1.1"
+  }
+}

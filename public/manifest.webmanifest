@@ -1,0 +1,10 @@
+{
+  "name": "FLOWEAT · 1947 COMMONS 학식 내비게이션",
+  "short_name": "FLOWEAT",
+  "lang": "ko",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef0f3",
+  "theme_color": "#0e2b63",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

@@ -5,6 +5,9 @@
  * Verified (user field observation): main entrance as reference point; 3 kiosks on the
  * left and 3 on the right; each kiosk has its own queue extending outward; all kiosks
  * sell the same menu; kiosks carry no visible numbers.
+ * Verified 2026-11-24 (user): left-bank users face right, right-bank users face left
+ * (screens face outward); each queue forms behind the person ordering; the central
+ * walkway is wider than the v1 drawing.
  * NOT verified: distances, angles, exact order along the depth axis, accessible kiosk
  * position, pickup counters, monitors, seating zone positions.
  */

@@ -5,7 +5,7 @@
 | 폴더 | 내용 | 갱신 규칙 |
 |---|---|---|
 | [product/](product/) | PRD v2.0 원본, [설계 결정 기록](product/decisions.md) | PRD는 원본 보존. 결정이 바뀌면 decisions.md에 새 항목 추가 |
-| [design/](design/) | 디자인 레퍼런스 원본, [디자인 시스템](design/design-system.md) | 토큰·컴포넌트가 바뀌면 design-system.md 갱신 |
+| [design/](design/) | 디자인 레퍼런스 원본, [디자인 시스템 v1](design/design-system.md), [레퍼런스 검수 v2와 개선 방향](design/reference-review-v2.md) | 토큰·컴포넌트가 바뀌면 design-system.md 갱신 |
 | [evidence/](evidence/) | 현장 인수인계팩 원본, [자료 충돌](evidence/discrepancies.md), [미확인 사항](evidence/open-questions.md) | 현장 확인이 생기면 open-questions.md의 상태를 바꾸고 출처를 적음 |
 | [architecture/](architecture/) | [전체 구조·저장소·실시간](architecture/overview.md) | 어댑터·API가 바뀌면 갱신 |
 | [ai/](ai/) | [영상 인식](ai/vision.md), [예측 모델](ai/prediction.md), [평가 결과](ai/evaluation/) | 평가를 다시 돌리면 evaluation/에 결과 저장 |

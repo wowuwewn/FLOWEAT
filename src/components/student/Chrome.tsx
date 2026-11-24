@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { getBrand } from "@/core/catalog";
-import { minuteRange } from "@/lib/format";
+import { minuteRange, prepText } from "@/lib/format";
 import { IconBowl, IconNow, IconTicket } from "../icons";
 import { useStudent } from "./StudentProvider";
 
@@ -109,7 +109,7 @@ export function OrderIsland() {
                   {first.order.status === "ready"
                     ? "준비 완료"
                     : first.order.prepEstimate
-                      ? `준비 중, 보통 ${minuteRange(first.order.prepEstimate.p50 * 0.85, first.order.prepEstimate.p80)}`
+                      ? `준비 중, 보통 ${prepText(first.order.prepEstimate.p50, first.order.prepEstimate.p80)}`
                       : "준비 중"}
                 </span>
               </span>

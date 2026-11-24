@@ -76,3 +76,8 @@ export function josaI(word: string): string {
   if (c < 0xac00 || c > 0xd7a3) return `${word}이`;
   return (c - 0xac00) % 28 ? `${word}이` : `${word}가`;
 }
+
+/** The single display rule for prep-time ranges everywhere (menu, brand, ticket, order). */
+export function prepText(p50: number, p80: number): string {
+  return minuteRange(p50 * 0.8, p80);
+}

@@ -112,7 +112,7 @@ function arrivalRatePerMin(tSec: number, scale: number, peakShiftMin: number, am
   const peak1 = 12 * 60 + 5 + peakShiftMin;
   const peak2 = 13 * 60 + 5 + peakShiftMin * 0.5;
   const base = 1.1;
-  const r = base + 5.6 * amp * Math.exp(-((m - peak1) ** 2) / (2 * 15 ** 2)) + 2.0 * amp * Math.exp(-((m - peak2) ** 2) / (2 * 9 ** 2));
+  const r = base + 5.6 * amp * Math.exp(-((m - peak1) ** 2) / (2 * 19 ** 2)) + 2.0 * amp * Math.exp(-((m - peak2) ** 2) / (2 * 9 ** 2));
   // taper at the very end of service
   const tail = m > 13 * 60 + 50 ? Math.max(0, 1 - (m - (13 * 60 + 50)) / 20) : 1;
   return r * scale * tail;
@@ -122,7 +122,7 @@ export function simulateDay(seed: string, scenarioId: ScenarioId = "peak"): SimR
   const sc = SCENARIOS[scenarioId];
   const rng: Rng = rngFrom(`${seed}|${scenarioId}`);
   const dayRng: Rng = rngFrom(`${seed}|day`);
-  const amp = 0.88 + 0.24 * dayRng();
+  const amp = 0.97 + 0.15 * dayRng();
   const peakShift = (dayRng() - 0.5) * 12;
 
   const K = KIOSKS.length;

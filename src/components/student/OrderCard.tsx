@@ -3,7 +3,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { getBrand } from "@/core/catalog";
 import type { TrackResult } from "@/core/orders/service";
-import { elapsed, minuteRange, percent, TABLE_LEVEL, clockKst } from "@/lib/format";
+import { elapsed, minuteRange, percent, TABLE_LEVEL, clockKst, prepText } from "@/lib/format";
 import { useNow } from "@/client/hooks";
 import { useStudent } from "./StudentProvider";
 
@@ -52,7 +52,7 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
               주문한 지 <span className="num">{elapsed(o.acceptedAt, now)}</span>
               {o.prepEstimate && (
                 <>
-                  , 보통 <span className="num font-semibold text-ink">{minuteRange(o.prepEstimate.p50 * 0.85, o.prepEstimate.p80)}</span> 걸려요
+                  , 보통 <span className="num font-semibold text-ink">{prepText(o.prepEstimate.p50, o.prepEstimate.p80)}</span> 걸려요
                 </>
               )}
             </p>

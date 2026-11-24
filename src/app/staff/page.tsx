@@ -6,7 +6,7 @@ import { brands, getBrand } from "@/core/catalog";
 import type { StaffOrder } from "@/core/orders/types";
 import { useBackend, useDemoContext, useNow, useSessionOrders } from "@/client/hooks";
 import { saveStaffBrand, savedStaffBrand } from "@/client/session";
-import { elapsed, minuteRange } from "@/lib/format";
+import { elapsed, minuteRange, prepText } from "@/lib/format";
 
 export default function StaffPage() {
   const { backend, info } = useBackend();
@@ -148,7 +148,7 @@ export default function StaffPage() {
                         </li>
                       ))}
                       {o.prepEstimate && (
-                        <li className="pt-1 text-[13px] text-ink-3">예측 {minuteRange(o.prepEstimate.p50 * 0.85, o.prepEstimate.p80)}</li>
+                        <li className="pt-1 text-[13px] text-ink-3">예측 {prepText(o.prepEstimate.p50, o.prepEstimate.p80)}</li>
                       )}
                     </ul>
                     <button

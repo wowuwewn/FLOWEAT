@@ -25,8 +25,8 @@ export const HISTORY_DAYS = 6;
 
 // ---------------------------------------------------------------- clock
 const KST_OFFSET = 9 * 3600 * 1000;
-const LOOP_START = 11 * 3600 + 35 * 60;
-const LOOP_LEN = 100 * 60;
+const LOOP_START = 11 * 3600 + 50 * 60;
+const LOOP_LEN = 60 * 60;
 
 export interface DemoClock {
   dateKey: string;

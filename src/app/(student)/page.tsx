@@ -7,7 +7,7 @@ import { ClockChip } from "@/components/student/DataNote";
 import { useStudent } from "@/components/student/StudentProvider";
 import { TrendChart } from "@/components/TrendChart";
 import { queueInsight, seatInsight, trendWord } from "@/core/insight";
-import { minuteRange, minuteRangeParts, percent, TABLE_LEVEL } from "@/lib/format";
+import { minuteRange, minuteRangeParts, percent, TABLE_LEVEL, prepText } from "@/lib/format";
 
 export default function HomePage() {
   const { world } = useStudent();
@@ -149,7 +149,7 @@ export default function HomePage() {
                       <span className="block text-[16px] font-semibold">{b.name}</span>
                       <span className="block text-[13px] text-ink-3">{b.cuisine}</span>
                     </span>
-                    <span className="num text-[17px] font-bold">{minuteRange(b.p20, b.p80)}</span>
+                    <span className="num text-[17px] font-bold">{prepText(b.p50, b.p80)}</span>
                   </Link>
                 </li>
               ))}

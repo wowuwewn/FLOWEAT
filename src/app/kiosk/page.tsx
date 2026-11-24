@@ -10,7 +10,7 @@ import { BackendError } from "@/client/backend";
 import { liveBacklogOf, useBackend, useDemoContext, useSessionOrders, useWorld } from "@/client/hooks";
 import { currentKiosk } from "@/client/session";
 import { Qr } from "@/components/Qr";
-import { minuteRange, won } from "@/lib/format";
+import { minuteRange, won, prepText } from "@/lib/format";
 
 type Step = "attract" | "menu" | "pay" | "tickets";
 
@@ -59,7 +59,7 @@ export default function KioskPage() {
   const prepLine = (menuId: string) => {
     if (!engine) return null;
     const e = prepForMenu(engine, clock, menuId, liveBacklog[menuId.split("-")[0]] ?? 0);
-    return e && Number.isFinite(e.p50) ? minuteRange(e.p50 * 0.85, e.p80) : null;
+    return e && Number.isFinite(e.p50) ? prepText(e.p50, e.p80) : null;
   };
 
   const add = (menuId: string) => {
@@ -97,6 +97,7 @@ export default function KioskPage() {
 
   const kiosk = kioskById(kioskId);
   const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const inFrame = typeof window !== "undefined" && window.top !== window.self;
   const onLocalhost = typeof window !== "undefined" && /^(localhost|127\.)/.test(window.location.hostname);
 
   return (
@@ -307,10 +308,10 @@ export default function KioskPage() {
                       </ul>
                       {order.prepEstimate && (
                         <p className="mt-2 text-[14px] font-semibold">
-                          준비 예상 {minuteRange(order.prepEstimate.p50 * 0.85, order.prepEstimate.p80)}
+                          준비 예상 {prepText(order.prepEstimate.p50, order.prepEstimate.p80)}
                         </p>
                       )}
-                      <a href={url} target="_blank" rel="noreferrer" data-testid="ticket-link" className="mt-3 block truncate rounded-lg bg-floor px-3 py-2 text-[12.5px] text-ink-3" title={url}>
+                      <a href={url} target={inFrame ? "student" : "_blank"} rel="noreferrer" data-testid="ticket-link" className="mt-3 block truncate rounded-lg bg-floor px-3 py-2 text-[12.5px] text-ink-3" title={url}>
                         {info?.kind === "device" ? "이 기기에서 열기 (한 기기 체험)" : url.replace(/^https?:\/\//, "")}
                       </a>
                     </li>

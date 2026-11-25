@@ -19,6 +19,9 @@ export default function MonitorPage() {
   const [, force] = useState(0);
   useEffect(() => {
     let changed = false;
+    // an undone completion leaves the board; if it comes back it should flash again
+    const ids = new Set(ready.map((o) => o.id));
+    for (const id of [...fresh.current.keys()]) if (!ids.has(id)) fresh.current.delete(id);
     for (const o of ready) {
       if (!fresh.current.has(o.id)) {
         fresh.current.set(o.id, Date.now());

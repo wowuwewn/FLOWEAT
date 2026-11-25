@@ -40,6 +40,16 @@ export class BackendError extends Error {
   }
 }
 
+/** small non-cryptographic digest (FNV-1a) — only used to name a local channel */
+function digest(text: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(36);
+}
+
 async function call<T>(url: string, init?: RequestInit & { json?: unknown }): Promise<T> {
   let res: Response;
   try {
@@ -67,6 +77,67 @@ const sleep = (ms: number, signal?: AbortSignal) =>
     });
   });
 
+// ------------------------------------------------------------------ shared long-poll
+/**
+ * Browsers allow ~6 concurrent HTTP/1.1 connections per host. Every tab/iframe holding its own
+ * 20-second long-poll used to exhaust that pool on the laptop demo (5+ surfaces), so a staff
+ * "완료" POST could queue for up to ~20 s. Now ONE tab per browser (elected with the Web Locks API)
+ * runs each long-poll and fans results out to the others over BroadcastChannel; within a tab,
+ * all subscribers share one loop. Followers still fetch the current state once, immediately.
+ */
+type Loop<T> = (emit: (v: T) => void, signal: AbortSignal) => void;
+interface Shared<T> {
+  subs: Set<(v: T) => void>;
+  last?: T;
+  stop: () => void;
+}
+const sharedFeeds = new Map<string, Shared<unknown>>();
+
+export function sharedFeed<T>(key: string, loop: Loop<T>, initial: () => Promise<T>, onValue: (v: T) => void): () => void {
+  let entry = sharedFeeds.get(key) as Shared<T> | undefined;
+  if (!entry) {
+    const e: Shared<T> = { subs: new Set(), stop: () => {} };
+    entry = e;
+    sharedFeeds.set(key, e as Shared<unknown>);
+    const deliver = (v: T) => {
+      e.last = v;
+      e.subs.forEach((fn) => fn(v));
+    };
+    const ctl = new AbortController();
+    const bc = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel(`floweat-feed:${key}`) : null;
+    if (bc) bc.onmessage = (m) => deliver(m.data as T);
+    const locks = typeof navigator !== "undefined" ? (navigator as Navigator & { locks?: LockManager }).locks : undefined;
+    if (locks && bc) {
+      initial().then((v) => !ctl.signal.aborted && deliver(v)).catch(() => {});
+      locks
+        .request(`floweat-poll:${key}`, { signal: ctl.signal }, () => new Promise<void>((done) => {
+          loop((v) => {
+            deliver(v);
+            bc.postMessage(v);
+          }, ctl.signal);
+          ctl.signal.addEventListener("abort", () => done());
+        }))
+        .catch(() => {});
+    } else {
+      loop(deliver, ctl.signal);
+    }
+    e.stop = () => {
+      ctl.abort();
+      bc?.close();
+    };
+  }
+  entry.subs.add(onValue);
+  if (entry.last !== undefined) onValue(entry.last);
+  const en = entry;
+  return () => {
+    en.subs.delete(onValue);
+    if (en.subs.size === 0) {
+      en.stop();
+      sharedFeeds.delete(key);
+    }
+  };
+}
+
 // ------------------------------------------------------------------ server
 export class ServerBackend implements OrderBackend {
   kind = "server" as const;
@@ -81,53 +152,62 @@ export class ServerBackend implements OrderBackend {
     return call<SessionSnapshot>(`/api/sessions/${sessionId}/orders`);
   }
   watchSession(sessionId: string, onChange: (s: SessionSnapshot) => void) {
-    const ctl = new AbortController();
-    (async () => {
-      let seq = -1;
-      let backoff = 1000;
-      while (!ctl.signal.aborted) {
-        try {
-          const s = await call<SessionSnapshot>(`/api/sessions/${sessionId}/orders?since=${seq}&wait=20000`, { signal: ctl.signal });
-          backoff = 1000;
-          if (s.seq !== seq) {
-            seq = s.seq;
-            onChange(s);
+    const loop: Loop<SessionSnapshot> = (emit, signal) => {
+      (async () => {
+        let seq = -1;
+        let backoff = 1000;
+        while (!signal.aborted) {
+          try {
+            const s = await call<SessionSnapshot>(`/api/sessions/${sessionId}/orders?since=${seq}&wait=20000`, { signal });
+            backoff = 1000;
+            if (s.seq !== seq) {
+              seq = s.seq;
+              emit(s);
+            }
+          } catch {
+            if (signal.aborted) return;
+            await sleep(backoff, signal);
+            backoff = Math.min(8000, backoff * 2);
           }
-        } catch {
-          if (ctl.signal.aborted) return;
-          await sleep(backoff, ctl.signal);
-          backoff = Math.min(8000, backoff * 2);
         }
-      }
-    })();
-    return () => ctl.abort();
+      })();
+    };
+    let lastSeq = -2;
+    return sharedFeed(`session:${sessionId}`, loop, () => this.sessionOrders(sessionId), (s) => {
+      if (s.seq === lastSeq) return;
+      lastSeq = s.seq;
+      onChange(s);
+    });
   }
   async track(tokens: string[]) {
     return (await call<{ results: TrackResult[] }>(`/api/track`, { json: { tokens } })).results;
   }
   watchTokens(tokens: string[], onChange: (r: TrackResult[]) => void) {
-    const ctl = new AbortController();
-    if (tokens.length === 0) return () => ctl.abort();
-    (async () => {
-      let versions: Record<string, number> | undefined;
-      let backoff = 1000;
-      while (!ctl.signal.aborted) {
-        try {
-          const { results } = await call<{ results: TrackResult[] }>(`/api/track`, {
-            json: { tokens, versions, wait: versions ? 20000 : 0 },
-            signal: ctl.signal,
-          });
-          backoff = 1000;
-          versions = Object.fromEntries(results.map((r) => [r.token, r.order?.version ?? -1]));
-          onChange(results);
-        } catch {
-          if (ctl.signal.aborted) return;
-          await sleep(backoff, ctl.signal);
-          backoff = Math.min(8000, backoff * 2);
+    if (tokens.length === 0) return () => {};
+    const loop: Loop<TrackResult[]> = (emit, signal) => {
+      (async () => {
+        let versions: Record<string, number> | undefined;
+        let backoff = 1000;
+        while (!signal.aborted) {
+          try {
+            const { results } = await call<{ results: TrackResult[] }>(`/api/track`, {
+              json: { tokens, versions, wait: versions ? 20000 : 0 },
+              signal,
+            });
+            backoff = 1000;
+            versions = Object.fromEntries(results.map((r) => [r.token, r.order?.version ?? -1]));
+            emit(results);
+          } catch {
+            if (signal.aborted) return;
+            await sleep(backoff, signal);
+            backoff = Math.min(8000, backoff * 2);
+          }
         }
-      }
-    })();
-    return () => ctl.abort();
+      })();
+    };
+    // tokens are bearer secrets: the channel/lock name uses a short non-reversible digest, not the tokens
+    const key = `track:${digest([...tokens].sort().join(","))}`;
+    return sharedFeed(key, loop, () => this.track(tokens), onChange);
   }
   close(token: string) {
     return call<TrackResult>(`/api/track/close`, { json: { token } });

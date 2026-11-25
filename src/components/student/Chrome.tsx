@@ -52,7 +52,7 @@ export function TabBar() {
 
 /** Live-Activity-inspired strip pinned to the top while an order is being tracked. */
 export function OrderIsland() {
-  const { active, alert, dismissAlert } = useStudent();
+  const { active, alert, alertCount, dismissAlert, retracted } = useStudent();
   const reduce = useReducedMotion();
   const path = usePathname();
   const hidden = path.startsWith("/app/orders") || path.startsWith("/o/") || path === "/app";
@@ -74,7 +74,7 @@ export function OrderIsland() {
             className="pointer-events-auto mb-2 overflow-hidden rounded-[22px] bg-free text-white shadow-[0_10px_30px_rgba(18,128,90,.35)]"
           >
             <Link href="/app/orders" onClick={dismissAlert} className="block px-5 pt-4 pb-4">
-              <p className="text-[13px] font-semibold opacity-90">준비 완료</p>
+              <p className="text-[13px] font-semibold opacity-90">준비 완료{alertCount > 1 ? ` · 외 ${alertCount - 1}건` : ""}</p>
               <p className="mt-0.5 text-[22px] leading-tight font-bold">
                 {alert.brandName} <span className="num">{alert.displayNumber}</span>번
               </p>
@@ -83,6 +83,23 @@ export function OrderIsland() {
             <button onClick={dismissAlert} className="w-full border-t border-white/25 py-2.5 text-[14px] font-semibold">
               확인
             </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {retracted && !alert && (
+          <motion.div
+            key="retracted"
+            role="status"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="pointer-events-auto mb-2 rounded-[18px] bg-[#fff4dc] px-4 py-3 text-[14px] text-[#5c3d00] shadow-[0_6px_20px_rgba(15,26,51,.12)]"
+          >
+            <b>
+              {retracted.brandName} {retracted.displayNumber}번
+            </b>
+            은 매장이 완료를 취소했어요. 아직 준비 중이니 번호가 다시 뜰 때까지 기다려 주세요.
           </motion.div>
         )}
       </AnimatePresence>

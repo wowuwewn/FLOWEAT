@@ -9,8 +9,13 @@ the users (away from the camera), passers crossing in front, occasional companio
 
 This is a test fixture for the analysis logic, NOT footage of 1947 COMMONS.
 
-usage: python3 -I scripts/vision/make_bank_video.py <source.mp4> <replay counter.json> <out_dir>
-outputs: bank.mp4 (raw 10 fps), bank_gt.json
+usage: python3 -I scripts/vision/make_bank_video.py <source.mp4> <data/fixtures/sprite_tracks.json> <out_dir>
+env:   SEED (default 1947) — people, arrivals, service times, passers
+       NAME (default "bank"), camera CAM_X / CAM_Z / YAW / FOCAL (default: straight-on)
+outputs: <NAME>.mp4 (10 fps), <NAME>_gt.json (per-frame truth incl. every person's screen box)
+
+The sprite source boxes are a frozen fixture, so the same SEED always renders the same video.
+(Older replay JSONs with 6- or 7-field person rows are also accepted.)
 """
 import json
 import math
@@ -26,7 +31,8 @@ SRC, REPLAY, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 W, H = 960, 540
 FPS = 10
 DUR = 150.0
-random.seed(1947)
+SEED = int(os.environ.get("SEED", 1947))
+random.seed(SEED)
 
 # ---------------------------------------------------------------- source frames
 def read_frames(path, fps, w, h):
@@ -39,16 +45,21 @@ def read_frames(path, fps, w, h):
         yield np.frombuffer(b, np.uint8).reshape(h, w, 3)
 
 replay = json.load(open(REPLAY))
+# accept the frozen fixture ({frames: [[[id,x,y,w,h],...],...]}) or an app replay ({frames: [{p: [[id,x,y,w,h,role,lane?],...]}]})
+track_frames = [f["p"] if isinstance(f, dict) else f for f in replay["frames"]]
 frames = list(read_frames(SRC, replay["fps"], W, H))
-n = min(len(frames), len(replay["frames"]))
-empty = [frames[i] for i in range(n) if not replay["frames"][i]["p"]]
+n = min(len(frames), len(track_frames))
+empty = [frames[i] for i in range(n) if not track_frames[i]]
+if not empty:
+    raise SystemExit("no person-free frames to build the background from")
 bg = np.median(np.stack(empty[:: max(1, len(empty) // 25)]), axis=0).astype(np.int16)
 
 # ---------------------------------------------------------------- sprites
 sprites = {}  # track id -> {"stand": [...], "walk": [...]}
 prev = {}
 for i in range(n):
-    for pid, x, y, w, h, role in replay["frames"][i]["p"]:
+    for row in track_frames[i]:
+        pid, x, y, w, h = row[:5]
         if h < 200 or x < 2 or x + w > W - 2:
             continue  # need whole bodies
         x0, y0, x1, y1 = max(0, x - 8), max(0, y - 8), min(W, x + w + 8), min(H, y + h + 4)
@@ -222,22 +233,27 @@ while t < DUR:
     drawables = []  # (z, kind, payload)
     for X in LANES_X:
         drawables.append((cam(X, KIOSK_Z)[1], "kiosk", X))
-    def add_person(ident, X, Z, kind, phase):
+    boxes = []
+    def add_person(ident, X, Z, kind, phase, role, lane, pid):
         seq = sprites[ident][kind] or sprites[ident]["stand"]
         drawables.append((cam(X, Z)[1], "person", (seq[int((t * 4 + phase * 7)) % len(seq)], X, Z)))
+        fx, fy = proj(X, Z)
+        hh = F * 1.7 / max(0.3, cam(X, Z)[1])
+        boxes.append([role, lane, pid, round(fx, 1), round(fy, 1), round(hh, 1)])
     for p in people:
         if p.state in ("approach", "leave"):
-            add_person(p.ident, p.x, p.z, "walk", p.phase)
+            add_person(p.ident, p.x, p.z, "walk", p.phase, p.state, p.lane, p.id)
         elif p.state in ("wait", "order"):
-            add_person(p.ident, p.x, p.z, "stand", p.phase)
+            add_person(p.ident, p.x, p.z, "stand", p.phase, p.state, p.lane, p.id)
     for c in companions:
         if t < c["until"]:
-            add_person(c["ident"], LANES_X[c["lane"]] + c["dx"], SERVE_Z + 0.1, "stand", 3)
+            add_person(c["ident"], LANES_X[c["lane"]] + c["dx"], SERVE_Z + 0.1, "stand", 3, "companion", c["lane"], 20000 + c["owner"])
     for q in passers:
         dist = (t - q["t0"]) * q["speed"]
         if 0 <= dist <= 9:
             X = -4.5 * q["dir"] + q["dir"] * dist
-            add_person(q["ident"], X, q["z"], "walk", 1)
+            add_person(q["ident"], X, q["z"], "walk", 1, "passer", -1, q["id"])
+    gt["boxes"] = boxes
     drawables.sort(key=lambda d: -d[0])
     for z, kind, pay in drawables:
         if kind == "kiosk":
@@ -261,6 +277,7 @@ sys.modules[__name__]._enc.stdin.close()
 sys.modules[__name__]._enc.wait()
 json.dump({
     "_about": "합성 테스트 영상(bank)의 정답. 사람 이미지는 Intel sample-videos(CC BY 4.0)에서 배경 차분으로 잘라 합성. 1947 COMMONS 영상 아님.",
+    "seed": SEED, "boxFields": ["role", "lane", "id", "footX", "footY", "heightPx"],
     "fps": FPS, "duration": DUR, "camera": {"assumed": "가정 위치 (설치 미확정)", "x": CAM_X, "z": CAM_Z, "yaw_deg": math.degrees(YAW), "height_m": CAM_H},
     "lanes": ["L1", "L2", "L3"], "service": events, "frames": gt_frames,
 }, open(os.path.join(OUT, NAME + "_gt.json"), "w"), ensure_ascii=False)

@@ -114,8 +114,14 @@ export default function SplitDemo() {
     const k = known.current;
     const added = orders.filter((o) => !k.ids.has(o.id));
     const turned = orders.filter((o) => o.status === "ready" && !k.ready.has(o.id));
+    const undone = orders.filter((o) => o.status === "accepted" && k.ready.has(o.id));
     added.forEach((o) => k.ids.add(o.id));
     turned.forEach((o) => k.ready.add(o.id));
+    undone.forEach((o) => k.ready.delete(o.id));
+    if (undone.length) {
+      const o = undone[0];
+      setToast({ id: `${o.id}-undo`, text: `${getBrand(o.brandId)?.name ?? ""} ${o.displayNumber}번 완료를 되돌렸어요. 학생 앱 알림과 모니터 번호도 함께 내려갔어요.` });
+    }
     if (added.length) setBadge((b) => ({ ...b, staff: !isVisible("staff") || b.staff }));
     if (turned.length) {
       const o = turned[0];
@@ -304,33 +310,14 @@ export default function SplitDemo() {
 }
 
 /**
- * The guide only needs to notice changes. In device mode that is free (BroadcastChannel). In server mode
- * the four surfaces already hold long-poll connections; a fifth/sixth would hit the browser's
- * six-connections-per-host limit on HTTP/1.1 (laptop demo) and stall the staff "완료" request — so the
- * guide uses short, non-blocking polls instead.
+ * The guide follows the same feed as the surfaces. In server mode the backend shares one long-poll
+ * per browser (Web Locks + BroadcastChannel), so this adds no connection of its own.
  */
 function useGuideOrders(backend: OrderBackend | null, session: string | undefined): { orders: StaffOrder[]; loaded: boolean } {
   const [state, setState] = useState<{ orders: StaffOrder[]; loaded: boolean }>({ orders: [], loaded: false });
-  const setOrders = (orders: StaffOrder[]) => setState({ orders, loaded: true });
   useEffect(() => {
     if (!backend || !session) return;
-    if (backend.kind === "device") return backend.watchSession(session, (s) => setOrders(s.orders));
-    let stop = false;
-    let timer: ReturnType<typeof setTimeout>;
-    const tick = async () => {
-      try {
-        const s = await backend.sessionOrders(session);
-        if (!stop) setOrders(s.orders);
-      } catch {
-        /* keep the last state */
-      }
-      if (!stop) timer = setTimeout(tick, 1200);
-    };
-    tick();
-    return () => {
-      stop = true;
-      clearTimeout(timer);
-    };
+    return backend.watchSession(session, (s) => setState({ orders: s.orders, loaded: true }));
   }, [backend, session]);
   return state;
 }

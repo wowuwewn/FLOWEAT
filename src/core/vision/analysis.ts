@@ -67,6 +67,15 @@ export interface ObservedWait {
   start: number;
 }
 
+/**
+ * How the waiting line is counted (see docs/ai/vision.md, "대기 인원 집계 방식 비교"):
+ *   roi     — every detection whose anchor is in the line zone, frame by frame (simple baseline)
+ *   tracked — v2: only confirmed tracks that have stood still in the zone for queueDwell seconds
+ *   hybrid  — v3: every detection in the zone except people the tracker sees clearly walking,
+ *             plus briefly occluded people who were waiting, median-smoothed over ~1 s
+ */
+export type QueueMode = "roi" | "tracked" | "hybrid";
+
 export const ANALYSIS_PARAMS = {
   /** seconds inside the service zone before counting as ordering */
   serviceDwell: 1.0,
@@ -89,7 +98,15 @@ export const ANALYSIS_PARAMS = {
   /** share of the table zone that must be covered to count as occlusion */
   occlusionCover: 0.35,
   personMinScore: 0.35,
+  /** hybrid: frames a waiting person may be missed (occluded) and still be counted */
+  holdMisses: 2,
+  /** hybrid: a tracked person faster than this (body heights / s) is walking, not waiting */
+  hybridWalkSpeed: 0.3,
+  /** hybrid: rolling median window, frames */
+  smoothFrames: 5,
 };
+
+export const DEFAULT_QUEUE_MODE: QueueMode = "hybrid";
 
 const BAGS = new Set<number>([COCO.backpack, COCO.handbag, COCO.suitcase]);
 
@@ -116,6 +133,10 @@ interface LaneMemo {
   start: number | null;
   lastSeen: number;
   orderer: number | null;
+  /** recent raw waiting counts (hybrid smoothing) */
+  hist: number[];
+  /** last time anyone stood (not walking) in the service zone */
+  presentLast: number;
 }
 
 export class SceneAnalyzer {
@@ -126,9 +147,12 @@ export class SceneAnalyzer {
   readonly sessions: ServiceSession[] = [];
   readonly waits: ObservedWait[] = [];
 
-  constructor(public scene: Scene, private W: number, private H: number) {
+  readonly queueMode: QueueMode;
+
+  constructor(public scene: Scene, private W: number, private H: number, opts: { queueMode?: QueueMode } = {}) {
+    this.queueMode = opts.queueMode ?? DEFAULT_QUEUE_MODE;
     for (const t of scene.tables) this.tableMemo.set(t.id, { lastPerson: -Infinity, lastBag: -Infinity, lastItem: -Infinity, bagSince: null, state: "uncertain", reason: "warming_up", occludedSince: null });
-    this.laneMemo = scene.lanes.map(() => ({ start: null, lastSeen: -Infinity, orderer: null }));
+    this.laneMemo = scene.lanes.map(() => ({ start: null, lastSeen: -Infinity, orderer: null, hist: [], presentLast: -Infinity }));
   }
 
   private norm(x: number, y: number): Pt {
@@ -175,8 +199,10 @@ export class SceneAnalyzer {
       here.forEach((s, k) => assigned.set(s.tr.id, { role: k === 0 ? "ordering" : "companion", lane: i }));
     });
 
+    const movingKeys = new Set<string>();
     for (const tr of tracks) {
       const m = this.memo.get(tr.id)!;
+      if (this.speed(m) >= ANALYSIS_PARAMS.hybridWalkSpeed) movingKeys.add(`${tr.x},${tr.y}`);
       let role: Role = "other";
       let lane = -1;
       const as = assigned.get(tr.id);
@@ -220,24 +246,67 @@ export class SceneAnalyzer {
       persons.push({ id: tr.id, x: tr.x, y: tr.y, w: tr.w, h: tr.h, role, lane });
     }
 
-    // 3) lane use sessions
-    lanes.forEach((_, i) => {
+    // 2b) waiting count by mode (roles above are still used for display and ordering)
+    if (this.queueMode !== "tracked") {
+      const walking = movingKeys;
+      const ordering = new Set(persons.filter((p) => p.role === "ordering" || p.role === "companion").map((p) => `${p.x},${p.y}`));
+      lanes.forEach((l, i) => {
+        let n = 0;
+        for (const d of people) {
+          const a = this.anchor(d);
+          if (!inPoly(a, l.queue) || inPoly(a, l.service)) continue;
+          const key = `${d.x},${d.y}`;
+          if (ordering.has(key)) continue;
+          if (this.queueMode === "hybrid" && walking.has(key)) continue;
+          n++;
+        }
+        if (this.queueMode === "hybrid") {
+          // people who were waiting a moment ago but are hidden behind someone this frame
+          for (const tr of this.tracker.missing(ANALYSIS_PARAMS.holdMisses)) {
+            const m = this.memo.get(tr.id);
+            if (m?.role === "waiting" && m.lane === i) n++;
+          }
+          const lm = this.laneMemo[i];
+          lm.hist.push(n);
+          if (lm.hist.length > ANALYSIS_PARAMS.smoothFrames) lm.hist.shift();
+          n = [...lm.hist].sort((a, b) => a - b)[Math.floor(lm.hist.length / 2)];
+        }
+        laneOut[i].waiting = n;
+      });
+    }
+
+    // 3) lane use: sessions (durations feed the wait model) and the live "in use" flag
+    lanes.forEach((l, i) => {
       const lm = this.laneMemo[i];
-      const ordering = persons.find((p) => p.role === "ordering" && p.lane === i);
-      if (ordering && lm.start !== null && lm.orderer !== null && lm.orderer !== ordering.id) {
-        // a different person stepped up: close the previous use
+      const tracked = persons.find((p) => p.role === "ordering" && p.lane === i);
+      const present = people.some((d) => inPoly(this.anchor(d), l.service) && (this.queueMode === "roi" || !movingKeys.has(`${d.x},${d.y}`)));
+      if (this.queueMode === "roi") {
+        // presence only: cannot tell two customers apart, so back-to-back uses merge
+        if (present) {
+          if (lm.start === null) lm.start = t;
+          lm.lastSeen = t;
+        }
+      } else {
+        // tracked sessions: a different confirmed person stepping up closes the previous use
+        if (tracked && lm.start !== null && lm.orderer !== null && lm.orderer !== tracked.id) {
+          if (lm.lastSeen - lm.start >= ANALYSIS_PARAMS.minSession) this.sessions.push({ lane: i, start: lm.start, end: lm.lastSeen });
+          lm.start = null;
+        }
+        if (tracked) {
+          if (lm.start === null) lm.start = this.memo.get(tracked.id)?.enter[`s${i}`] ?? t;
+          lm.orderer = tracked.id;
+          lm.lastSeen = t;
+        }
+      }
+      if (lm.start !== null && t - lm.lastSeen > ANALYSIS_PARAMS.serviceGap) {
         if (lm.lastSeen - lm.start >= ANALYSIS_PARAMS.minSession) this.sessions.push({ lane: i, start: lm.start, end: lm.lastSeen });
         lm.start = null;
+        lm.orderer = null;
       }
-      if (ordering) {
-        if (lm.start === null) lm.start = this.memo.get(ordering.id)?.enter[`s${i}`] ?? t;
-        lm.orderer = ordering.id;
-        lm.lastSeen = t;
-      } else if (lm.start !== null && t - lm.lastSeen > ANALYSIS_PARAMS.serviceGap) {
-        if (lm.lastSeen - lm.start >= ANALYSIS_PARAMS.minSession) this.sessions.push({ lane: i, start: lm.start, end: lm.lastSeen });
-        lm.start = null;
-      }
-      laneOut[i].inUse = lm.start !== null;
+      // live flag: hybrid also treats any standing detection at the kiosk as "in use" (robust to missed tracks)
+      if (present) lm.presentLast = t;
+      const presentNow = this.queueMode === "hybrid" && t - lm.presentLast <= ANALYSIS_PARAMS.serviceGap;
+      laneOut[i].inUse = lm.start !== null || presentNow;
       laneOut[i].elapsed = lm.start !== null ? t - lm.start : null;
     });
 

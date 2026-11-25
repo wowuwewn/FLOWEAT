@@ -86,4 +86,9 @@ export class ByteTrackLite {
     this.tracks = this.tracks.filter((tr) => tr.misses <= this.o.maxMisses);
     return this.tracks.filter((tr) => tr.confirmed && tr.misses === 0);
   }
+
+  /** confirmed tracks not seen in the last frame(s) but not yet dropped (briefly occluded people) */
+  missing(maxMisses: number): Track[] {
+    return this.tracks.filter((tr) => tr.confirmed && tr.misses > 0 && tr.misses <= maxMisses);
+  }
 }

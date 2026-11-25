@@ -27,8 +27,12 @@ interface Ctx {
   refs: MyOrderRef[];
   tracked: TrackResult[] | null;
   active: TrackResult[];
+  /** most recent "ready" banner; `alertCount` = how many orders are ready and not yet dismissed */
   alert: ReadyAlert | null;
+  alertCount: number;
   dismissAlert: () => void;
+  /** shown briefly when staff undo a completion — the earlier banner was withdrawn */
+  retracted: ReadyAlert | null;
   /** map ↔ list selection and active map layer, shared by mobile and desktop panes */
   selected: string | null;
   setSelected: (id: string | null) => void;
@@ -86,9 +90,17 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const overrides = linked && replays ? visionOverrides(replays.lanes, replays.tables, tick) : {};
   const { world, engine } = useWorld(demo?.scenario, { liveBacklog, ...overrides });
 
-  const [alert, setAlert] = useState<ReadyAlert | null>(null);
+  const [alerts, setAlerts] = useState<ReadyAlert[]>([]);
+  const [retracted, setRetracted] = useState<ReadyAlert | null>(null);
   const seen = useRef<Map<string, string>>(new Map());
   const titleTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const originalTitle = useRef<string | null>(null);
+  const stopTitle = () => {
+    if (titleTimer.current) clearInterval(titleTimer.current);
+    titleTimer.current = null;
+    if (originalTitle.current !== null) document.title = originalTitle.current;
+    originalTitle.current = null;
+  };
 
   useEffect(() => {
     if (!tracked) return;
@@ -96,13 +108,24 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
       const prev = seen.current.get(r.token);
       const cur = r.order?.status ?? r.state;
       seen.current.set(r.token, cur);
-      if (prev === "accepted" && cur === "ready" && r.order) {
-        const brandName = getBrand(r.order.brandId)?.name ?? "";
-        setAlert({ token: r.token, brandName, displayNumber: r.order.displayNumber, at: Date.now() });
+      if (prev === cur || !r.order) continue;
+      const brandName = getBrand(r.order.brandId)?.name ?? "";
+      const info: ReadyAlert = { token: r.token, brandName, displayNumber: r.order.displayNumber, at: Date.now() };
+      if (prev === "ready" && cur === "accepted") {
+        // staff pressed "되돌리기": withdraw everything that announced this order as ready
+        setAlerts((a) => a.filter((x) => x.token !== r.token));
+        setRetracted(info);
+        stopTitle();
+        continue;
+      }
+      if (prev === "accepted" && cur === "ready") {
+        setRetracted((x) => (x?.token === r.token ? null : x));
+        // one banner per order: a repeated "ready" (after an undo) replaces, never stacks
+        setAlerts((a) => [...a.filter((x) => x.token !== r.token), info]);
         try {
           navigator.vibrate?.([140, 70, 140]);
         } catch {
-          /* unsupported */
+          /* unsupported (e.g. iPhone) — the banner is the guaranteed signal */
         }
         chime();
         if (typeof Notification !== "undefined" && Notification.permission === "granted" && document.visibilityState === "hidden") {
@@ -113,23 +136,28 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
           }
         }
         // flash the tab title while the page is in the background
-        const original = document.title;
+        stopTitle();
+        originalTitle.current = document.title;
         let on = false;
-        if (titleTimer.current) clearInterval(titleTimer.current);
+        const n = r.order.displayNumber;
         titleTimer.current = setInterval(() => {
-          if (document.visibilityState === "visible") {
-            document.title = original;
-            if (titleTimer.current) clearInterval(titleTimer.current);
-            return;
-          }
+          if (document.visibilityState === "visible") return stopTitle();
           on = !on;
-          document.title = on ? `🔔 ${r.order!.displayNumber}번 준비 완료` : original;
+          document.title = on ? `🔔 ${n}번 준비 완료` : (originalTitle.current ?? document.title);
         }, 1000);
       }
+      if (cur === "closed" || cur === "expired") setAlerts((a) => a.filter((x) => x.token !== r.token));
     }
   }, [tracked]);
+  useEffect(() => {
+    if (!retracted) return;
+    const t = setTimeout(() => setRetracted(null), 8000);
+    return () => clearTimeout(t);
+  }, [retracted]);
+  useEffect(() => () => stopTitle(), []);
 
-  const dismissAlert = useCallback(() => setAlert(null), []);
+  const alert = alerts.at(-1) ?? null;
+  const dismissAlert = useCallback(() => setAlerts([]), []);
   const [selected, setSelected] = useState<string | null>(null);
   const [layer, setLayer] = useState<MapLayer>("queue");
   useEffect(() => {
@@ -142,7 +170,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value: Ctx = {
-    backend, info, session: demo?.session ?? null, scenario: demo?.scenario ?? null, world, engine, refs, tracked, active, alert, dismissAlert,
+    backend, info, session: demo?.session ?? null, scenario: demo?.scenario ?? null, world, engine, refs, tracked, active, alert, alertCount: alerts.length, dismissAlert, retracted,
     selected, setSelected, layer, setLayer,
   };
   return <StudentCtx.Provider value={value}>{children}</StudentCtx.Provider>;

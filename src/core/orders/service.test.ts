@@ -101,4 +101,47 @@ describe("token hashing", () => {
     }
     expect(sha256HexSync("abc")).toBe("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
   });
+
+  it("ready → undo → ready again: each transition is reported once, keys never collide", async () => {
+    const { svc, tick } = setup();
+    const r = await svc.placeOrder({ sessionId: "EDGE1", kioskId: "L1", lines: [{ menuId: bibim.id, qty: 1 }] });
+    const id = r.tickets[0].order.id;
+    const v1 = (await svc.markReady("EDGE1", id, `ready:${id}:v1`)).order;
+    expect(v1.status).toBe("ready");
+    tick(3000);
+    const undone = await svc.undoReady("EDGE1", id, `undo:${id}:v${v1.version}`);
+    expect(undone.changed).toBe(true);
+    expect(undone.order.status).toBe("accepted");
+    expect(undone.order.readyAt).toBeNull();
+    // the staff screen re-sends with the NEW version → a fresh key, so the second completion goes through
+    const again = await svc.markReady("EDGE1", id, `ready:${id}:v${undone.order.version}`);
+    expect(again.changed).toBe(true);
+    expect(again.order.status).toBe("ready");
+    // a retried request with the same key is a no-op (no duplicate "ready" event)
+    const retry = await svc.markReady("EDGE1", id, `ready:${id}:v${undone.order.version}`);
+    expect(retry.changed).toBe(false);
+    const [tracked] = await svc.track([r.tickets[0].token]);
+    expect(tracked.order?.status).toBe("ready");
+  });
+
+  it("concurrent completions of the same order change it exactly once", async () => {
+    const { svc } = setup();
+    const r = await svc.placeOrder({ sessionId: "EDGE2", kioskId: "L1", lines: [{ menuId: bibim.id, qty: 1 }, { menuId: jjigae.id, qty: 1 }] });
+    const id = r.tickets[0].order.id;
+    const results = await Promise.all(Array.from({ length: 8 }, (_, i) => svc.markReady("EDGE2", id, `tab${i}:${id}`)));
+    expect(results.filter((x) => x.changed)).toHaveLength(1);
+    // the other order is untouched
+    const [, other] = await svc.track(r.tickets.map((t) => t.token));
+    expect(other.order?.status).toBe("accepted");
+  });
+
+  it("an order id from another session cannot be completed, undone or reset into", async () => {
+    const { svc } = setup();
+    const a = await svc.placeOrder({ sessionId: "SESA", kioskId: "L1", lines: [{ menuId: bibim.id, qty: 1 }] });
+    const id = a.tickets[0].order.id;
+    await expect(svc.markReady("SESB", id, "x1")).rejects.toThrow();
+    await expect(svc.undoReady("SESB", id, "x2")).rejects.toThrow();
+    const snap = await svc.waitSession("SESB", -1, 0);
+    expect(snap.orders).toHaveLength(0);
+  });
 });

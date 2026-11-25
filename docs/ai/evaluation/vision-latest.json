@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-25T01:52:20.662Z",
+  "generatedAt": "2026-11-25T08:37:52.545Z",
   "analyzer": "v2 (multi-lane)",
   "runtime": "onnxruntime-node CPU (4 vCPU, no GPU)",
   "analysisFps": 5,
@@ -10,12 +10,12 @@
       "sizeMB": 3.7,
       "counter": {
         "labelledFrames": 70,
-        "inUseAccuracy": 0.857,
+        "inUseAccuracy": 0.843,
         "personCountMAE": 0.1,
         "sessionsTrue": 6,
         "sessionsDetected": 6,
         "sessionDurationMAEsec": 1.5,
-        "inferenceMsMean": 11.6
+        "inferenceMsMean": 11.3
       },
       "tables": {
         "labelledTableFrames": 64,
@@ -36,52 +36,52 @@
           "trueEmptyFrames": 0,
           "emptyFound": 0
         },
-        "inferenceMsMean": 25.4
+        "inferenceMsMean": 24.9
       },
       "bank": {
         "bank": {
           "frames": 736,
           "waitingCountMAE": [
-            0.073,
-            1.212,
-            1.168
+            0.045,
+            1.073,
+            0.705
           ],
-          "waitingCountMAEAll": 0.818,
+          "waitingCountMAEAll": 0.608,
           "orderingAccuracy": [
-            0.955,
-            0.245,
-            0.936
+            0.974,
+            0.355,
+            1
           ],
-          "overcountShare": 0.014,
+          "overcountShare": 0.063,
           "servicesTrue": 29,
           "servicesMatched": 24,
           "serviceDurationMAEsec": 17.63,
           "observedWaits": 3,
           "observedWaitMAEsec": 9.75,
-          "inferenceMsMean": 13,
-          "inferenceMsP95": 20.1
+          "inferenceMsMean": 13.5,
+          "inferenceMsP95": 22.8
         },
         "bank_oblique": {
           "frames": 736,
           "waitingCountMAE": [
-            0.326,
             0.283,
-            1.289
+            0.107,
+            0.75
           ],
-          "waitingCountMAEAll": 0.633,
+          "waitingCountMAEAll": 0.38,
           "orderingAccuracy": [
-            0.837,
-            0.927,
-            0.832
+            0.95,
+            0.997,
+            0.981
           ],
-          "overcountShare": 0.014,
+          "overcountShare": 0.082,
           "servicesTrue": 29,
           "servicesMatched": 27,
           "serviceDurationMAEsec": 7.7,
           "observedWaits": 4,
           "observedWaitMAEsec": 26.9,
-          "inferenceMsMean": 13.4,
-          "inferenceMsP95": 21.5
+          "inferenceMsMean": 12.5,
+          "inferenceMsP95": 19.8
         }
       }
     },
@@ -96,7 +96,7 @@
         "sessionsTrue": 6,
         "sessionsDetected": 6,
         "sessionDurationMAEsec": 1.53,
-        "inferenceMsMean": 33.6
+        "inferenceMsMean": 29.5
       },
       "tables": {
         "labelledTableFrames": 64,
@@ -117,52 +117,52 @@
           "trueEmptyFrames": 0,
           "emptyFound": 0
         },
-        "inferenceMsMean": 62.5
+        "inferenceMsMean": 75.8
       },
       "bank": {
         "bank": {
           "frames": 736,
           "waitingCountMAE": [
-            0.073,
-            1.227,
-            0.918
+            0.054,
+            1.115,
+            0.529
           ],
-          "waitingCountMAEAll": 0.74,
+          "waitingCountMAEAll": 0.566,
           "orderingAccuracy": [
-            0.966,
-            0.333,
-            0.989
+            0.974,
+            0.56,
+            1
           ],
-          "overcountShare": 0.003,
+          "overcountShare": 0.047,
           "servicesTrue": 29,
           "servicesMatched": 25,
           "serviceDurationMAEsec": 16.5,
           "observedWaits": 6,
           "observedWaitMAEsec": 17.43,
-          "inferenceMsMean": 34.6,
-          "inferenceMsP95": 70.6
+          "inferenceMsMean": 53.5,
+          "inferenceMsP95": 131.5
         },
         "bank_oblique": {
           "frames": 736,
           "waitingCountMAE": [
-            0.235,
-            0.285,
-            1.269
+            0.228,
+            0.105,
+            0.698
           ],
-          "waitingCountMAEAll": 0.596,
+          "waitingCountMAEAll": 0.344,
           "orderingAccuracy": [
-            0.814,
-            0.947,
-            0.996
+            0.955,
+            0.995,
+            1
           ],
-          "overcountShare": 0.005,
+          "overcountShare": 0.058,
           "servicesTrue": 29,
           "servicesMatched": 29,
           "serviceDurationMAEsec": 34.27,
           "observedWaits": 1,
           "observedWaitMAEsec": null,
-          "inferenceMsMean": 31.6,
-          "inferenceMsP95": 56.3
+          "inferenceMsMean": 55.7,
+          "inferenceMsP95": 137.4
         }
       }
     }

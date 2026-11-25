@@ -96,7 +96,7 @@ export const SCENES: Scene[] = [
     file: "/media/bank_oblique.mp4",
     kind: "semi_synthetic",
     standsFor: "정문 왼쪽 키오스크 3대와 각각의 대기열",
-    camera: "키오스크 줄의 옆쪽 위에서 약 50° 비스듬히 보는 가정 시점 (권장안, 설치 미확정)",
+    camera: "키오스크 줄의 옆쪽 위에서 약 50° 비스듬히 보는 가정 시점 (가정, 설치 미확정 — 정면과 장단점이 있음)",
     mapsTo: { kioskIds: ["L1", "L2", "L3"] },
     attribution: "사람 이미지: Intel IoT DevKit sample-videos one-by-one-person-detection.mp4 (CC BY 4.0)를 잘라 FLOWEAT이 합성",
     license: "CC BY 4.0",

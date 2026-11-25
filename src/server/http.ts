@@ -15,9 +15,18 @@ export function noStore() {
     : null;
 }
 
-export function limited(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  return rateLimited(ip) ? json({ error: "RATE_LIMITED", message: "요청이 너무 많아요. 잠시 후 다시 시도하세요." }, 429) : null;
+export function limited(req: Request, sessionId?: string) {
+  return rateLimited(req, sessionId) ? json({ error: "RATE_LIMITED", message: "요청이 너무 많아요. 잠시 후 다시 시도하세요." }, 429) : null;
+}
+
+export function forbidden(role: "staff" | "operator") {
+  return json(
+    {
+      error: "FORBIDDEN",
+      message: role === "staff" ? "직원 인증이 필요해요. 운영자가 알려 준 직원 키로 연결하세요." : "운영자 키가 필요해요.",
+    },
+    403,
+  );
 }
 
 export function fail(e: unknown) {

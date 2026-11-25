@@ -47,6 +47,8 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   const kioskCtx = await browser.newContext({ viewport: { width: 900, height: 1300 } });
   const phoneCtx = await browser.newContext({ ...devices["iPhone 13"] });
   const staffCtx = await browser.newContext({ viewport: { width: 1180, height: 820 } });
+  // the staff device was paired by the operator (operator key → this session's staff key)
+  await staffCtx.addInitScript(() => localStorage.setItem("floweat.operatorKey", "e2e-operator"));
   const monitorCtx = await browser.newContext({ viewport: { width: 1600, height: 900 } });
 
   const kiosk = await kioskCtx.newPage();
@@ -105,17 +107,47 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   await Promise.all([kioskCtx.close(), phoneCtx.close(), staffCtx.close(), monitorCtx.close()]);
 });
 
+const OP = { "x-floweat-operator": "e2e-operator" };
+
+test("roles: a session code alone cannot complete, undo or reset; staff keys are per session", async ({ request }) => {
+  const s = `R${Date.now().toString(36).slice(-5).toUpperCase()}`;
+  const placed = await request.post(`/api/sessions/${s}/orders`, { data: { kioskId: "L1", lines: [{ menuId: "babi-018", qty: 1 }] } });
+  expect(placed.status()).toBe(201);
+  const id = (await placed.json()).tickets[0].order.id;
+  // anonymous
+  expect((await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "anon-1" } })).status()).toBe(403);
+  expect((await request.post(`/api/sessions/${s}/reset`, { data: {} })).status()).toBe(403);
+  expect((await request.post(`/api/sessions/${s}/staff-key`, { data: {} })).status()).toBe(403);
+  // the public feed hides order details
+  const pub = await (await request.get(`/api/sessions/${s}/orders`)).json();
+  expect(pub.view).toBe("public");
+  expect(pub.orders[0].items).toEqual([]);
+  // staff key of ANOTHER session is rejected
+  const otherKey = (await (await request.post(`/api/sessions/OTHER9/staff-key`, { data: {}, headers: OP })).json()).staffKey;
+  expect((await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "wrong-1" }, headers: { "x-floweat-staff": otherKey } })).status()).toBe(403);
+  // the right staff key works and sees details
+  const key = (await (await request.post(`/api/sessions/${s}/staff-key`, { data: {}, headers: OP })).json()).staffKey;
+  const ok = await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "staff-1" }, headers: { "x-floweat-staff": key } });
+  expect(ok.status()).toBe(200);
+  const full = await (await request.get(`/api/sessions/${s}/orders`, { headers: { "x-floweat-staff": key } })).json();
+  expect(full.view).toBe("staff");
+  expect(full.orders[0].items.length).toBeGreaterThan(0);
+  // staff cannot reset; the operator can
+  expect((await request.post(`/api/sessions/${s}/reset`, { data: {}, headers: { "x-floweat-staff": key } })).status()).toBe(403);
+  expect((await request.post(`/api/sessions/${s}/reset`, { data: {}, headers: OP })).status()).toBe(200);
+});
+
 test("staff completion is idempotent at the API", async ({ request }) => {
   const s = "IDEM" + Math.floor(Math.random() * 9000 + 1000);
   const placed = await request.post(`/api/sessions/${s}/orders`, { data: { kioskId: "L1", lines: [{ menuId: "babi-018", qty: 1 }] } });
   expect(placed.status()).toBe(201);
   const { tickets } = await placed.json();
   const id = tickets[0].order.id;
-  const a = await (await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "same-key" } })).json();
-  const b = await (await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "same-key" } })).json();
-  const c = await (await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "other-key" } })).json();
+  const a = await (await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "same-key" }, headers: OP })).json();
+  const b = await (await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "same-key" }, headers: OP })).json();
+  const c = await (await request.post(`/api/sessions/${s}/orders/${id}/ready`, { data: { idempotencyKey: "other-key" }, headers: OP })).json();
   expect([a.changed, b.changed, c.changed]).toEqual([true, false, false]);
-  const wrong = await request.post(`/api/sessions/OTHER1/orders/${id}/ready`, { data: { idempotencyKey: "x-key" } });
+  const wrong = await request.post(`/api/sessions/OTHER1/orders/${id}/ready`, { data: { idempotencyKey: "x-key" }, headers: OP });
   expect(wrong.status()).toBe(404);
   const bad = await request.post(`/api/track`, { data: { tokens: ["../../etc"] } });
   expect((await bad.json()).results[0].state).toBe("invalid");

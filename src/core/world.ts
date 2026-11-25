@@ -41,12 +41,24 @@ export function setDemoTimeOverride(tSec: number | null) {
   fixedT = tSec;
 }
 
+/**
+ * Default: the 12:00–12:45 lunch peak replays in a loop, whatever the real time is — every judge sees
+ * the busy case. Real-time mode (opt-in) follows the actual KST clock during lunch service only.
+ */
+let followRealTime = false;
+export function setRealTimeClock(on: boolean) {
+  followRealTime = on;
+}
+export function realTimeClockEnabled() {
+  return followRealTime;
+}
+
 export function demoClock(nowMs: number): DemoClock {
   const kst = new Date(nowMs + KST_OFFSET);
   if (fixedT !== null) return { dateKey: kst.toISOString().slice(0, 10), tSec: fixedT + (Math.floor(nowMs / 1000) % 60), realTime: false };
   const dateKey = kst.toISOString().slice(0, 10);
   const secOfDay = kst.getUTCHours() * 3600 + kst.getUTCMinutes() * 60 + kst.getUTCSeconds();
-  if (secOfDay >= 11 * 3600 && secOfDay < 13 * 3600 + 50 * 60) return { dateKey, tSec: secOfDay, realTime: true };
+  if (followRealTime && secOfDay >= 11 * 3600 && secOfDay < 13 * 3600 + 50 * 60) return { dateKey, tSec: secOfDay, realTime: true };
   const loop = Math.floor(nowMs / 1000) % LOOP_LEN;
   return { dateKey, tSec: LOOP_START + loop, realTime: false };
 }
@@ -225,7 +237,8 @@ export function worldAt(engine: Engine, clock: DemoClock, opts: WorldOptions = {
     const people = ov ? ov.people : sim.queuePeople[ki][i];
     const since = sim.serviceSince[ki][i];
     const inServiceElapsed = ov ? ov.inServiceElapsed : since >= 0 ? Math.max(0, t - since) : null;
-    const e = estimateWait({ kiosk: ki, people, inServiceElapsed, t }, stats, engine.etaPrior, 400, engine.dateKey);
+    // counts that came from the camera carry the measured counter error (src/core/data/count-error.json)
+    const e = estimateWait({ kiosk: ki, people, inServiceElapsed, t, countFrom: ov && ov.source !== "simulated" ? "hybrid" : undefined }, stats, engine.etaPrior, 400, engine.dateKey);
     return { k, people, inService: inServiceElapsed !== null, e, source: ov?.source ?? ("simulated" as DataMode) };
   });
   const p50s = raw.map((r) => r.e.p50);

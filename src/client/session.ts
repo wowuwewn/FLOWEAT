@@ -88,3 +88,37 @@ export function savedStaffBrand(): string | null {
 export function saveStaffBrand(id: string) {
   write(BRAND_KEY, id);
 }
+
+// ---- role keys (laptop demo server only; Vercel one-device mode needs none) ------------------
+const STAFF_KEY = (sid: string) => `floweat.staffKey.${sid}`;
+const OPERATOR_KEY = "floweat.operatorKey";
+
+export function staffKeyFor(sessionId: string): string | null {
+  return read(STAFF_KEY(sessionId)) || null;
+}
+export function saveStaffKey(sessionId: string, key: string) {
+  write(STAFF_KEY(sessionId), key);
+}
+export function operatorKeyStored(): string | null {
+  return read(OPERATOR_KEY);
+}
+export function saveOperatorKey(key: string | null) {
+  try {
+    if (key) localStorage.setItem(OPERATOR_KEY, key);
+    else localStorage.removeItem(OPERATOR_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+/** A pairing link puts the staff key in the URL fragment (never sent to the server): /staff?s=X#staff=KEY */
+export function adoptStaffKeyFromHash(sessionId: string): boolean {
+  try {
+    const m = /(?:^|[#&])staff=([A-Za-z0-9_-]{8,64})/.exec(location.hash);
+    if (!m) return false;
+    saveStaffKey(sessionId, m[1]);
+    history.replaceState(null, "", location.pathname + location.search);
+    return true;
+  } catch {
+    return false;
+  }
+}

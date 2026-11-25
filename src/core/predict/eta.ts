@@ -13,6 +13,7 @@
  */
 import { mean, mulberry32, hashSeed, normal, quantile } from "../sim/rng";
 import type { TxRecord } from "../sim/simulator";
+import { plausibleTrue, type CounterMode } from "./count-noise";
 
 export interface ServiceStats {
   /** per kiosk shrunken mean of log(duration) */
@@ -83,6 +84,8 @@ export interface EtaInput {
   /** elapsed seconds of the transaction in progress, or null when idle */
   inServiceElapsed: number | null;
   t: number;
+  /** the count came from a camera: integrate its measured error instead of trusting it exactly */
+  countFrom?: CounterMode;
 }
 
 export interface EtaEstimate {
@@ -114,9 +117,10 @@ export function estimateWait(input: EtaInput, stats: ServiceStats, prior: EtaPri
       }
       total += dur > inServiceElapsed ? dur - inServiceElapsed : Math.max(3, inServiceElapsed * 0.12);
     }
-    const mean = people * r;
-    const sd = Math.sqrt(Math.max(0, people * r * (1 - r)));
-    const tx = Math.max(people > 0 ? 1 : 0, Math.round(mean + sd * normal(rng)));
+    const n = input.countFrom ? plausibleTrue(rng, people, input.countFrom) : people;
+    const mean = n * r;
+    const sd = Math.sqrt(Math.max(0, n * r * (1 - r)));
+    const tx = Math.max(n > 0 ? 1 : 0, Math.round(mean + sd * normal(rng)));
     for (let i = 0; i < tx; i++) total += Math.exp(mu + sigma * normal(rng));
     out[d] = total;
   }

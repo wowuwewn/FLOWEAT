@@ -14,12 +14,15 @@ import type { CartLine, PlaceOrderResult, StaffOrder } from "@/core/orders/types
 import { toStaff } from "@/core/orders/types";
 import type { ScenarioId } from "@/core/sim/simulator";
 import { demoClock, getEngine, prepForOrder } from "@/core/world";
+import { operatorKeyStored, staffKeyFor } from "./session";
 
 export type BackendKind = "server" | "device";
 
 export interface SessionSnapshot {
   seq: number;
   orders: StaffOrder[];
+  /** server mode: "staff" when this device's staff/operator key was accepted */
+  view?: "staff" | "public";
 }
 
 export interface OrderBackend {
@@ -50,13 +53,13 @@ function digest(text: string): string {
   return (h >>> 0).toString(36);
 }
 
-async function call<T>(url: string, init?: RequestInit & { json?: unknown }): Promise<T> {
+async function call<T>(url: string, init?: RequestInit & { json?: unknown; auth?: Record<string, string> }): Promise<T> {
   let res: Response;
   try {
     res = await fetch(url, {
       ...init,
       method: init?.method ?? (init?.json ? "POST" : "GET"),
-      headers: init?.json ? { "content-type": "application/json" } : undefined,
+      headers: { ...(init?.json ? { "content-type": "application/json" } : {}), ...(init?.auth ?? {}) },
       body: init?.json ? JSON.stringify(init.json) : undefined,
       cache: "no-store",
     });
@@ -139,26 +142,46 @@ export function sharedFeed<T>(key: string, loop: Loop<T>, initial: () => Promise
 }
 
 // ------------------------------------------------------------------ server
+/** role headers from keys stored on this device (see src/server/auth.ts) */
+function staffAuth(sessionId: string): Record<string, string> {
+  const h: Record<string, string> = {};
+  const k = staffKeyFor(sessionId);
+  const op = operatorKeyStored();
+  if (k) h["x-floweat-staff"] = k;
+  if (op) h["x-floweat-operator"] = op;
+  return h;
+}
+
 export class ServerBackend implements OrderBackend {
   kind = "server" as const;
+
+  /** operator: get the staff key for a session (for the pairing link) */
+  async issueStaffKey(sessionId: string): Promise<string> {
+    const op = operatorKeyStored();
+    if (!op) throw new BackendError("FORBIDDEN", "운영자 키가 필요해요.", 403);
+    return (await call<{ staffKey: string }>(`/api/sessions/${sessionId}/staff-key`, { json: {}, auth: { "x-floweat-operator": op } })).staffKey;
+  }
 
   placeOrder(sessionId: string, kioskId: string, lines: CartLine[], scenario: ScenarioId) {
     return call<PlaceOrderResult>(`/api/sessions/${sessionId}/orders`, { json: { kioskId, lines, scenario } });
   }
   setReady(sessionId: string, orderId: string, idempotencyKey: string, undo = false) {
-    return call<{ changed: boolean; order: StaffOrder }>(`/api/sessions/${sessionId}/orders/${orderId}/ready`, { json: { idempotencyKey, undo } });
+    return call<{ changed: boolean; order: StaffOrder }>(`/api/sessions/${sessionId}/orders/${orderId}/ready`, { json: { idempotencyKey, undo }, auth: staffAuth(sessionId) });
   }
   sessionOrders(sessionId: string) {
-    return call<SessionSnapshot>(`/api/sessions/${sessionId}/orders`);
+    return call<SessionSnapshot>(`/api/sessions/${sessionId}/orders`, { auth: staffAuth(sessionId) });
   }
   watchSession(sessionId: string, onChange: (s: SessionSnapshot) => void) {
+    const auth = staffAuth(sessionId);
+    // staff and public views are different feeds: never fan a staff view out to a public tab or vice versa
+    const role = auth["x-floweat-staff"] || auth["x-floweat-operator"] ? `staff:${digest(Object.values(auth).join("|"))}` : "public";
     const loop: Loop<SessionSnapshot> = (emit, signal) => {
       (async () => {
         let seq = -1;
         let backoff = 1000;
         while (!signal.aborted) {
           try {
-            const s = await call<SessionSnapshot>(`/api/sessions/${sessionId}/orders?since=${seq}&wait=20000`, { signal });
+            const s = await call<SessionSnapshot>(`/api/sessions/${sessionId}/orders?since=${seq}&wait=20000`, { signal, auth });
             backoff = 1000;
             if (s.seq !== seq) {
               seq = s.seq;
@@ -173,7 +196,7 @@ export class ServerBackend implements OrderBackend {
       })();
     };
     let lastSeq = -2;
-    return sharedFeed(`session:${sessionId}`, loop, () => this.sessionOrders(sessionId), (s) => {
+    return sharedFeed(`session:${sessionId}:${role}`, loop, () => this.sessionOrders(sessionId), (s) => {
       if (s.seq === lastSeq) return;
       lastSeq = s.seq;
       onChange(s);
@@ -213,7 +236,8 @@ export class ServerBackend implements OrderBackend {
     return call<TrackResult>(`/api/track/close`, { json: { token } });
   }
   async reset(sessionId: string) {
-    await call(`/api/sessions/${sessionId}/reset`, { json: {} });
+    const op = operatorKeyStored();
+    await call(`/api/sessions/${sessionId}/reset`, { json: {}, auth: op ? { "x-floweat-operator": op } : {} });
   }
 }
 

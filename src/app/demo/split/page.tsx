@@ -186,7 +186,7 @@ export default function SplitDemo() {
         <div className="min-w-0 flex-1">
           <ol className="hidden items-center gap-1.5 lg:flex" aria-label="체험 순서">
             {STEPS.map((s, i) => (
-              <li key={s.title} className={`flex items-center gap-1.5 rounded-full py-1 pr-3 pl-1 text-[12.5px] ${i === step ? "bg-white text-navy" : i < step ? "text-white/80" : "text-white/45"}`}>
+              <li key={s.title} className={`flex items-center gap-1.5 rounded-full py-1 pr-3 pl-1 text-[12.5px] ${i === step ? "bg-white text-navy" : i < step ? "text-white/85" : "text-white/65"}`}>
                 <span className={`grid size-5 place-items-center rounded-full text-[11px] font-bold ${i === step ? "bg-blue text-white" : i < step ? "bg-white/20" : "bg-white/10"}`}>{i < step ? "✓" : i + 1}</span>
                 <span className="font-semibold">{s.title}</span>
               </li>

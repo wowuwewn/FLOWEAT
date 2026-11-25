@@ -72,9 +72,9 @@ export default function MyOrdersPage() {
 function NotifyRow({ perm, onAsk }: { perm: Perm; onAsk: () => void }) {
   const text: Record<Perm, string> = {
     granted: "다른 탭을 보고 있어도 브라우저 알림을 보내요. 화면을 완전히 닫으면 알림이 오지 않아요.",
-    default: "준비되면 소리·진동과 화면 알림으로 알려 드려요. 브라우저 알림도 받으려면 허용해 주세요.",
-    denied: "브라우저 알림이 꺼져 있어요. 이 화면을 켜 두면 소리와 진동으로 알려 드려요.",
-    unsupported: "이 브라우저는 알림을 지원하지 않아요. 이 화면을 켜 두면 소리와 진동으로 알려 드려요.",
+    default: "준비되면 이 화면에 배너로 알려 드려요. 다른 탭에 있을 때도 알림을 받으려면 브라우저 알림을 허용해 주세요. 소리·진동은 기기에 따라 안 될 수 있어요.",
+    denied: "브라우저 알림이 꺼져 있어요. 이 화면을 켜 두면 배너로 알려 드려요(소리·진동은 기기에 따라 안 될 수 있어요).",
+    unsupported: "이 브라우저는 알림을 지원하지 않아요. 이 화면을 켜 두면 배너로 알려 드려요(소리·진동은 기기에 따라 안 될 수 있어요).",
   };
   return (
     <div className="mx-3 mb-3 flex items-start gap-3 rounded-[var(--radius-card)] bg-ice px-4 py-3">

@@ -1,10 +1,13 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { SCENARIOS, type ScenarioId } from "@/core/sim/simulator";
 import { getEngine, worldAt } from "@/core/world";
+import { ServerBackend } from "@/client/backend";
 import { useBackend } from "@/client/hooks";
-import { currentScenario, currentSession, newSessionCode, setScenario, setSession } from "@/client/session";
+import { currentScenario, currentSession, newSessionCode, operatorKeyStored, saveOperatorKey, setScenario, setSession } from "@/client/session";
+import { setVisionLinked, useVisionLinked } from "@/client/vision";
 import { Wordmark } from "@/components/brand/Logo";
 import { CommonsMap } from "@/components/map/CommonsMap";
 import { Qr } from "@/components/Qr";
@@ -32,6 +35,20 @@ export default function EntryHub() {
   const [scenario, setSc] = useState<ScenarioId>("peak");
   const [origin, setOrigin] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
+  const [opKey, setOpKey] = useState("");
+  const [hasOp, setHasOp] = useState(false);
+  const [pair, setPair] = useState<string | null>(null);
+  const [realClock, setRealClock] = useState(false);
+  const linked = useVisionLinked();
+  const router = useRouter();
+  useEffect(() => {
+    setHasOp(!!operatorKeyStored());
+    try {
+      setRealClock(localStorage.getItem("floweat.clock") === "real");
+    } catch {
+      /* ignore */
+    }
+  }, []);
   useEffect(() => {
     setSess(currentSession());
     setSc(currentScenario());
@@ -59,7 +76,7 @@ export default function EntryHub() {
             음식이 나오면 알려 줘요
           </h1>
           <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-ink-2">
-            단국대 죽전 혜당관 1947 COMMONS의 키오스크 6대와 좌석을 AI 영상 분석으로 읽고, 번호표 QR로 내 주문이 준비되는 순간을 알려 주는 학생 팀의 서비스예요.
+            단국대 죽전 혜당관 1947 COMMONS의 키오스크 줄·좌석 혼잡과 내 주문 준비를 알려 주는 학생 팀의 시제품이에요. 학교 카메라와 연결하기 전이라, 화면의 식당 상황은 <b className="font-semibold text-ink">시뮬레이션</b>이고 영상 AI는 <b className="font-semibold text-ink">테스트 영상</b>(키오스크 3대 장면, 테이블 4개 장면)에서 실제로 돌아가요.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Link href={`/demo/split?${q}`} className="flex h-13 items-center rounded-2xl bg-blue px-6 text-[16px] font-bold text-white">
@@ -69,11 +86,16 @@ export default function EntryHub() {
               학생 앱 열기
             </Link>
           </div>
-          <p className="mt-3 text-[13px] text-ink-3">
-            {shared
-              ? "이 시연 서버는 기기 간 주문을 공유해요. 키오스크·직원·모니터·휴대폰을 다른 기기에서 열 수 있어요."
-              : "이 배포는 공용 저장소 없이 동작해요. 주문은 이 브라우저 안에서만 오가니 ‘한 화면에서 전체 체험’을 권해요. 휴대폰에서는 화면을 바꿔 가며 키오스크·학생 앱·직원·모니터를 모두 써 볼 수 있어요."}
-          </p>
+          {shared ? (
+            <p className="mt-3 text-[13px] text-ink-3">이 시연 서버는 기기 간 주문을 공유해요. 키오스크·직원·모니터·휴대폰을 다른 기기에서 열 수 있어요. 직원 화면은 운영자가 연결해 줘야 해요.</p>
+          ) : (
+            <div className="mt-4 max-w-xl rounded-2xl border border-[#f0d9a8] bg-[#fff8e8] px-4 py-3 text-[13.5px] leading-relaxed text-[#5c3d00]" role="note">
+              <p className="font-bold">체험 전에: 이 주소는 ‘한 기기 체험’이에요</p>
+              <p className="mt-0.5">
+                주문은 지금 이 브라우저 안에서만 오가요. 키오스크 번호표 QR을 <b>다른 휴대폰 카메라로 찍으면 주문을 찾을 수 없다</b>고 나와요. 번호표 아래 ‘학생 앱에 연결’ 버튼을 쓰거나, 아래 ‘한 화면에서 전체 체험’으로 진행하세요. 휴대폰에서는 위쪽 탭으로 화면을 바꿔 가며 써요.
+              </p>
+            </div>
+          )}
         </div>
         <div className="overflow-hidden rounded-[28px] bg-white shadow-[0_20px_50px_rgba(15,26,51,.10)]">
           <CommonsMap kiosks={world.kiosks} interactive={false} width={520} height={380} selected="R2" />
@@ -139,10 +161,16 @@ export default function EntryHub() {
               </button>
               <button
                 onClick={async () => {
-                  await backend?.reset(session);
-                  setMsg(`세션 ${session}의 주문을 지웠어요.`);
+                  try {
+                    await backend?.reset(session);
+                    setMsg(`세션 ${session}의 주문을 지웠어요.`);
+                  } catch {
+                    setMsg("주문 초기화는 운영자 키가 있어야 해요 (아래 ‘운영자’).");
+                  }
                 }}
-                className="h-11 flex-1 rounded-xl bg-floor text-[14px] font-semibold"
+                disabled={shared && !hasOp}
+                className="h-11 flex-1 rounded-xl bg-floor text-[14px] font-semibold disabled:opacity-50"
+                title={shared && !hasOp ? "운영자 키가 필요해요" : undefined}
               >
                 주문 초기화
               </button>
@@ -169,6 +197,85 @@ export default function EntryHub() {
                 </button>
               ))}
             </div>
+            <label className="mt-3 flex items-start gap-3 rounded-xl bg-floor px-4 py-3 text-[13px] leading-relaxed text-ink-2">
+              <input
+                type="checkbox"
+                checked={realClock}
+                onChange={(e) => {
+                  setRealClock(e.target.checked);
+                  try {
+                    localStorage.setItem("floweat.clock", e.target.checked ? "real" : "loop");
+                  } catch {
+                    /* ignore */
+                  }
+                }}
+                className="mt-1 size-4 accent-[#2448db]"
+              />
+              <span>
+                <b className="text-ink">실제 시각 연동</b> (선택) — 기본은 점심 피크(12:00–12:45)를 반복해요. 켜면 실제 점심시간(11:00–13:50)에만 지금 시각으로 시뮬레이션해요.
+              </span>
+            </label>
+            {shared && (
+              <div className="mt-4 rounded-xl border border-line p-4" aria-labelledby="op-h">
+                <h3 id="op-h" className="text-[14.5px] font-bold">
+                  운영자
+                </h3>
+                {!hasOp ? (
+                  <form
+                    className="mt-2 flex gap-2"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!opKey.trim()) return;
+                      saveOperatorKey(opKey.trim());
+                      setHasOp(true);
+                      setOpKey("");
+                    }}
+                  >
+                    <label className="sr-only" htmlFor="op-key">
+                      운영자 키
+                    </label>
+                    <input id="op-key" type="password" value={opKey} onChange={(e) => setOpKey(e.target.value)} placeholder="서버 시작 때 표시된 운영자 키" autoComplete="off" className="h-10 min-w-0 flex-1 rounded-lg border border-line px-3 text-[14px]" />
+                    <button className="h-10 rounded-lg bg-navy px-4 text-[13.5px] font-semibold text-white">저장</button>
+                  </form>
+                ) : (
+                  <div className="mt-2 space-y-2 text-[13px] text-ink-2">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={async () => {
+                          try {
+                            const k = await (backend as ServerBackend).issueStaffKey(session);
+                            setPair(`${origin}/staff?s=${session}#staff=${k}`);
+                          } catch {
+                            setMsg("운영자 키가 맞지 않아요. 다시 입력하세요.");
+                            saveOperatorKey(null);
+                            setHasOp(false);
+                          }
+                        }}
+                        className="h-10 flex-1 rounded-lg bg-navy text-[13.5px] font-semibold text-white"
+                      >
+                        직원 기기 연결 QR
+                      </button>
+                      <button
+                        onClick={() => {
+                          saveOperatorKey(null);
+                          setHasOp(false);
+                          setPair(null);
+                        }}
+                        className="h-10 rounded-lg bg-floor px-3 text-[13px] font-semibold"
+                      >
+                        키 지우기
+                      </button>
+                    </div>
+                    {pair && (
+                      <div className="flex items-center gap-3">
+                        <Qr value={pair} size={96} label={`세션 ${session} 직원 화면 연결 QR`} />
+                        <p>매장 태블릿으로 찍으면 이 세션의 직원 화면이 열려요. 키는 주소의 # 뒤에 있어 서버 로그에 남지 않아요. 세션 코드만으로는 완료 처리를 할 수 없어요.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             {shared && origin && (
               <div className="mt-4 flex items-center gap-3">
                 <Qr value={`${origin}/app?${q}`} size={96} label="휴대폰으로 학생 앱 열기 QR" />
@@ -179,20 +286,39 @@ export default function EntryHub() {
 
           <div className="rounded-2xl bg-white p-6 text-[13.5px] leading-relaxed text-ink-2">
             <h2 className="text-[16px] font-bold text-ink">무엇이 실제이고 무엇이 모의인가요</h2>
-            <dl className="mt-2 space-y-2">
+            <dl className="mt-2 space-y-2.5">
               <div>
-                <dt className="font-bold text-ink">실제로 동작</dt>
-                <dd>영상 객체 검출(브라우저에서 직접), 키오스크별 줄·테이블 판정, 대기·준비시간·혼잡 예측 계산, QR 발급과 주문 연결, 완료 이벤트 전달</dd>
+                <dt className="font-bold text-ink">영상 AI (실제 추론, 테스트 영상 한정)</dt>
+                <dd>
+                  사람 검출 모델이 <b>테스트 영상 2종</b>에서 실제로 돌아가요: 키오스크 3대 줄 장면(사람 이미지를 잘라 만든 <b>합성 영상</b>)과 테이블 4개 장면(공개 영상). 학교 CCTV·실제 1947 COMMONS 영상은 아직 분석하지 않았어요. ‘AI 분석’ 화면에서 <b>미리 계산한 결과 재생</b>과 <b>이 브라우저에서 직접 추론</b>을 고를 수 있어요.
+                </dd>
               </div>
               <div>
-                <dt className="font-bold text-ink">모의로 대체</dt>
-                <dd>학교 CCTV → 공개·합성 테스트 영상, 키오스크·POS → 모의 키오스크, 주문 이력 → 시뮬레이션, 결제 → 모의 결제</dd>
+                <dt className="font-bold text-ink">학생 앱의 식당 상황 (시뮬레이션)</dt>
+                <dd>키오스크 6대의 줄과 좌석은 기본적으로 시뮬레이션이에요. 아래 버튼으로 영상 AI 결과를 연결하면 <b>왼쪽 키오스크 3대</b>와 <b>중앙 칸막이석 4개</b>만 테스트 영상 분석값으로 바뀌고 ‘영상 AI’ 표시가 붙어요.</dd>
+              </div>
+              <div>
+                <dt className="font-bold text-ink">주문·QR·완료 알림 (실제 동작)</dt>
+                <dd>모의 키오스크 주문, 매장별 번호표 QR, 직원 완료, 모니터·학생 화면 반영은 실제 이벤트예요. 결제·학교 키오스크·POS는 모의예요.</dd>
+              </div>
+              <div>
+                <dt className="font-bold text-ink">알림의 한계</dt>
+                <dd>학생 앱을 열어 둔 동안 화면 배너로 알려요. 소리·진동·백그라운드(잠금 화면) 알림은 기기와 브라우저에 따라 안 될 수 있어요 (예: iPhone은 진동 미지원).</dd>
               </div>
               <div>
                 <dt className="font-bold text-ink">아직 확인 전</dt>
                 <dd>실제 평면도, 수령대·모니터·좌석 위치, 카메라 설치 위치, 현재 메뉴와 가격. 화면에 사실처럼 표시하지 않아요.</dd>
               </div>
             </dl>
+            <button
+              onClick={() => {
+                setVisionLinked(true);
+                router.push(`/app?${q}`);
+              }}
+              className="mt-4 h-11 w-full rounded-xl bg-blue text-[14px] font-semibold text-white"
+            >
+              {linked ? "영상 AI 결과가 연결됨 → 학생 앱에서 보기" : "영상 AI 결과를 학생 앱에 연결해 보기"}
+            </button>
             <p className="mt-3 text-[12.5px] text-ink-3">단국대학교·운영사·입점 브랜드의 공식 서비스가 아니에요.</p>
           </div>
         </div>

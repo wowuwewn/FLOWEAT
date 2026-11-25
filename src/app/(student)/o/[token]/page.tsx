@@ -66,7 +66,7 @@ export default function OrderLandingPage({ params }: { params: Promise<{ token: 
         <OrderCard r={live} large onForget={() => removeMyOrder(token)} onClose={() => backend?.close(token)} />
       </div>
       <p className="mx-5 mt-4 text-[13px] leading-relaxed text-ink-3">
-        이 화면을 켜 두면 준비됐을 때 소리와 진동으로 알려 드려요. 화면을 닫으면 알림이 오지 않을 수 있어요.{" "}
+        이 화면을 켜 두면 준비됐을 때 배너로 알려 드려요. 소리·진동은 기기에 따라 안 될 수 있고(iPhone은 진동 없음), 화면을 닫거나 잠그면 알림이 오지 않아요.{" "}
         <Link href="/app/orders" className="font-semibold text-ink-2 underline underline-offset-2">
           알림 설정
         </Link>

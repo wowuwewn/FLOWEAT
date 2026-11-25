@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { toStaff } from "@/core/orders/types";
+import { toStaff, type StaffOrder } from "@/core/orders/types";
+import { isStaff } from "@/server/auth";
 import { SCENARIOS } from "@/core/sim/simulator";
 import { service } from "@/server/orders";
 import { body, fail, json, limited, noStore } from "@/server/http";
@@ -12,10 +13,11 @@ const PlaceBody = z.object({
   lines: z.array(z.object({ menuId: z.string().max(40), qty: z.number().int().min(1).max(9) })).min(1).max(20),
 });
 
+/** Kiosk role: anyone may place a (mock-paid) order; limited per client, per server and per session. */
 export async function POST(req: Request, ctx: { params: Promise<{ sid: string }> }) {
-  const blocked = noStore() ?? limited(req);
-  if (blocked) return blocked;
   const { sid } = await ctx.params;
+  const blocked = noStore() ?? limited(req, sid);
+  if (blocked) return blocked;
   const parsed = PlaceBody.safeParse(await body(req));
   if (!parsed.success) return json({ error: "INVALID_INPUT", message: "주문 정보가 올바르지 않아요." }, 400);
   try {
@@ -26,7 +28,15 @@ export async function POST(req: Request, ctx: { params: Promise<{ sid: string }>
   }
 }
 
-/** Staff & monitor feed. Long-poll: ?since=<seq>&wait=<ms> returns on change or timeout. */
+/** What a monitor / kiosk / guide may see without the staff key: numbers and states, no items. */
+function publicView(o: StaffOrder): StaffOrder {
+  return { ...o, items: [], kioskId: "", batchId: "", prepEstimate: null, closeReason: null };
+}
+
+/**
+ * Session feed. Long-poll: ?since=<seq>&wait=<ms> returns on change or timeout.
+ * Staff key → full tickets (items, estimates). Otherwise the public view used by the monitor.
+ */
 export async function GET(req: Request, ctx: { params: Promise<{ sid: string }> }) {
   const blocked = noStore();
   if (blocked) return blocked;
@@ -36,7 +46,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ sid: string }> 
   const wait = Math.min(25_000, Math.max(0, Number(url.searchParams.get("wait") ?? 0)));
   try {
     const r = await service().waitSession(sid, Number.isFinite(since) ? since : -1, wait);
-    return json({ seq: r.seq, orders: r.orders.map(toStaff), serverNow: Date.now() });
+    const full = isStaff(req, sid);
+    return json({ seq: r.seq, orders: r.orders.map((o) => (full ? toStaff(o) : publicView(toStaff(o)))), serverNow: Date.now(), view: full ? "staff" : "public" });
   } catch (e) {
     return fail(e);
   }

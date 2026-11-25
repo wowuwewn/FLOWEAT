@@ -6,10 +6,22 @@ import { brands } from "../catalog";
 import { KIOSKS } from "../layout";
 import { mean } from "../sim/rng";
 import { simulateDay, snapIndex, type ScenarioId, type SimResult } from "../sim/simulator";
+import { mulberry32 } from "../sim/rng";
+import { observe } from "./count-noise";
 import { estimateWait, fitEtaPrior, fitServiceStats } from "./eta";
 import { baselinePrep, estimatePrep, fitPrepModel } from "./prep";
 
+export interface EtaVariant {
+  /** what the model saw and whether it knew the count was noisy */
+  label: string;
+  maeSec: number;
+  /** share of actual waits inside the shown [p20, p80] (nominal 60 %) */
+  coverage: number | null;
+}
+
 export interface EtaBacktest {
+  /** perfect counts vs camera-like counts, model vs simple baselines */
+  variants: EtaVariant[];
   n: number;
   maeModelSec: number;
   maeBaselineSec: number;
@@ -22,6 +34,14 @@ export interface EtaBacktest {
 export function backtestEta(train: SimResult[], test: SimResult[]): EtaBacktest {
   const prior = fitEtaPrior(train);
   const rows: { k: number; err: number; base: number; inside: boolean }[] = [];
+  type V = { err: number[]; inside: number[] };
+  const v: Record<string, V> = {};
+  const add = (key: string, err: number, inside: boolean | null) => {
+    const x = (v[key] ??= { err: [], inside: [] });
+    x.err.push(err);
+    if (inside !== null) x.inside.push(inside ? 1 : 0);
+  };
+  const noise = mulberry32(20261125);
   for (const day of test) {
     for (const g of day.groups) {
       if (g.serviceStart < 0 || g.id % 2 !== 0) continue; // subsample for speed
@@ -29,9 +49,22 @@ export function backtestEta(train: SimResult[], test: SimResult[]): EtaBacktest 
       const stats = fitServiceStats(day.txs, KIOSKS.length, t, prior);
       const i = snapIndex(day, t);
       const since = day.serviceSince[g.kiosk][i];
-      const e = estimateWait({ kiosk: g.kiosk, people: g.peopleAheadAtJoin, inServiceElapsed: since >= 0 ? t - since : null, t }, stats, prior, 200, "bt");
+      const busy = since >= 0 ? t - since : null;
       const actual = g.serviceStart - g.queueJoin;
+      const e = estimateWait({ kiosk: g.kiosk, people: g.peopleAheadAtJoin, inServiceElapsed: busy, t }, stats, prior, 200, "bt");
       rows.push({ k: g.kiosk, err: Math.abs(e.p50 - actual), base: Math.abs(e.baselineSec - actual), inside: actual >= e.p20 && actual <= e.p80 });
+      add("model · 정확한 인원", Math.abs(e.p50 - actual), actual >= e.p20 && actual <= e.p80);
+      add("기준선 · 인원×전체 평균 · 정확한 인원", Math.abs(e.baselineSec - actual), null);
+      // camera-like counts from the measured counter error (hybrid)
+      const seen = observe(noise, g.peopleAheadAtJoin, "hybrid");
+      const naive = estimateWait({ kiosk: g.kiosk, people: seen, inServiceElapsed: busy, t }, stats, prior, 200, "bt");
+      add("model · 카메라 인원(오차 무시)", Math.abs(naive.p50 - actual), actual >= naive.p20 && actual <= naive.p80);
+      const aware = estimateWait({ kiosk: g.kiosk, people: seen, inServiceElapsed: busy, t, countFrom: "hybrid" }, stats, prior, 200, "bt");
+      add("model · 카메라 인원(오차 반영)", Math.abs(aware.p50 - actual), actual >= aware.p20 && actual <= aware.p80);
+      add("기준선 · 인원×전체 평균 · 카메라 인원", Math.abs(seen * prior.txPerPerson * stats.pooledMeanSec - actual), null);
+      // naive per-kiosk baseline: camera count × this kiosk's recent median transaction × tx per person
+      const kMed = Number.isFinite(stats.rawMedian[g.kiosk]) ? stats.rawMedian[g.kiosk] : stats.pooledMeanSec;
+      add("기준선 · 인원×이 기기 최근 중앙값 · 카메라 인원", Math.abs(seen * prior.txPerPerson * kMed + (busy !== null ? Math.max(0, kMed - busy) : 0) - actual), null);
     }
   }
   // how often is "fewer people" not "faster"? compare kiosk pairs at snapshots
@@ -52,6 +85,7 @@ export function backtestEta(train: SimResult[], test: SimResult[]): EtaBacktest 
     }
   }
   return {
+    variants: Object.entries(v).map(([label, x]) => ({ label, maeSec: mean(x.err), coverage: x.inside.length ? mean(x.inside) : null })),
     n: rows.length,
     maeModelSec: mean(rows.map((r) => r.err)),
     maeBaselineSec: mean(rows.map((r) => r.base)),

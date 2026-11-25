@@ -71,15 +71,46 @@ export function service(scenario: ScenarioId = "peak"): OrderService {
   });
 }
 
-// --- naive per-IP rate limit for write endpoints (demo hardening) -------------
+// --- rate limits for write endpoints -----------------------------------------
+/**
+ * `next start` passes a client-supplied X-Forwarded-For through unchanged (it only fills it in when
+ * absent), so on the laptop server the claimed IP cannot be trusted. Three buckets apply together:
+ *   claimed client (fairness for honest clients) · whole server (a spoofer can't exceed it) ·
+ *   per session (one session can't be flooded with orders/completions)
+ * Behind a proxy you control, FLOWEAT_TRUST_PROXY=1 uses the proxy-appended (last) X-Forwarded-For hop.
+ */
 const buckets = new Map<string, { n: number; reset: number }>();
-export function rateLimited(ip: string, limit = 40, windowMs = 60_000): boolean {
+function hit(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
-  const b = buckets.get(ip);
+  if (buckets.size > 5000) for (const [k, b] of buckets) if (b.reset < now) buckets.delete(k);
+  const b = buckets.get(key);
   if (!b || b.reset < now) {
-    buckets.set(ip, { n: 1, reset: now + windowMs });
+    buckets.set(key, { n: 1, reset: now + windowMs });
     return false;
   }
   b.n++;
   return b.n > limit;
+}
+
+export function clientId(req: Request): string {
+  if (process.env.VERCEL) return req.headers.get("x-real-ip") ?? "vercel"; // set by Vercel's edge
+  const xff = req.headers.get("x-forwarded-for")?.split(",").map((s) => s.trim()).filter(Boolean) ?? [];
+  if (process.env.FLOWEAT_TRUST_PROXY === "1") return xff.at(-1) ?? "direct";
+  return `claimed:${xff[0] ?? "direct"}`;
+}
+
+export const LIMITS = { perClient: 40, global: 400, perSession: 120, windowMs: 60_000 };
+
+export function rateLimited(req: Request, sessionId?: string): boolean {
+  const w = LIMITS.windowMs;
+  // evaluate all buckets so each counts the request
+  const a = hit(`c:${clientId(req)}`, LIMITS.perClient, w);
+  const b = hit("global", LIMITS.global, w);
+  const c = sessionId ? hit(`s:${sessionId}`, LIMITS.perSession, w) : false;
+  return a || b || c;
+}
+
+/** tests only */
+export function resetRateLimits() {
+  buckets.clear();
 }

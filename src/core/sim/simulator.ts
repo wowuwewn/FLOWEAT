@@ -11,6 +11,15 @@
 import { brands, menusOf, type CookType, type Menu } from "../catalog";
 import { KIOSKS, ZONES } from "../layout";
 import { lognormal, normal, pickWeighted, poisson, rngFrom, type Rng } from "./rng";
+import calibrationJson from "../data/calibration.json";
+
+/** All simulation assumptions live in src/core/data/calibration.json (replace with field data). */
+export const CALIBRATION = calibrationJson;
+const C = calibrationJson;
+const hhmm = (s: string) => {
+  const [h, m] = s.split(":").map(Number);
+  return h * 60 + m;
+};
 
 export const DAY_START = 10 * 3600 + 50 * 60; // 10:50 (seconds since midnight)
 export const DAY_END = 14 * 3600 + 10 * 60; // 14:10
@@ -35,27 +44,14 @@ export const SCENARIOS: Record<ScenarioId, Scenario> = {
 };
 
 /** Hidden per-kiosk speed factors. The prediction model must discover them from logs. */
-export const KIOSK_SPEED: Record<string, number> = { L1: 1.0, L2: 1.08, L3: 0.95, R1: 1.0, R2: 1.38, R3: 0.9 };
+export const KIOSK_SPEED: Record<string, number> = C.kiosk.speed;
 
 /** Ground-truth median cook seconds per cooking type (simulation assumption). */
-export const COOK_BASE_SEC: Record<CookType, number> = {
-  side: 90, rice_bowl: 150, curry: 120, stew: 330, noodle_soup: 270, cold_noodle: 180, fried: 390, wok: 300, snack: 180, grill: 360,
-};
+export const COOK_BASE_SEC: Record<CookType, number> = C.kitchen.cookBaseSec;
 
 /** cooks = parallel cooking slots (pots, fryers, burners) — assumption */
 interface BrandKitchen { cooks: number; eff: number; popularity: number }
-export const KITCHENS: Record<string, BrandKitchen> = {
-  gapjjigae: { cooks: 5, eff: 1.0, popularity: 1.1 },
-  gyeongseong: { cooks: 4, eff: 1.05, popularity: 0.9 },
-  babi: { cooks: 4, eff: 0.9, popularity: 1.3 },
-  popo420: { cooks: 4, eff: 1.0, popularity: 1.0 },
-  bibigogo: { cooks: 3, eff: 0.85, popularity: 1.0 },
-  gwangttuk: { cooks: 4, eff: 1.1, popularity: 0.7 },
-  pokpung: { cooks: 4, eff: 0.95, popularity: 1.1 },
-  tokyoya: { cooks: 2, eff: 1.0, popularity: 0.6 },
-  kaohsiung: { cooks: 3, eff: 1.0, popularity: 0.8 },
-  jang51: { cooks: 4, eff: 0.95, popularity: 0.8 },
-};
+export const KITCHENS: Record<string, BrandKitchen> = C.kitchen.brands;
 
 export interface TxRecord { kiosk: number; start: number; end: number; group: number; persons: number }
 export interface GroupRecord {
@@ -104,15 +100,15 @@ interface LiveGroup extends GroupRecord {
 
 interface Cooking { rec: BrandOrderRecord; groupId: number; remaining: number }
 
-const GROUP_SIZES = [1, 2, 3, 4];
-const GROUP_WEIGHTS = [0.42, 0.32, 0.16, 0.1];
+const GROUP_SIZES = C.groups.sizes;
+const GROUP_WEIGHTS = C.groups.weights;
 
 function arrivalRatePerMin(tSec: number, scale: number, peakShiftMin: number, amp: number): number {
   const m = tSec / 60;
-  const peak1 = 12 * 60 + 5 + peakShiftMin;
-  const peak2 = 13 * 60 + 5 + peakShiftMin * 0.5;
-  const base = 1.1;
-  const r = base + 5.6 * amp * Math.exp(-((m - peak1) ** 2) / (2 * 19 ** 2)) + 2.0 * amp * Math.exp(-((m - peak2) ** 2) / (2 * 9 ** 2));
+  const a = C.arrivals;
+  const peak1 = hhmm(a.peak1Center) + peakShiftMin;
+  const peak2 = hhmm(a.peak2Center) + peakShiftMin * 0.5;
+  const r = a.basePerMin + a.peak1PerMin * amp * Math.exp(-((m - peak1) ** 2) / (2 * a.peak1SigmaMin ** 2)) + a.peak2PerMin * amp * Math.exp(-((m - peak2) ** 2) / (2 * a.peak2SigmaMin ** 2));
   // taper at the very end of service
   const tail = m > 13 * 60 + 50 ? Math.max(0, 1 - (m - (13 * 60 + 50)) / 20) : 1;
   return r * scale * tail;
@@ -122,8 +118,8 @@ export function simulateDay(seed: string, scenarioId: ScenarioId = "peak"): SimR
   const sc = SCENARIOS[scenarioId];
   const rng: Rng = rngFrom(`${seed}|${scenarioId}`);
   const dayRng: Rng = rngFrom(`${seed}|day`);
-  const amp = 0.97 + 0.15 * dayRng();
-  const peakShift = (dayRng() - 0.5) * 12;
+  const amp = C.arrivals.dayAmplitude[0] + (C.arrivals.dayAmplitude[1] - C.arrivals.dayAmplitude[0]) * dayRng();
+  const peakShift = (dayRng() - 0.5) * 2 * C.arrivals.dayShiftMin;
 
   const K = KIOSKS.length;
   const B = brands.length;
@@ -186,8 +182,8 @@ export function simulateDay(seed: string, scenarioId: ScenarioId = "peak"): SimR
 
   const startTx = (k: number, g: LiveGroup, t: number) => {
     const persons = g.txCount === 1 ? g.size : 1;
-    const hesitant = rng() < 0.08 ? 1.8 : 1;
-    const dur = lognormal(rng, 40 * KIOSK_SPEED[KIOSKS[k].id] * (1 + 0.2 * (persons - 1)), 0.33) * hesitant;
+    const hesitant = rng() < C.kiosk.hesitantShare ? C.kiosk.hesitantFactor : 1;
+    const dur = lognormal(rng, C.kiosk.txMedianSec * KIOSK_SPEED[KIOSKS[k].id] * (1 + C.kiosk.perExtraPerson * (persons - 1)), C.kiosk.logSd) * hesitant;
     txRemaining[k] = Math.max(12, dur);
     txStart[k] = t;
     txPersons[k] = persons;
@@ -213,7 +209,7 @@ export function simulateDay(seed: string, scenarioId: ScenarioId = "peak"): SimR
         brand: b, menuIds: items.map((m) => m.id), mainType: main.cookType, items: items.length, accept: t, ready: -1, backlogAhead,
       };
       orders.push(rec);
-      const work = lognormal(rng, COOK_BASE_SEC[main.cookType] * k.eff, 0.22) + 22 * (items.length - 1);
+      const work = lognormal(rng, COOK_BASE_SEC[main.cookType] * k.eff, C.kitchen.cookLogSd) + C.kitchen.perExtraItemSec * (items.length - 1);
       kitchenQueue[b].push({ rec, groupId: g.id, remaining: work });
       g.pendingOrders++;
     }
@@ -260,7 +256,7 @@ export function simulateDay(seed: string, scenarioId: ScenarioId = "peak"): SimR
           best = k;
         }
       });
-      const txCount = size === 1 ? 1 : rng() < 0.68 ? 1 : size;
+      const txCount = size === 1 ? 1 : rng() < C.groups.payTogether ? 1 : size;
       const g: LiveGroup = {
         id: groups.length, size, arrive: t, kiosk: best, queueJoin: t, peopleAheadAtJoin: visiblePeople(best),
         serviceStart: -1, serviceEnd: -1, txCount, holds: false, seatedAt: -1, leaveAt: -1,

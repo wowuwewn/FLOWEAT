@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import evalReport from "../../../docs/ai/evaluation/vision-latest.json";
-import evalV1 from "../../../docs/ai/evaluation/vision-v1-2026-11-24.json";
+import benchDev from "../../../docs/ai/evaluation/queue-bench-dev.json";
+import benchHoldout from "../../../docs/ai/evaluation/queue-bench-holdout.json";
 import { ROLES, SceneAnalyzer, type FrameOut, type Role } from "@/core/vision/analysis";
 import { COCO, MODELS } from "@/core/vision/detector";
 import { centroid, SCENES, type Scene } from "@/core/vision/scenes";
@@ -21,7 +22,7 @@ const STATE_COLOR = { occupied: "#a0533b", apparently_empty: "#12805a", uncertai
 const STATE_LABEL = { occupied: "사용 중", apparently_empty: "비어 보임", uncertain: "판단 어려움" };
 const REASON_LABEL: Record<string, string> = { person: "앉은 사람", bag_hold: "가방으로 맡음", brief_absence: "잠깐 자리 비움", tableware: "그릇·컵만 남음", occluded: "가려짐", empty: "단서 없음", warming_up: "관찰 시작" };
 const ITEM_LABEL: Record<number, string> = { [COCO.backpack]: "가방", [COCO.handbag]: "가방", [COCO.suitcase]: "가방", [COCO.cup]: "컵", [COCO.bowl]: "그릇", [COCO.bottle]: "병", [COCO.laptop]: "노트북", [COCO.cellPhone]: "휴대폰", [COCO.book]: "책" };
-const SCENE_TAB: Record<string, string> = { bank_oblique: "키오스크 줄 · 권장 카메라", bank: "키오스크 줄 · 정면 카메라", tables: "테이블", counter: "카운터 (실제 영상)" };
+const SCENE_TAB: Record<string, string> = { bank_oblique: "키오스크 줄 · 비스듬한 카메라", bank: "키오스크 줄 · 정면 카메라", tables: "테이블", counter: "카운터 (실제 영상)" };
 
 type Mode = "replay" | "live";
 
@@ -130,7 +131,7 @@ export default function OpsPage() {
                 학생 앱에 연결
               </h2>
               <p className="text-[12.5px] leading-relaxed text-ink-2">
-                켜면 권장 카메라 영상의 줄 인원·이용 중 여부·이용 시간이 왼쪽 키오스크 3대에, 테이블 영상이 중앙 칸막이석 4개에 들어가요. 나머지는 시뮬레이션이에요.
+                켜면 비스듬한 카메라 합성 영상의 줄 인원·이용 중 여부·이용 시간이 왼쪽 키오스크 3대에, 테이블 영상이 중앙 칸막이석 4개에 들어가요. 나머지는 시뮬레이션이에요.
               </p>
             </div>
             <button role="switch" aria-checked={linked} onClick={() => setVisionLinked(!linked)} className={`flex h-11 shrink-0 items-center justify-between gap-3 rounded-xl px-4 text-[14px] font-semibold sm:w-[200px] ${linked ? "bg-blue text-white" : "bg-white ring-1 ring-line"}`}>
@@ -450,69 +451,106 @@ function CameraView({ scene }: { scene: Scene }) {
   );
 }
 
+type BenchRow = { waitMAE: number; overShare: number; underMean: number; passerOverShare: number; orderingAcc: number; serviceDurMAE: number; servicesMatched: string; falseSessions: number };
+const QUEUE_MODE_LABEL: Record<string, string> = { roi: "단순 구역 집계", tracked: "추적 기반 (v2)", hybrid: "혼합 (v3, 적용)" };
+
 function Evaluation() {
   type R = (typeof evalReport.results)[number];
   const rows = evalReport.results as R[];
   const nano = rows.find((r) => r.model === "yolox_nano")!;
-  const v1 = (evalV1 as { results: { model: string; tables: { confusion: Record<string, number> } }[] }).results.find((r) => r.model === "yolox_nano")!;
-  const b = nano.bank as Record<string, { waitingCountMAEAll: number; orderingAccuracy: number[]; servicesMatched: number; servicesTrue: number; serviceDurationMAEsec: number; overcountShare: number; inferenceMsMean: number }>;
+  const H = benchHoldout.summary as unknown as Record<string, BenchRow>;
+  const D = benchDev.summary as unknown as Record<string, BenchRow>;
+  const pct = (x: number) => `${Math.round(x * 100)}%`;
   return (
     <section className="rounded-2xl bg-white p-5 xl:col-span-2" aria-labelledby="ev-h">
       <h2 id="ev-h" className="text-[17px] font-bold">
         인식 검증 결과
       </h2>
-      <p className="mt-1 text-[12.5px] text-ink-3">
-        정답: 합성 영상은 생성 프로그램이 기록한 정확한 정답, 공개 영상은 Claude Code가 육안으로 단 라벨(사람 검수 필요). 분석 {evalReport.analysisFps}fps, {evalReport.runtime}. 실제 1947 COMMONS 정확도가 아니에요.
+      <p className="mt-1 text-[12.5px] leading-relaxed text-ink-3">
+        줄 분석은 <b className="text-ink-2">합성 테스트 영상</b>(생성 프로그램이 기록한 정확한 정답)으로, 알고리즘을 고른 개발용 4개 시드와 고른 뒤 한 번만 평가한 <b className="text-ink-2">새 시드 4개(홀드아웃)</b>를 나눴어요. 실제 1947 COMMONS 영상 성능이 아니에요. 재현: <code>npm run vision:bench -- holdout</code>
       </p>
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 overflow-x-auto">
+        <table className="num w-full min-w-[640px] text-[13px]">
+          <caption className="mb-1 text-left text-[14px] font-bold">대기 인원 집계 방식 비교 (홀드아웃, 영상 8개 · 3개 줄)</caption>
+          <thead className="text-left text-[12px] text-ink-3">
+            <tr>
+              <th className="py-1 font-medium">방식</th>
+              <th className="py-1 font-medium">인원 오차(MAE)</th>
+              <th className="py-1 font-medium">과다 집계</th>
+              <th className="py-1 font-medium">과소(평균 명)</th>
+              <th className="py-1 font-medium">통행자를 대기로 셈</th>
+              <th className="py-1 font-medium">주문 중 판정</th>
+              <th className="py-1 font-medium">처리시간 오차</th>
+              <th className="py-1 font-medium">개발 세트 MAE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(["roi", "tracked", "hybrid"] as const).map((m) => {
+              const h = H[`all/${m}`];
+              return (
+                <tr key={m} className={`border-t border-line ${m === "hybrid" ? "font-bold" : ""}`}>
+                  <td className="py-1.5">{QUEUE_MODE_LABEL[m]}</td>
+                  <td>{h.waitMAE.toFixed(2)}명</td>
+                  <td>{pct(h.overShare)}</td>
+                  <td>{h.underMean.toFixed(2)}</td>
+                  <td>{pct(h.passerOverShare)}</td>
+                  <td>{pct(h.orderingAcc)}</td>
+                  <td>{h.serviceDurMAE.toFixed(1)}초</td>
+                  <td className="font-normal text-ink-3">{D[`all/${m}`].waitMAE.toFixed(2)}명</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <p className="mt-2 text-[12.5px] leading-relaxed text-ink-2">
+          독립 검수 지적대로 v2 추적 기반은 단순 집계보다 인원 오차가 컸어요(검출이 끊기면 사람을 놓침). 대신 지나가는 사람을 거의 세지 않았죠. v3은 구역 안의 검출을 그대로 세되 <b>추적상 걷고 있는 사람만 빼고</b>, 잠깐 가려진 대기자를 유지하고, 1초 중앙값으로 흔들림을 줄여요. 주문 중 표시는 ‘키오스크 앞에 서 있는 사람’ 기준, 처리시간은 추적 기반 기록을 써요.
+        </p>
+      </div>
+      <div className="mt-5 grid gap-4 lg:grid-cols-3">
         <div>
-          <h3 className="text-[14px] font-bold">카메라 위치 비교 (같은 사람들, 키오스크 3대)</h3>
+          <h3 className="text-[14px] font-bold">카메라 위치 (홀드아웃, v3)</h3>
           <table className="num mt-2 w-full text-[13px]">
             <thead className="text-left text-[12px] text-ink-3">
               <tr>
                 <th className="py-1 font-medium" />
                 <th className="py-1 font-medium">정면</th>
-                <th className="py-1 font-medium">비스듬히 (권장)</th>
+                <th className="py-1 font-medium">비스듬히</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-t border-line">
-                <td className="py-1.5">대기 인원 오차</td>
-                <td>{b.bank.waitingCountMAEAll}명</td>
-                <td className="font-bold">{b.bank_oblique.waitingCountMAEAll}명</td>
-              </tr>
-              <tr className="border-t border-line">
-                <td className="py-1.5">가운데 줄 주문 중 판정</td>
-                <td>{Math.round(b.bank.orderingAccuracy[1] * 100)}%</td>
-                <td className="font-bold">{Math.round(b.bank_oblique.orderingAccuracy[1] * 100)}%</td>
-              </tr>
-              <tr className="border-t border-line">
-                <td className="py-1.5">이용 기록 찾음</td>
-                <td>
-                  {b.bank.servicesMatched}/{b.bank.servicesTrue}
-                </td>
-                <td className="font-bold">
-                  {b.bank_oblique.servicesMatched}/{b.bank_oblique.servicesTrue}
-                </td>
-              </tr>
-              <tr className="border-t border-line">
-                <td className="py-1.5">이용 시간 오차</td>
-                <td>{b.bank.serviceDurationMAEsec}초</td>
-                <td className="font-bold">{b.bank_oblique.serviceDurationMAEsec}초</td>
-              </tr>
+              {(
+                [
+                  ["인원 오차", (r: BenchRow) => `${r.waitMAE.toFixed(2)}명`, (a: BenchRow, b: BenchRow) => a.waitMAE <= b.waitMAE],
+                  ["통행자 오인", (r: BenchRow) => pct(r.passerOverShare), (a: BenchRow, b: BenchRow) => a.passerOverShare <= b.passerOverShare],
+                  ["주문 중 판정", (r: BenchRow) => pct(r.orderingAcc), (a: BenchRow, b: BenchRow) => a.orderingAcc >= b.orderingAcc],
+                  ["처리시간 오차", (r: BenchRow) => `${r.serviceDurMAE.toFixed(1)}초`, (a: BenchRow, b: BenchRow) => a.serviceDurMAE <= b.serviceDurMAE],
+                  ["잘못 잡은 이용 기록", (r: BenchRow) => `${r.falseSessions}건`, (a: BenchRow, b: BenchRow) => a.falseSessions <= b.falseSessions],
+                ] as const
+              ).map(([label, f, better]) => {
+                const st = H["straight/hybrid"];
+                const ob = H["oblique/hybrid"];
+                return (
+                  <tr key={label} className="border-t border-line">
+                    <td className="py-1.5">{label}</td>
+                    <td className={better(st, ob) ? "font-bold" : ""}>{f(st)}</td>
+                    <td className={better(ob, st) ? "font-bold" : ""}>{f(ob)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-          <p className="mt-2 text-[12.5px] text-ink-2">줄과 나란히 정면에서 보면 앞사람이 뒷사람을 가려 한 명으로 합쳐져요. 줄을 옆에서 비스듬히 보는 위치가 더 정확했어요.</p>
+          <p className="mt-2 text-[12.5px] leading-relaxed text-ink-2">
+            이전 문서의 “비스듬한 카메라가 모든 지표에서 우수”는 틀렸어요. 비스듬한 카메라는 <b>주문 중 판정과 처리시간</b>이, 정면 카메라는 <b>인원 수와 통행자 구분</b>이 나았어요. 실제 설치 위치는 현장 촬영으로 다시 비교해야 해요.
+          </p>
         </div>
         <div>
-          <h3 className="text-[14px] font-bold">자리 판정 (테이블 4개 영상)</h3>
+          <h3 className="text-[14px] font-bold">자리 판정 (테이블 4개 공개 영상)</h3>
           <p className="num mt-2 text-[13px] text-ink-2">
-            이용할 수 없는 자리를 빈자리로 잘못 보여 준 경우 <b className="text-ink">{nano.tables.availability.shownAvailableWrongly}/{nano.tables.availability.notAvailableFrames}칸</b>
+            이용할 수 없는 자리를 빈자리로 잘못 보여 준 경우 <b className="text-ink">{nano.tables.availability.shownAvailableWrongly}/{nano.tables.availability.notAvailableFrames}칸</b> (실제 영상)
           </p>
           <p className="mt-2 text-[12.5px] leading-relaxed text-ink-2">
-            v1에서 “빈자리 0/8”로 보였던 8칸은 다시 확인해 보니, 앉아 있던 사람이 테이블 바로 옆에 서 있거나 노트북을 두고 잠깐 일어난 장면이었어요. 이 영상에는 실제로 비워진 테이블이 없어서 ‘빈자리를 찾아내는 능력’은 이 영상으로 확인할 수 없어요. 대신 v2는 실제로 비워진 자리를 약 4초 안에 빈자리로 바꾸고, 가방은 ‘맡은 자리’, 그릇만 남으면 ‘판단 어려움’, 지나가는 사람에 가려지면 이전 상태 유지를 단위 테스트로 검증했어요.
+            이 공개 영상에는 <b>실제로 비워진 테이블이 없어서</b> ‘빈자리를 찾아내는 정확도’는 측정하지 못했어요. 비워진 자리를 약 4초 안에 빈자리로 바꾸는 동작, 가방 = 맡은 자리, 그릇만 = 판단 어려움, 가림 처리는 <b>단위 테스트(가상 입력)</b>로만 확인했어요. 실제 영상 정확도와 구분해 주세요.
           </p>
-          <p className="num mt-2 text-[12px] text-ink-3">v1 착석 기준 혼동: 사용 중→빈자리 {v1.tables.confusion.occ_empty}, 빈자리→빈자리 {v1.tables.confusion.empty_empty}</p>
         </div>
         <div>
           <h3 className="text-[14px] font-bold">모델과 속도</h3>
@@ -523,13 +561,12 @@ function Evaluation() {
                   {MODELS.find((m) => m.id === r.model)?.name} {r.model === "yolox_nano" && <span className="ml-1 rounded bg-ice px-1.5 py-0.5 text-[11px] text-blue-ink">기본</span>}
                 </p>
                 <p className="num text-ink-2">
-                  {r.license}, {r.sizeMB}MB, 서버 CPU {r.counter.inferenceMsMean}ms/프레임, 카운터 이용 판정 {(r.counter.inUseAccuracy * 100).toFixed(1)}%, 권장 카메라 대기 오차{" "}
-                  {(r.bank as typeof b).bank_oblique.waitingCountMAEAll}명
+                  {r.license}, {r.sizeMB}MB, 서버 CPU {r.counter.inferenceMsMean}ms/프레임, 공개 카운터 영상 이용 판정 {(r.counter.inUseAccuracy * 100).toFixed(1)}%
                 </p>
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-[12.5px] text-ink-2">Tiny가 일부 지표에서 조금 낫지만 2.5–3배 느리고 5.5배 커서 휴대폰 브라우저용 기본은 Nano예요.</p>
+          <p className="mt-2 text-[12.5px] text-ink-2">휴대폰 브라우저에서도 돌릴 수 있게 작고 빠른 Nano가 기본이에요. 카운터 영상 라벨은 생성형 AI가 육안으로 단 것이라 사람 검수가 필요해요.</p>
         </div>
       </div>
     </section>
@@ -585,6 +622,22 @@ function PredictionEval() {
             ) : (
               <p className="mt-1 text-[13px] text-ink-2">기록이 부족해 예측하지 않아요.</p>
             )}
+            <p className="mt-1 text-[12px] text-ink-3">표시 구간 목표 80%. 학습에 안 쓴 날로 확인한 실제 적중 75–88% (docs/ai/prediction.md).</p>
+          </div>
+          <div className="md:col-span-3">
+            <h3 className="text-[14px] font-bold">카메라 인원 오차를 넣어도 괜찮은가 (대기시간)</h3>
+            <p className="mt-0.5 text-[12.5px] text-ink-3">정확한 인원 대신, 홀드아웃 합성 영상에서 측정한 v3 집계 오차를 그대로 넣어 다시 검증했어요. 범위(p20–p80)의 목표 적중률은 60%.</p>
+            <table className="num mt-2 w-full max-w-[720px] text-[13px]">
+              <tbody>
+                {r.eta.variants.map((v) => (
+                  <tr key={v.label} className={`border-t border-line ${v.label.includes("오차 반영") ? "font-bold" : ""}`}>
+                    <td className="py-1.5">{v.label}</td>
+                    <td>{Math.round(v.maeSec)}초</td>
+                    <td className="text-ink-2">{v.coverage !== null ? `범위 적중 ${Math.round(v.coverage * 100)}%` : "범위 없음"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

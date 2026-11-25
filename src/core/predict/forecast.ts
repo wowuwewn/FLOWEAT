@@ -6,6 +6,13 @@
  */
 import { mean, quantile } from "../sim/rng";
 
+/**
+ * Residual quantiles for the shown interval (target: 80 % of actual values inside).
+ * Leave-one-day-out residuals understate day-to-day shifts, so 10/90 % gave 68–85 % on held-out days;
+ * 8/92 % brings held-out simulated days to 75–88 % (mean ≈82 %) — see docs/ai/prediction.md.
+ */
+export const FORECAST_INTERVAL = { lo: 0.08, hi: 0.92, target: 0.8 };
+
 export type ForecastMethod = "persistence" | "damped_trend" | "profile_anomaly";
 export const METHOD_LABEL: Record<ForecastMethod, string> = {
   persistence: "현재값 유지",
@@ -71,7 +78,7 @@ export function fitForecast(history: Series[], horizons = [300, 600, 900], bound
     const mae = Object.fromEntries(methods.map((m) => [m, mean(errs[m].map(Math.abs))])) as Record<ForecastMethod, number>;
     const best = methods.reduce((a, b) => (mae[b] < mae[a] ? b : a));
     const sorted = [...errs[best]].sort((a, b) => a - b);
-    return { horizonSec: h, mae, best, lo: quantile(sorted, 0.1), hi: quantile(sorted, 0.9), n: sorted.length };
+    return { horizonSec: h, mae, best, lo: quantile(sorted, FORECAST_INTERVAL.lo), hi: quantile(sorted, FORECAST_INTERVAL.hi), n: sorted.length };
   });
   return { history, evals, bounds, sufficient: true };
 }
@@ -104,5 +111,25 @@ export function forecastAt(model: ForecastModel, today: Series, t: number): Fore
       maeModel: e.mae[e.best],
       maePersistence: e.mae.persistence,
     };
+  });
+}
+
+/** Held-out check: share of actual values inside [lo, hi] on a day the model did not see (nominal 80 %). */
+export function forecastCoverage(model: ForecastModel, day: Series, window: [number, number] = [11 * 3600 + 20 * 60, 13 * 3600 + 40 * 60]) {
+  if (!model.sufficient) return [];
+  return model.evals.map((e) => {
+    let inside = 0;
+    let n = 0;
+    let absErr = 0;
+    let absPersist = 0;
+    for (let t = window[0]; t + e.horizonSec <= window[1]; t += 120) {
+      const p = forecastAt(model, day, t)!.find((x) => x.horizonSec === e.horizonSec)!;
+      const y = at(day, t + e.horizonSec);
+      n++;
+      if (y >= p.lo && y <= p.hi) inside++;
+      absErr += Math.abs(y - p.value);
+      absPersist += Math.abs(y - at(day, t));
+    }
+    return { horizonSec: e.horizonSec, method: e.best, coverage: inside / n, mae: absErr / n, maePersistence: absPersist / n, n };
   });
 }

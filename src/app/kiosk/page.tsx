@@ -130,8 +130,8 @@ export default function KioskPage() {
                   const idx = STEPS.findIndex((x) => x.id.includes(step));
                   return (
                     <li key={st.label} className="flex items-center gap-1 sm:gap-1.5" aria-current={cur ? "step" : undefined}>
-                      {i > 0 && <span className="opacity-40">›</span>}
-                      <span className={`whitespace-nowrap ${cur ? "font-bold" : i < idx ? "opacity-75" : "opacity-45"}`}>{st.label}</span>
+                      {i > 0 && <span aria-hidden className="opacity-70">›</span>}
+                      <span className={`whitespace-nowrap ${cur ? "font-bold" : i < idx ? "opacity-85" : "opacity-70"}`}>{st.label}</span>
                     </li>
                   );
                 })}
@@ -345,6 +345,13 @@ export default function KioskPage() {
                 {info?.kind === "device"
                   ? "번호표 아래 ‘학생 앱에 연결’을 누르면 QR을 찍은 것처럼 이 브라우저의 학생 앱에 연결돼요."
                   : "번호표의 QR을 휴대폰 카메라로 찍으면, 음식이 준비됐을 때 알려 드려요."}
+              </p>
+              {info?.kind === "device" && (
+                <p className="mt-2 rounded-xl bg-[#fff4dc] px-3.5 py-2.5 text-[13.5px] leading-relaxed text-[#5c3d00]" role="note">
+                  한 기기 체험 중이라 <b>다른 휴대폰 카메라로 QR을 찍으면 주문을 찾을 수 없어요.</b> 기기 간 연동은 공용 저장소를 연결한 뒤에 가능해요.
+                </p>
+              )}
+              <p className="sr-only">
               </p>
               {onLocalhost && info?.kind === "server" && (
                 <p className="mt-2 rounded-xl bg-normal-bg px-4 py-2.5 text-[14px] text-normal">

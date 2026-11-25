@@ -76,6 +76,7 @@ function evaluate(name: string, gt: Gt, dets: { t: number; dets: Detection[] }[]
   an.finish(150);
   const byT = new Map(gt.frames.map((f) => [Math.round(f.t * 100), f]));
   const err: number[] = [];
+  const hist: Record<number, Record<number, number>> = {};
   const over: number[] = [];
   const under: number[] = [];
   let orderOk = 0;
@@ -89,6 +90,8 @@ function evaluate(name: string, gt: Gt, dets: { t: number; dets: Detection[] }[]
     g.lanes.forEach((gl, i) => {
       const est = o.lanes[i].waiting;
       err.push(Math.abs(est - gl.waiting));
+      ((hist[gl.waiting] ??= {})[est - gl.waiting] ??= 0);
+      hist[gl.waiting][est - gl.waiting]++;
       over.push(Math.max(0, est - gl.waiting));
       under.push(Math.max(0, gl.waiting - est));
       orderOk += (o.lanes[i].inUse ? 1 : 0) === gl.ordering ? 1 : 0;
@@ -125,6 +128,7 @@ function evaluate(name: string, gt: Gt, dets: { t: number; dets: Detection[] }[]
     }
   }
   return {
+    hist,
     waitMAE: mean(err),
     overMean: mean(over),
     underMean: mean(under),
@@ -145,12 +149,20 @@ function evaluate(name: string, gt: Gt, dets: { t: number; dets: Detection[] }[]
   if (!existsSync(dir)) throw new Error(`no videos in ${dir} — run scripts/vision/make-synth-set.sh ${SPLIT}`);
   const names = readdirSync(dir).filter((f) => f.endsWith("_gt.json")).map((f) => f.replace("_gt.json", "")).sort();
   const rows: Record<string, unknown>[] = [];
+  const errorModel: Record<string, Record<string, Record<string, number>>> = {};
   for (const name of names) {
     const gt: Gt = JSON.parse(readFileSync(join(dir, `${name}_gt.json`), "utf8"));
     const d = await detections(name, gt);
     for (const mode of MODES) {
       const m = evaluate(name, gt, d, mode);
-      rows.push({ video: name, seed: gt.seed, camera: name.endsWith("_oblique") ? "oblique" : "straight", mode, ...m });
+      const { hist, ...metrics } = m;
+      rows.push({ video: name, seed: gt.seed, camera: name.endsWith("_oblique") ? "oblique" : "straight", mode, ...metrics });
+      // pooled count-error distribution per true count → used by the wait-time evaluation (src/core/predict)
+      const pooled = (errorModel[mode] ??= {});
+      for (const [g, e] of Object.entries(hist)) for (const [d, n] of Object.entries(e)) {
+        const b = (pooled[g] ??= {});
+        b[d] = (b[d] ?? 0) + n;
+      }
     }
   }
   const metricKeys = ["waitMAE", "overMean", "underMean", "overShare", "underShare", "passerOverShare", "movingOverShare", "orderingAcc", "serviceDurMAE"] as const;
@@ -176,7 +188,7 @@ function evaluate(name: string, gt: Gt, dets: { t: number; dets: Detection[] }[]
   const file = `docs/ai/evaluation/queue-bench-${SPLIT}${DETECTOR === "oracle" ? "-oracle" : ""}.json`;
   writeFileSync(
     file,
-    JSON.stringify({ generatedAt: new Date().toISOString(), split: SPLIT, detector: DETECTOR, analysisFps: FPS, note: "semi-synthetic videos with exact ground truth; NOT footage of 1947 COMMONS", summary, rows: rows.map((r) => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === "number" ? r3(v) : v]))) }, null, 1) + "\n",
+    JSON.stringify({ generatedAt: new Date().toISOString(), split: SPLIT, detector: DETECTOR, analysisFps: FPS, note: "semi-synthetic videos with exact ground truth; NOT footage of 1947 COMMONS", summary, countErrorModel: errorModel, rows: rows.map((r) => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === "number" ? r3(v) : v]))) }, null, 1) + "\n",
   );
   console.log("wrote", file);
 })();

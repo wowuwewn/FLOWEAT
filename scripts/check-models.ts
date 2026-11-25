@@ -17,3 +17,8 @@ for (const hm of [ [12,10], [12,25], [12,40] ]) {
   console.log("   fc lines", w.forecast.lines?.map(p=>`${p.horizonSec/60}m ${p.value.toFixed(1)} [${p.lo.toFixed(1)},${p.hi.toFixed(1)}]`).join(" "));
 }
 console.log(demoClock(Date.now()));
+for (const sc of ["peak", "skew", "calm"] as const) {
+  const r = evaluate("2026-11-24", sc);
+  console.log(`\n[${sc}] wait-time variants (n=${r.eta.n})`);
+  for (const v of r.eta.variants) console.log(`  ${v.label.padEnd(36)} MAE ${v.maeSec.toFixed(1)}s${v.coverage !== null ? `  p20–p80 적중 ${(v.coverage * 100).toFixed(0)}%` : ""}`);
+}

@@ -6,10 +6,21 @@ import type { ScenarioId } from "@/core/sim/simulator";
 import { demoClock, getEngine, worldAt, type Engine, type World, type WorldOptions } from "@/core/world";
 import { backendInfo, getBackend, type BackendInfo, type OrderBackend } from "./backend";
 import { currentScenario, currentSession } from "./session";
-import { setDemoTimeOverride } from "@/core/world";
+import { setDemoTimeOverride, setRealTimeClock } from "@/core/world";
 
-/** ?t=12:20 pins the demo clock for this tab (recordings, screenshots). ?t=live clears it. */
-function applyTimeOverride() {
+/**
+ * ?t=12:20 pins the demo clock for this tab (recordings, screenshots). ?t=live clears it.
+ * ?clock=real (remembered on this device) follows the real KST time during lunch; ?clock=loop returns
+ * to the default peak replay.
+ */
+export function applyTimeOverride() {
+  try {
+    const c = new URLSearchParams(location.search).get("clock");
+    if (c === "real" || c === "loop") localStorage.setItem("floweat.clock", c);
+    setRealTimeClock(localStorage.getItem("floweat.clock") === "real");
+  } catch {
+    /* ignore */
+  }
   try {
     const q = new URLSearchParams(location.search).get("t");
     if (q === "live") sessionStorage.removeItem("floweat.t");

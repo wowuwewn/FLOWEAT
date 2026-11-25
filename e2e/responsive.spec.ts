@@ -1,5 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// the e2e server is the laptop-demo server: the operator key lets the split demo pair its staff pane
+test.beforeEach(async ({ context }) => {
+  await context.addInitScript(() => localStorage.setItem("floweat.operatorKey", "e2e-operator"));
+});
+
 /** Clicks through the whole loop inside /demo/split and returns the monitor frame + page. */
 async function runSplitLoop(page: Page, prefix: string) {
   const session = `${prefix}${Date.now().toString(36).slice(-4).toUpperCase()}`.slice(0, 8);

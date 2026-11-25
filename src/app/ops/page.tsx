@@ -64,7 +64,7 @@ export default function OpsPage() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1320px] items-start gap-4 px-3 py-4 sm:px-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <main className="mx-auto grid max-w-[1320px] grid-cols-[minmax(0,1fr)] items-start gap-4 px-3 py-4 sm:px-4 xl:grid-cols-[minmax(0,1fr)_380px]">
         <section className="min-w-0 rounded-2xl bg-white p-3 sm:p-4" aria-labelledby="stage-h">
           <h2 id="stage-h" className="sr-only">
             테스트 영상 분석
@@ -606,7 +606,7 @@ function PredictionEval() {
               {Math.round(r.prep.maeModelSec)}초 <span className="text-[13px] font-medium text-ink-3">vs 메뉴 평균만 {Math.round(r.prep.maeBaselineSec)}초</span>
             </p>
             <p className="num text-[13px] text-ink-2">
-              {r.prep.n}건, 범위 적중 {(r.prep.coverage * 100).toFixed(0)}%. 실제 완료는 직원이 누를 때만 표시해요.
+              {r.prep.n}건, 범위 적중 {(r.prep.coverage * 100).toFixed(0)}%. 실제 완료는 매장이 호출기에 번호를 누를 때만 표시해요.
             </p>
           </div>
           <div>

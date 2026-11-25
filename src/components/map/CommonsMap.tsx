@@ -1,13 +1,17 @@
 "use client";
 /**
  * Commons Floor — the student map. Viewpoint: standing at the main entrance, looking in.
- * Draws only verified relations; everything beyond the entrance area is shown as
- * unverified space. Pinch / drag / wheel / double-tap zoom, tap a kiosk to select.
+ * Kiosk banks and queues: user-verified relations. Hall outline, counter bands, cafe, restroom:
+ * read off the "혜당관 1F" guide at the entrance (2026-11-25) — schematic, no measured scale.
+ * The queue layer frames the kiosks; the seat and pickup layers pull back to the whole hall.
+ * Pinch / drag / wheel / double-tap zoom, tap a kiosk to select.
  */
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getBrand } from "@/core/catalog";
+import { FLOOR_GUIDE, type CounterSlot } from "@/core/layout";
 import type { KioskView } from "@/core/world";
 import { minuteRange } from "@/lib/format";
-import { boxFaces, entranceCamera, kioskPos, pathOf, personPos, projector, WORLD, type V3 } from "./geometry";
+import { boxFaces, entranceCamera, hallView, kioskPos, lerpView, pathOf, personPos, projector, queueView, WORLD, type V3, type ViewSpec } from "./geometry";
 
 export type MapLayer = "queue" | "seats" | "pickup";
 
@@ -40,30 +44,71 @@ interface Props {
   padBottom?: number;
   /** px from the top for the layer notice chip (clear of overlaid headers) */
   noticeTop?: number;
+  /** brands to emphasise on the pickup layer (the student's active orders) */
+  highlightBrands?: string[];
 }
 
 const LAYER_NOTICE: Partial<Record<MapLayer, string>> = {
-  seats: "좌석 위치는 확인 전이라 지도에 그리지 않고 목록으로 보여 드려요",
-  pickup: "수령 카운터 위치는 확인 전이라 지도에 표시하지 않아요",
+  seats: "테이블 배치는 확인 전이라 구역별 현황은 아래 목록으로 보여 드려요",
+  pickup: "정문 안내도 기준 대략 위치예요 · 거리와 크기는 실측이 아니에요",
 };
 
-export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue", pitch = 68, height = 420, width = 390, interactive = true, className, overlay, hideLabels, fitHalf = WORLD.viewHalf, padBottom, noticeTop = 4 }: Props) {
+const BAND = {
+  yellow: { top: "#f7e7a6", side: "#e3cd78", front: "#ecd88a", stroke: "#cdb45e" },
+  blue: { top: "#cfe2f3", side: "#a9c6e3", front: "#bcd5ec", stroke: "#8fb0d4" },
+};
+
+function useTweenedView(target: ViewSpec): ViewSpec {
+  const [cur, setCur] = useState(target);
+  const from = useRef(target);
+  const key = JSON.stringify(target);
+  useEffect(() => {
+    const start = from.current;
+    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || JSON.stringify(start) === key) {
+      from.current = target;
+      setCur(target);
+      return;
+    }
+    let raf = 0;
+    const t0 = performance.now();
+    const step = (t: number) => {
+      const p = Math.min(1, (t - t0) / 650);
+      const e = 1 - Math.pow(1 - p, 3);
+      const v = lerpView(start, target, e);
+      from.current = v;
+      setCur(v);
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  return cur;
+}
+
+export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue", pitch = 68, height = 420, width = 390, interactive = true, className, overlay, hideLabels, fitHalf = WORLD.viewHalf, padBottom, noticeTop = 4, highlightBrands = [] }: Props) {
   const W = width;
   const H = height;
+  const hall = layer !== "queue";
+  const target = useMemo(() => (hall ? hallView(H / W) : queueView(pitch, fitHalf)), [hall, H, W, pitch, fitHalf]);
+  const v = useTweenedView(target);
   const P = useMemo(() => {
-    const f = WORLD.floor;
     const fit: V3[] = [
-      [-fitHalf, -0.6, 0],
-      [fitHalf, -0.6, 0],
-      [-fitHalf, WORLD.verifiedDepth + 1.4, 0],
-      [fitHalf, WORLD.verifiedDepth + 1.4, 0],
-      [0, WORLD.kioskDepth[3], 2.4],
+      [v.x0, v.y0, 0],
+      [v.x1, v.y0, 0],
+      [v.x0, v.y1, 0],
+      [v.x1, v.y1, 0],
+      [v.tx, v.y1 - 1, v.z],
     ];
-    return projector(entranceCamera(pitch), { w: W, h: H, pad: 10, padBottom: padBottom ?? 10, alignBottom: padBottom != null }, fit);
-  }, [pitch, W, H, fitHalf, padBottom]);
+    return projector(entranceCamera(v.pitch, v.distance, v.tx, v.ty), { w: W, h: H, pad: 10, padBottom: padBottom ?? 10, alignBottom: padBottom != null && !hall }, fit);
+  }, [v, W, H, padBottom, hall]);
+  // 0 in the kiosk view → 1 in the hall view (fades kiosk ETA pills out, counter labels in)
+  const hallT = Math.max(0, Math.min(1, (v.distance - 17) / (95 - 17)));
 
   // ---------------------------------------------------------------- zoom & pan
   const [view, setView] = useState({ k: 1, x: 0, y: 0 });
+  useEffect(() => setView({ k: 1, x: 0, y: 0 }), [hall]);
   const svgRef = useRef<SVGSVGElement>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef<{ moved: number; startDist?: number; startK?: number; lastTap?: number }>({ moved: 0 });
@@ -156,12 +201,16 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
   };
 
   // ---------------------------------------------------------------- scene
-  const f = WORLD.floor;
-  const floorPts = [P([f.x0, 0, 0]), P([f.x1, 0, 0]), P([f.x1, WORLD.verifiedDepth, 0]), P([f.x0, WORLD.verifiedDepth, 0])];
-  const fogPts = [P([f.x0, WORLD.verifiedDepth, 0]), P([f.x1, WORLD.verifiedDepth, 0]), P([f.x1, f.y1, 0]), P([f.x0, f.y1, 0])];
+  const G = FLOOR_GUIDE;
+  const h = G.hall;
+  const floorPts = [P([h.x0, 0, 0]), P([h.x1, 0, 0]), P([h.x1, h.y1Right, 0]), P([h.stepX, h.y1Right, 0]), P([h.stepX, h.y1Left, 0]), P([h.x0, h.y1Left, 0])];
+  // the guide photo is cut off on the right: the hall continues, but we do not know how
+  const cutPts = [P([h.x1, 0, 0]), P([h.x1 + 14, 0, 0]), P([h.x1 + 14, h.y1Right, 0]), P([h.x1, h.y1Right, 0])];
   const grid: string[] = [];
-  for (let x = f.x0; x <= f.x1 + 0.01; x += 1.25) grid.push(pathOf([P([x, 0, 0]), P([x, WORLD.verifiedDepth, 0])], false));
-  for (let y = 1.25; y < WORLD.verifiedDepth; y += 1.25) grid.push(pathOf([P([f.x0, y, 0]), P([f.x1, y, 0])], false));
+  const gs = 2.5;
+  for (let x = Math.ceil(h.x0 / gs) * gs; x < h.x1; x += gs) grid.push(pathOf([P([x, 0, 0]), P([x, x < h.stepX ? h.y1Left : h.y1Right, 0])], false));
+  for (let y = gs; y < h.y1Left; y += gs) grid.push(pathOf([P([h.x0, y, 0]), P([y > h.y1Right ? h.stepX : h.x1, y, 0])], false));
+  const mine = new Set(highlightBrands);
 
   const similarCount = kiosks.filter((k) => k.similar).length;
   const highlightSimilar = similarCount < kiosks.length;
@@ -170,17 +219,64 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
   type Drawable = { depth: number; el: React.ReactNode };
   const drawables: Drawable[] = [];
 
-  // entrance: low cut-away brick wall with a glass door
+  // entrance: low cut-away brick wall with a glass door; the other walls are the guide's outline
   const wallH = 0.45;
-  for (const [x0, x1] of [
-    [f.x0, -WORLD.door],
-    [WORLD.door, f.x1],
-  ]) {
-    for (const face of boxFaces(P, [(x0 + x1) / 2, -0.12, wallH / 2], [x1 - x0, 0.24, wallH])) {
+  const walls: [number, number, number, number, string][] = [
+    [h.x0, -WORLD.door, -0.12, -0.12, "#b8634a"],
+    [WORLD.door, h.x1, -0.12, -0.12, "#b8634a"],
+    [h.x0 - 0.12, h.x0 - 0.12, 0, h.y1Left, "#c9ced8"],
+    [h.x0, h.stepX, h.y1Left + 0.12, h.y1Left + 0.12, "#c9ced8"],
+    [h.stepX, h.x1, h.y1Right + 0.12, h.y1Right + 0.12, "#c9ced8"],
+  ];
+  for (const [x0, x1, y0, y1, color] of walls) {
+    const c: V3 = [(x0 + x1) / 2, (y0 + y1) / 2, wallH / 2];
+    const size: V3 = [Math.max(0.24, x1 - x0), Math.max(0.24, y1 - y0), wallH];
+    for (const face of boxFaces(P, c, size)) {
       drawables.push({
         depth: face.depth + 50,
-        el: <path key={`wall${x0}-${face.shade}-${face.normal.join("")}`} d={face.d} fill={face.shade === "top" ? "#b8634a" : "#9c4a33"} />,
+        el: <path key={`wall${x0}-${y0}-${face.shade}-${face.normal.join("")}`} d={face.d} fill={face.shade === "top" ? color : color === "#b8634a" ? "#9c4a33" : "#b3bac7"} />,
       });
+    }
+  }
+
+  // counter bands (yellow / blue on the guide), cafe, restroom and stairs as low blocks
+  const block = (key: string, x0: number, x1: number, y0: number, y1: number, hgt: number, tone: { top: string; side: string; front: string; stroke: string }, opacity = 1) => {
+    for (const face of boxFaces(P, [(x0 + x1) / 2, (y0 + y1) / 2, hgt / 2], [x1 - x0, y1 - y0, hgt])) {
+      drawables.push({
+        depth: face.depth,
+        el: <path key={`${key}-${face.shade}-${face.normal.join("")}`} d={face.d} fill={tone[face.shade]} stroke={tone.stroke} strokeWidth={0.6} opacity={opacity} strokeLinejoin="round" />,
+      });
+    }
+  };
+  const yb = G.bands.yellow;
+  const bb = G.bands.blue;
+  // each band = kitchen area (lower, lighter) behind a counter strip facing the hall
+  const KITCHEN = {
+    yellow: { top: "#fbf3d2", side: "#eadfae", front: "#f1e7bd", stroke: "#e0d29a" },
+    blue: { top: "#e5effa", side: "#c9dbee", front: "#d6e5f4", stroke: "#b5cbe4" },
+  };
+  block("ykit", yb.x0, yb.x1, yb.y0 + 1.6, yb.y1, 0.6, KITCHEN.yellow);
+  block("yband", yb.x0, yb.x1, yb.y0, yb.y0 + 1.6, 1.1, BAND.yellow);
+  block("bkit", yb.x1, bb.cutAt, bb.y0 + 1.6, bb.y1, 0.6, KITCHEN.blue);
+  block("bband", yb.x1, bb.cutAt, bb.y0, bb.y0 + 1.6, 1.1, BAND.blue);
+  block("bkitcut", bb.cutAt, bb.x1, bb.y0 + 1.6, bb.y1, 0.6, KITCHEN.blue, 0.45);
+  block("bbandcut", bb.cutAt, bb.x1, bb.y0, bb.y0 + 1.6, 1.1, BAND.blue, 0.45);
+  block("cafe", G.cafe.x0, G.cafe.x1, G.cafe.y0, G.cafe.y1, 0.9, { top: "#f5dccb", side: "#e2bfa7", front: "#ebcdb8", stroke: "#d1a98d" });
+  block("wc", G.restroom.x0, G.restroom.x1, G.restroom.y0, G.restroom.y1, 0.9, { top: "#e6e9ee", side: "#cfd4dc", front: "#d9dde4", stroke: "#bcc3cf" });
+  block("stairs", G.stairs.x0, G.stairs.x1, G.stairs.y0, G.stairs.y1, 0.9, { top: "#e6e9ee", side: "#cfd4dc", front: "#d9dde4", stroke: "#bcc3cf" });
+  // slot dividers + highlight for the student's own brands
+  for (const c of G.counters) {
+    const y0 = c.band === "yellow" ? yb.y0 : bb.y0;
+    const isMine = c.brandId ? mine.has(c.brandId) : !!c.candidates?.some((b) => mine.has(b));
+    if (isMine && hall) {
+      const pts = [P([c.x - c.half, y0 - 0.05, 1.12]), P([c.x + c.half, y0 - 0.05, 1.12]), P([c.x + c.half, y0 + 1.6, 1.12]), P([c.x - c.half, y0 + 1.6, 1.12])];
+      drawables.push({ depth: P([c.x, y0, 1.1]).depth - 0.5, el: <path key={`mine${c.id}`} d={pathOf(pts)} fill="#2448db" opacity={0.85 * hallT} /> });
+    }
+    if (c.status !== "continues") {
+      const x = c.x + c.half;
+      if (x < (c.band === "yellow" ? yb.x1 - 0.5 : bb.x1)) {
+        drawables.push({ depth: P([x, y0, 1.1]).depth - 0.4, el: <path key={`div${c.id}`} d={pathOf([P([x, y0, 1.11]), P([x, y0 + 1.6, 1.11])], false)} stroke={BAND[c.band].stroke} strokeWidth={1.2} /> });
+      }
     }
   }
 
@@ -276,7 +372,8 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
           }
         }}
         className={onSelect ? "cursor-pointer outline-none [&:focus-visible>rect:first-child]:stroke-[3]" : undefined}
-        opacity={dim ? 0.4 : 1}
+        opacity={(dim ? 0.4 : 1) * (1 - hallT)}
+        visibility={hallT > 0.95 ? "hidden" : undefined}
       >
         <rect x={-w / 2} y={-34} width={w} height={30} rx={15} fill={strong || isSel ? "#2448db" : "#ffffff"} stroke={isSel ? "#0b1f4d" : "rgba(15,25,45,.12)"} strokeWidth={isSel ? 2 : 1} filter="url(#pillShadow)" />
         <circle cx={-w / 2 + 13} cy={-19} r={4} fill={strong || isSel ? "#ffffff" : LEVEL_DOT[k.level]} />
@@ -289,9 +386,24 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
   });
 
   const door = P([0, -0.1, 0]);
-  const fogEdge = P([0, WORLD.verifiedDepth + 1.3, 0]);
-  // keep the fog caption clear of the deepest ETA pills (which sit ~40px above their kiosks)
-  const fogLabel = { x: fogEdge.x, y: Math.max(16, fogEdge.y - 34) };
+
+  // counter labels (hall layers): staggered so neighbours never collide on narrow screens
+  const counterLabels = hallT > 0.05 && !hideLabels ? layoutCounterLabels(P, mine, W < 520).map((l) => <CounterLabel key={l.c.id} {...l} opacity={hallT} />) : null;
+  const placeLabel = (x: number, y: number, z: number, text: string, sub?: string) => {
+    const p = P([x, y, z]);
+    return (
+      <g key={`${text}${x}${y}`} transform={`translate(${p.x},${p.y})`} opacity={hallT} pointerEvents="none">
+        <text textAnchor="middle" fontSize={11} fontWeight={700} fill="#5b6578" stroke="#fff" strokeWidth={3} paintOrder="stroke">
+          {text}
+        </text>
+        {sub && (
+          <text y={12} textAnchor="middle" fontSize={9.5} fill="#6b7486" stroke="#fff" strokeWidth={3} paintOrder="stroke">
+            {sub}
+          </text>
+        )}
+      </g>
+    );
+  };
 
   return (
     <div
@@ -305,7 +417,7 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
         viewBox={`0 0 ${W} ${H}`}
         className="block h-auto w-full select-none"
         role="group"
-        aria-label="정문에서 식당 안쪽을 본 개념 지도. 왼쪽과 오른쪽에 키오스크가 3대씩 있고, 줄은 주문하는 사람 뒤 바깥쪽으로 서요."
+        aria-label={hall ? "혜당관 1층 안내도를 바탕으로 한 개념 지도. 안쪽 벽을 따라 노란 매장 구역(바비든든, 포포420, 가오슝 추정, 폭풍분식, 값찌개, 경성카츠)이 있고, 오른쪽 파란 구역에 51장국밥과 나머지 매장이 이어져요. 왼쪽에 카페1847과 화장실이 있어요. 거리는 실측이 아니에요." : "정문에서 식당 안쪽을 본 개념 지도. 왼쪽과 오른쪽에 키오스크가 3대씩 있고, 줄은 주문하는 사람 뒤 바깥쪽으로 서요."}
         onClick={() => tap(null)}
         {...handlers}
       >
@@ -327,21 +439,32 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
         </defs>
         <rect width={W} height={H} fill="#eef0f3" />
         <g transform={`translate(${view.x},${view.y}) scale(${view.k})`}>
-          <path d={pathOf(fogPts)} fill="url(#fogHatch)" />
-          <path d={pathOf(fogPts)} fill="url(#fog)" />
+          <path d={pathOf(cutPts)} fill="url(#fogHatch)" />
           <path d={pathOf(floorPts)} fill="#dfe3e9" />
-          {/* central walkway: lighter, wider than v1 */}
-          <path d={pathOf([P([-WORLD.aisleHalf, 0, 0]), P([WORLD.aisleHalf, 0, 0]), P([WORLD.aisleHalf, WORLD.verifiedDepth, 0]), P([-WORLD.aisleHalf, WORLD.verifiedDepth, 0])])} fill="#e9ecf1" />
+          {/* central walkway from the door toward the counters: lighter, wider than v1 */}
+          <path d={pathOf([P([-WORLD.aisleHalf, 0, 0]), P([WORLD.aisleHalf, 0, 0]), P([WORLD.aisleHalf, G.bands.blue.y0, 0]), P([-WORLD.aisleHalf, G.bands.blue.y0, 0])])} fill="#e9ecf1" />
           {grid.map((d, i) => (
-            <path key={i} d={d} stroke="#cfd5de" strokeWidth={0.6} fill="none" />
+            <path key={i} d={d} stroke="#cfd5de" strokeWidth={0.6} fill="none" opacity={1 - hallT * 0.5} />
           ))}
-          <path d={pathOf([P([f.x0, WORLD.verifiedDepth, 0]), P([f.x1, WORLD.verifiedDepth, 0])], false)} stroke="#9aa5b8" strokeWidth={1.2} strokeDasharray="5 5" fill="none" />
-          {!LAYER_NOTICE[layer] && (
-            <text x={fogLabel.x} y={fogLabel.y} textAnchor="middle" fontSize={11.5} fontWeight={600} fill="#5b6578">
-              아직 확인 전인 공간
-            </text>
-          )}
+          {/* the guide's unlabelled green shape — drawn as an outline only, its use is unknown */}
+          <path d={pathOf(G.unlabelled.map(([x, y]) => P([x, y, 0])))} fill="rgba(140,170,110,.10)" stroke="#a9bb94" strokeWidth={1} strokeDasharray="4 3" />
+          {G.hidden.map((z) => (
+            <path key={z.label} d={pathOf([P([z.x0, z.y0, 0]), P([z.x1, z.y0, 0]), P([z.x1, z.y1, 0]), P([z.x0, z.y1, 0])])} fill="url(#fogHatch)" opacity={0.9} />
+          ))}
           {drawables.map((d) => d.el)}
+          {hallT > 0.05 && !hideLabels && (
+            <>
+              {placeLabel((G.cafe.x0 + G.cafe.x1) / 2, (G.cafe.y0 + G.cafe.y1) / 2, 1, "카페1847", "별도 주문")}
+              {placeLabel((G.restroom.x0 + G.restroom.x1) / 2, (G.restroom.y0 + G.restroom.y1) / 2, 1, "화장실")}
+              {placeLabel(h.x1 + 6, 9, 0, "안내도 잘린 부분", "매장이 이어짐")}
+              {placeLabel(-28, 7.5, 0, "안내도에서 가려짐")}
+              {layer === "seats" && placeLabel(-17, 13, 0, "좌석 구역", "테이블 배치 미확인")}
+              {layer === "seats" && placeLabel(14, 9, 0, "좌석 구역", "테이블 배치 미확인")}
+              {placeLabel(-4, 15.5, 0, "안내도 표시", "용도 미표기")}
+              {placeLabel(0, 4.2, 0, "키오스크 3대씩")}
+            </>
+          )}
+          {counterLabels}
           {/* glass door threshold */}
           <path d={pathOf([P([-WORLD.door, -0.24, 0]), P([WORLD.door, -0.24, 0]), P([WORLD.door, 0, 0]), P([-WORLD.door, 0, 0])])} fill="#bcd2f4" stroke="#8fb0e6" strokeWidth={1} />
           {!hideLabels && labels}
@@ -377,5 +500,66 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
         </div>
       )}
     </div>
+  );
+}
+
+interface PlacedLabel {
+  c: CounterSlot;
+  x: number;
+  y: number;
+  lift: number;
+  w: number;
+  text: string;
+  sub: string | null;
+  isMine: boolean;
+  unsure: boolean;
+  small: boolean;
+}
+
+/** Places counter labels above their slots, lifting a label to the next row while it would overlap one already placed. */
+function layoutCounterLabels(P: (p: V3) => { x: number; y: number }, mine: Set<string>, small: boolean): PlacedLabel[] {
+  const placed: { x0: number; x1: number; y0: number; y1: number }[] = [];
+  const fs = small ? 10.5 : 12;
+  return FLOOR_GUIDE.counters.map((c) => {
+    const y0 = c.band === "yellow" ? FLOOR_GUIDE.bands.yellow.y0 : FLOOR_GUIDE.bands.blue.y0;
+    const a = P([c.x, y0 + 0.8, 1.1]);
+    const brand = c.brandId ? getBrand(c.brandId)?.name : null;
+    const isMine = c.brandId ? mine.has(c.brandId) : !!c.candidates?.some((b) => mine.has(b));
+    const unsure = c.status === "inferred" || c.status === "outdated" || c.status === "continues";
+    const text = brand ?? (c.status === "continues" ? "나머지 매장" : "미확인");
+    const sub = c.status === "inferred" ? "추정" : c.status === "outdated" ? `안내도: ${c.guideLabel}` : c.status === "continues" ? (small ? "3곳 · 순서 미확인" : "비비고고·도쿄야·광뚝") : null;
+    const w = Math.max(text.length * fs * 0.92 + 14, sub ? sub.length * fs * 0.72 + 10 : 0);
+    const h = sub ? fs * 2.5 : fs * 1.7;
+    let lift = 6;
+    for (let k = 0; k < 6; k++) {
+      const box = { x0: a.x - w / 2 - 2, x1: a.x + w / 2 + 2, y0: a.y - lift - h, y1: a.y - lift };
+      if (!placed.some((b) => b.x0 < box.x1 && box.x0 < b.x1 && b.y0 < box.y1 && box.y0 < b.y1)) {
+        placed.push(box);
+        break;
+      }
+      lift += h + 3;
+    }
+    return { c, x: a.x, y: a.y, lift, w, text, sub, isMine, unsure, small };
+  });
+}
+
+/** Brand label over a counter slot, with a leader line down to the counter. */
+function CounterLabel({ c, x, y, lift, w, text, sub, isMine, unsure, small, opacity }: PlacedLabel & { opacity: number }) {
+  const fs = small ? 10.5 : 12;
+  const hgt = sub ? fs * 2.5 : fs * 1.7;
+  return (
+    <g transform={`translate(${x},${y - lift})`} opacity={opacity} pointerEvents="none" data-counter={c.id}>
+      <path d={`M0,${lift}L0,0`} stroke={isMine ? "#2448db" : "#8592a8"} strokeWidth={1} />
+      <circle cy={lift} r={2} fill={isMine ? "#2448db" : "#8592a8"} />
+      <rect x={-w / 2} y={-hgt} width={w} height={hgt} rx={7} fill={isMine ? "#2448db" : "#ffffff"} stroke={isMine ? "#0b1f4d" : unsure ? "#8592a8" : "rgba(15,25,45,.16)"} strokeDasharray={unsure && !isMine ? "3 2" : undefined} filter="url(#pillShadow)" />
+      <text y={sub ? -hgt + fs * 1.05 : -hgt / 2 + fs * 0.36} textAnchor="middle" fontSize={fs} fontWeight={750} fill={isMine ? "#fff" : "#0f1a33"}>
+        {text}
+      </text>
+      {sub && (
+        <text y={-fs * 0.42} textAnchor="middle" fontSize={fs * 0.78} fontWeight={600} fill={isMine ? "#dfe6ff" : "#5b6578"}>
+          {sub}
+        </text>
+      )}
+    </g>
   );
 }

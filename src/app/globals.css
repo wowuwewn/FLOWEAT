@@ -123,6 +123,10 @@
   45% { transform: scale(1.015); }
   100% { transform: scale(1); }
 }
+@keyframes monitor-new {
+  0%, 100% { background: transparent; }
+  25%, 60% { background: #ffe9ea; }
+}
 @keyframes monitor-flash {
   0%, 100% { background: transparent; }
   20%, 60% { background: rgba(255, 255, 255, 0.14); }

@@ -1,97 +1,111 @@
 "use client";
+/**
+ * Shared pickup monitor, modelled on the two light-blue "주문 번호 리스트" screens photographed on
+ * 2026-11-25: five brand columns per screen, numbers listed under each brand.
+ *   screen A: (cut off in the photo — 바비든든 is the only brand left) · 포포420 · 가오슝 · 폭풍분식 · 값찌개
+ *   screen B: 경성카츠 · 도쿄야 · 51장국밥 · 광뚝 · 비비고고
+ * `?screen=A|B` shows one screen full size (one TV each); otherwise both side by side / stacked.
+ * The real screens use red and black numbers whose meaning we do not know; here red only marks a
+ * number called in the last 30 s — FLOWEAT's own demo rule, said so in the legend.
+ */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { brands } from "@/core/catalog";
+import { getBrand } from "@/core/catalog";
 import { monitorOrders } from "@/core/orders/service";
+import type { StaffOrder } from "@/core/orders/types";
 import { useBackend, useDemoContext, useNow, useSessionOrders, useWorld } from "@/client/hooks";
 import { formatClock, simulatedReadyNumbers } from "@/core/world";
-import { Logo } from "@/components/brand/Logo";
 
-/** Shared pickup monitor: ready numbers only, per brand — mirrors the existing screens. */
+const SCREENS: Record<"A" | "B", string[]> = {
+  A: ["babi", "popo420", "kaohsiung", "pokpung", "gapjjigae"],
+  B: ["gyeongseong", "tokyoya", "jang51", "gwangttuk", "bibigogo"],
+};
+const NEW_MS = 30_000;
+const PER_COLUMN = 7;
+
 export default function MonitorPage() {
   const { backend, info } = useBackend();
   const demo = useDemoContext();
   const { orders, loaded } = useSessionOrders(backend, demo?.session);
-  const now = useNow(5000);
+  const now = useNow(1000);
   const ready = useMemo(() => monitorOrders(orders, now), [orders, now]);
   const { world, engine } = useWorld(demo?.scenario);
   const simNums = useMemo(() => (engine && world ? simulatedReadyNumbers(engine, world.clock.tSec) : {}), [engine, world]);
-  const fresh = useRef<Map<string, number>>(new Map());
-  const [, force] = useState(0);
+  const [only, setOnly] = useState<"A" | "B" | null>(null);
   useEffect(() => {
-    let changed = false;
-    // an undone completion leaves the board; if it comes back it should flash again
-    const ids = new Set(ready.map((o) => o.id));
-    for (const id of [...fresh.current.keys()]) if (!ids.has(id)) fresh.current.delete(id);
-    for (const o of ready) {
-      if (!fresh.current.has(o.id)) {
-        fresh.current.set(o.id, Date.now());
-        changed = true;
-      }
-    }
-    if (changed) force((x) => x + 1);
-  }, [ready]);
+    const s = new URLSearchParams(window.location.search).get("screen");
+    if (s === "A" || s === "B") setOnly(s);
+  }, []);
+  // when a number first appears on this screen (an undone call leaves; if it comes back it is new again)
+  const seen = useRef<Map<string, number>>(new Map());
+  const ids = new Set(ready.map((o) => o.id));
+  for (const id of [...seen.current.keys()]) if (!ids.has(id)) seen.current.delete(id);
+  for (const o of ready) if (!seen.current.has(o.id)) seen.current.set(o.id, Date.now());
 
+  const screens = only ? [only] : (["A", "B"] as const);
   return (
-    <div className="flex h-dvh min-h-[360px] flex-col overflow-hidden bg-[#0b1f4d] text-white">
-      <header className="flex shrink-0 items-end justify-between gap-3 px-[max(14px,2.6vw)] pt-[max(12px,2vw)] pb-[max(8px,1vw)]">
-        <div className="min-w-0">
-          <h1 className="flex items-center gap-[max(8px,0.9vw)] text-[clamp(22px,3.2vw,64px)] leading-none font-[800] tracking-[-0.03em]">
-            <Logo size={44} tone="white" className="size-[1.05em]" />
-            준비된 주문
-          </h1>
-          <p className="mt-[max(4px,0.5vw)] truncate text-[clamp(12.5px,1.25vw,24px)] opacity-75">번호가 보이면 매장 카운터에서 받아 가세요</p>
-        </div>
-        <p className="num shrink-0 text-right text-[clamp(18px,2.1vw,40px)] leading-none font-bold opacity-90">
-          {world ? formatClock(world.clock.tSec) : ""}
-          <span className="mt-1 block text-[clamp(10.5px,0.9vw,16px)] font-medium opacity-70">시연 시각</span>
-        </p>
-      </header>
-      <main style={{ containerType: "size" }} className="grid min-h-0 flex-1 auto-rows-fr grid-cols-2 gap-[1px] bg-white/10 [@media(min-aspect-ratio:6/5)]:grid-cols-5" aria-live="polite">
-        {brands.map((b) => {
-          const nums = ready.filter((o) => o.brandId === b.id).slice(0, 6);
-          const sims = (simNums[b.id] ?? []).slice(0, Math.max(0, 5 - nums.length));
+    <div className="flex h-dvh min-h-[360px] flex-col overflow-hidden bg-[#2a2d33] text-[#14233f]">
+      <main className={`grid min-h-0 flex-1 gap-[max(6px,0.8vw)] p-[max(6px,0.8vw)] ${screens.length === 2 ? "grid-rows-2 [@media(min-aspect-ratio:7/5)]:grid-cols-2 [@media(min-aspect-ratio:7/5)]:grid-rows-1" : ""}`} aria-live="polite">
+        {screens.map((sc) => (
+          <Screen key={sc} id={sc} ready={ready} sims={simNums} seen={seen.current} now={now} />
+        ))}
+      </main>
+      <footer className="flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 bg-[#1d2025] px-[max(12px,1.6vw)] py-[max(5px,0.6vw)] text-[clamp(11px,0.85vw,15px)] text-white/85">
+        <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <span>
+            <b className="num text-[#ff6b70]">123</b> 방금 호출(30초) · <b className="num">123</b> 체험 주문 · <span className="num text-white/60">512</span> 시뮬레이션 손님
+          </span>
+          <span className="text-white/60">색 구분은 FLOWEAT 시연 규칙이에요. 실제 모니터의 빨간·검은 번호 뜻은 확인 전이에요.</span>
+        </span>
+        <span className="text-white/60">
+          {world ? `시연 ${formatClock(world.clock.tSec)} · ` : ""}세션 {demo?.session ?? "–"} · {!loaded ? "연결하는 중" : info?.kind === "device" ? "한 기기 체험" : "시연 서버와 연결됨"}
+        </span>
+      </footer>
+    </div>
+  );
+}
+
+function Screen({ id, ready, sims, seen, now }: { id: "A" | "B"; ready: StaffOrder[]; sims: Record<string, { n: number }[]>; seen: Map<string, number>; now: number }) {
+  return (
+    <section
+      style={{ containerType: "size" }}
+      className="flex min-h-0 flex-col overflow-hidden rounded-[max(4px,0.4vw)] bg-gradient-to-b from-[#86c0ee] to-[#a9d4f6] ring-[max(3px,0.35vw)] ring-[#0c0d10]"
+      aria-label={`호출 모니터 ${id === "A" ? "1" : "2"}`}
+    >
+      <h1 className="shrink-0 pt-[2.2cqh] pb-[1.6cqh] text-center text-[clamp(16px,min(5.4cqw,9cqh),72px)] leading-none font-[800] tracking-[-0.02em] text-[#14233f]">주문 번호 리스트</h1>
+      <div className="grid min-h-0 flex-1 grid-cols-5 gap-[0.9cqw] px-[1.4cqw]">
+        {SCREENS[id].map((bid) => {
+          const b = getBrand(bid)!;
+          const mine = ready.filter((o) => o.brandId === bid).slice(0, PER_COLUMN);
+          const sim = (sims[bid] ?? []).slice(0, Math.max(0, PER_COLUMN - mine.length));
           return (
-            <section key={b.id} className="flex min-h-0 flex-col overflow-hidden bg-[#0b1f4d] px-[max(10px,1.3vw)] pt-[max(6px,1vw)] pb-[max(6px,1vw)]" aria-label={`${b.name} 준비 완료 번호`}>
-              <h2 className="shrink-0 truncate border-b border-white/15 pb-[max(4px,0.5vw)] text-[clamp(13px,min(4.2cqw,2.8cqh),28px)] [@media(min-aspect-ratio:6/5)]:text-[clamp(13px,min(1.6cqw,4cqh),28px)] font-bold">{b.name}</h2>
-              <ul className="mt-[max(4px,0.6vw)] flex min-h-0 flex-wrap content-start items-baseline gap-x-[max(8px,1vw)] overflow-hidden">
-                {nums.map((o) => {
-                  const isNew = Date.now() - (fresh.current.get(o.id) ?? 0) < 12_000;
+            <div key={bid} className="flex min-h-0 flex-col" aria-label={`${b.name} 호출 번호`} role="group">
+              <h2 className="shrink-0 truncate rounded-t-[1cqw] bg-[#e7f2fc] px-[0.6cqw] py-[1.3cqh] text-center text-[clamp(11px,min(2.9cqw,6cqh),40px)] font-bold text-[#14233f]">{b.name}</h2>
+              <ol className="flex min-h-0 flex-1 flex-col items-center gap-[0.6cqh] overflow-hidden bg-[#f4f9fe]/90 pt-[1.2cqh]">
+                {mine.map((o) => {
+                  const isNew = now - (seen.get(o.id) ?? 0) < NEW_MS;
                   return (
                     <li
                       key={o.id}
                       data-testid="monitor-number"
-                      aria-label={`체험 주문 ${o.displayNumber}번`}
-                      className={`num rounded-lg text-[clamp(20px,min(9cqw,6cqh),80px)] [@media(min-aspect-ratio:6/5)]:text-[clamp(20px,min(4.4cqw,9cqh),80px)] leading-[1.15] font-[800] tracking-[-0.03em] ${isNew ? "text-[#ffd34d] [animation:monitor-flash_1.6s_ease-in-out_3]" : "text-white"}`}
+                      data-new={isNew || undefined}
+                      aria-label={`${b.name} ${o.displayNumber}번${isNew ? ", 방금 호출" : ""}`}
+                      className={`num w-[88%] rounded-[0.8cqw] text-center text-[clamp(16px,min(4.6cqw,9.5cqh),84px)] leading-[1.12] font-[850] tracking-[-0.02em] ${isNew ? "text-[#d21f26] [animation:monitor-new_1.2s_ease-in-out_4]" : "text-[#14233f]"}`}
                     >
                       {o.displayNumber}
                     </li>
                   );
                 })}
-                {sims.map((x) => (
-                  <li key={`sim-${x.n}`} className="num text-[clamp(14px,min(5.8cqw,3.9cqh),52px)] [@media(min-aspect-ratio:6/5)]:text-[clamp(14px,min(2.9cqw,5.8cqh),52px)] leading-[1.35] font-[600] tracking-[-0.02em] text-white/50" aria-label={`시뮬레이션 손님 ${x.n}번`}>
+                {sim.map((x) => (
+                  <li key={`sim-${x.n}`} className="num text-center text-[clamp(13px,min(3.4cqw,7cqh),60px)] leading-[1.2] font-[650] text-[#5a6a84]" aria-label={`시뮬레이션 손님 ${x.n}번`}>
                     {x.n}
                   </li>
                 ))}
-              </ul>
-            </section>
+              </ol>
+            </div>
           );
         })}
-      </main>
-      <footer className="flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 px-[max(14px,2.6vw)] py-[max(6px,0.8vw)] text-[clamp(11px,0.9vw,16px)]">
-        <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <span className="flex items-center gap-1.5">
-            <span className="num font-[800]">123</span>
-            <span className="opacity-75">진한 번호: 이 체험에서 실제로 주문·완료한 번호</span>
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="num font-semibold text-white/60">512</span>
-            <span className="opacity-75">흐린 번호: 시뮬레이션 손님</span>
-          </span>
-        </span>
-        <span className="opacity-60">
-          세션 {demo?.session ?? "–"} · {!loaded ? "연결하는 중" : info?.kind === "device" ? "한 기기 체험" : "시연 서버와 연결됨"}
-        </span>
-      </footer>
-    </div>
+      </div>
+      <p className="shrink-0 py-[1.6cqh] text-center text-[clamp(10px,min(2.3cqw,4.6cqh),32px)] font-semibold text-[#14233f]">주문하신 번호가 표시되면 음식을 찾아가 주세요.</p>
+    </section>
   );
 }

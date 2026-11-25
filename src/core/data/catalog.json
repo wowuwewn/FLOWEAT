@@ -1,1065 +1,2449 @@
 {
- "generatedAt": "2026-11-24",
- "source": {
-  "evidence": "docs/evidence/floweat-handoff-2026-11-24",
-  "priceSource": "https://www.diningcode.com/profile.php?rid=zouqpRLBZlrb",
-  "priceStatus": "제3자 공개 목록의 참고 가격 · 게시일과 오늘 판매 여부 미확인",
-  "asOf": "2026-11-24"
- },
- "brands": [
-  {
-   "id": "gapjjigae",
-   "name": "값찌개",
-   "cuisine": "찌개",
-   "verification": "operator_listed",
-   "verificationNote": "운영사의 죽전 매장 목록에 있는 브랜드예요.",
-   "latestOperatorReview": null,
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "gyeongseong",
-   "name": "경성카츠",
-   "cuisine": "돈카츠와 우동",
-   "verification": "operator_listed",
-   "verificationNote": "운영사의 죽전 매장 목록에 있는 브랜드예요.",
-   "latestOperatorReview": "2026-11-20",
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "babi",
-   "name": "바비든든",
-   "cuisine": "덮밥",
-   "verification": "operator_listed",
-   "verificationNote": "운영사의 죽전 매장 목록에 있는 브랜드예요.",
-   "latestOperatorReview": "2026-10-12",
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "popo420",
-   "name": "포포420",
-   "cuisine": "쌀국수",
-   "verification": "operator_listed",
-   "verificationNote": "운영사의 죽전 매장 목록에 있는 브랜드예요.",
-   "latestOperatorReview": "2026-11-19",
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "bibigogo",
-   "name": "비비고고",
-   "cuisine": "비빔밥과 카레",
-   "verification": "operator_listed",
-   "verificationNote": "운영사 죽전 매장 목록에 있고, 팀원이 현장에서도 봤어요.",
-   "latestOperatorReview": null,
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "gwangttuk",
-   "name": "광뚝",
-   "cuisine": "뚝배기와 칼제비",
-   "verification": "operator_listed",
-   "verificationNote": "운영사의 죽전 매장 목록에 있는 브랜드예요.",
-   "latestOperatorReview": "2026-09-08",
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "pokpung",
-   "name": "폭풍분식",
-   "cuisine": "분식과 포케",
-   "verification": "operator_listed",
-   "verificationNote": "운영사의 죽전 매장 목록에 있는 브랜드예요.",
-   "latestOperatorReview": "2026-09-28",
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "tokyoya",
-   "name": "도쿄야",
-   "cuisine": "오므라이스와 라멘",
-   "verification": "visit_report",
-   "verificationNote": "방문기와 공개 가격 목록에서만 확인된 브랜드예요. 지금도 운영하는지 확인이 필요해요.",
-   "latestOperatorReview": null,
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "kaohsiung",
-   "name": "가오슝",
-   "cuisine": "대만식 중식",
-   "verification": "field_observed",
-   "verificationNote": "팀원이 현장에서 본 브랜드예요. 운영사 목록에는 아직 없어요.",
-   "latestOperatorReview": null,
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  },
-  {
-   "id": "jang51",
-   "name": "51장국밥",
-   "cuisine": "국밥과 냉면",
-   "verification": "visit_report",
-   "verificationNote": "방문기와 공개 가격 목록에서만 확인된 브랜드예요. 지금도 운영하는지 확인이 필요해요.",
-   "latestOperatorReview": "2026-09-17",
-   "currentCourtNumber": null,
-   "pickupNodeId": null
-  }
- ],
- "menus": [
-  {
-   "id": "gapjjigae-001",
-   "brandId": "gapjjigae",
-   "name": "참치김치찌개(밥포함)",
-   "listedPriceKrw": 6500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gapjjigae-002",
-   "brandId": "gapjjigae",
-   "name": "우삼겹순두부(밥포함)",
-   "listedPriceKrw": 6900,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gapjjigae-003",
-   "brandId": "gapjjigae",
-   "name": "우삼겹된장찌개(밥포함)",
-   "listedPriceKrw": 6500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gapjjigae-004",
-   "brandId": "gapjjigae",
-   "name": "스팸순두부(밥포함)",
-   "listedPriceKrw": 6900,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gapjjigae-005",
-   "brandId": "gapjjigae",
-   "name": "스팸김치찌개(밥포함)",
-   "listedPriceKrw": 6500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gapjjigae-006",
-   "brandId": "gapjjigae",
-   "name": "순두부찌개(밥포함)",
-   "listedPriceKrw": 6000,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gapjjigae-007",
-   "brandId": "gapjjigae",
-   "name": "바지락순두부(밥포함)",
-   "listedPriceKrw": 6200,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gapjjigae-008",
-   "brandId": "gapjjigae",
-   "name": "돼지김치찌개(밥포함)",
-   "listedPriceKrw": 6500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gapjjigae-009",
-   "brandId": "gapjjigae",
-   "name": "공기밥",
-   "listedPriceKrw": 1000,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "gyeongseong-010",
-   "brandId": "gyeongseong",
-   "name": "우동",
-   "listedPriceKrw": 4900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "gyeongseong-011",
-   "brandId": "gyeongseong",
-   "name": "새우튀김 우동",
-   "listedPriceKrw": 6900,
-   "cookType": "fried",
-   "isSide": false
-  },
-  {
-   "id": "gyeongseong-012",
-   "brandId": "gyeongseong",
-   "name": "고구마치즈돈카츠",
-   "listedPriceKrw": 8300,
-   "cookType": "fried",
-   "isSide": false
-  },
-  {
-   "id": "gyeongseong-013",
-   "brandId": "gyeongseong",
-   "name": "김치냄비우동",
-   "listedPriceKrw": 5900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "gyeongseong-014",
-   "brandId": "gyeongseong",
-   "name": "등심돈카츠",
-   "listedPriceKrw": 7500,
-   "cookType": "fried",
-   "isSide": false
-  },
-  {
-   "id": "gyeongseong-015",
-   "brandId": "gyeongseong",
-   "name": "샐러드파스타+등심카츠",
-   "listedPriceKrw": 8900,
-   "cookType": "fried",
-   "isSide": false
-  },
-  {
-   "id": "gyeongseong-016",
-   "brandId": "gyeongseong",
-   "name": "왕돈카츠",
-   "listedPriceKrw": 8900,
-   "cookType": "fried",
-   "isSide": false
-  },
-  {
-   "id": "babi-017",
-   "brandId": "babi",
-   "name": "춘천닭갈비덮밥(킹)",
-   "listedPriceKrw": 5900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "babi-018",
-   "brandId": "babi",
-   "name": "제육덮밥",
-   "listedPriceKrw": 3900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "babi-019",
-   "brandId": "babi",
-   "name": "제육덮밥(킹)",
-   "listedPriceKrw": 5900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "babi-020",
-   "brandId": "babi",
-   "name": "고기든든(킹)",
-   "listedPriceKrw": 5900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "babi-021",
-   "brandId": "babi",
-   "name": "고기든든",
-   "listedPriceKrw": 3900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "babi-022",
-   "brandId": "babi",
-   "name": "치킨마요덮밥(라지)",
-   "listedPriceKrw": 4900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "babi-023",
-   "brandId": "babi",
-   "name": "햄볶음김치덮밥",
-   "listedPriceKrw": 4900,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "babi-024",
-   "brandId": "babi",
-   "name": "참치마요덮밥(라지)",
-   "listedPriceKrw": 4900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "babi-025",
-   "brandId": "babi",
-   "name": "장어덮밥",
-   "listedPriceKrw": 8900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "babi-026",
-   "brandId": "babi",
-   "name": "스팸마요덮밥(라지)",
-   "listedPriceKrw": 4900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "popo420-027",
-   "brandId": "popo420",
-   "name": "오징어링튀김",
-   "listedPriceKrw": 1900,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "popo420-028",
-   "brandId": "popo420",
-   "name": "반꿔이",
-   "listedPriceKrw": 1800,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "popo420-029",
-   "brandId": "popo420",
-   "name": "돈불직화구이",
-   "listedPriceKrw": 3000,
-   "cookType": "grill",
-   "isSide": false
-  },
-  {
-   "id": "popo420-030",
-   "brandId": "popo420",
-   "name": "고수",
-   "listedPriceKrw": 500,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "popo420-031",
-   "brandId": "popo420",
-   "name": "쉬림프나시고랭",
-   "listedPriceKrw": 7900,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "popo420-032",
-   "brandId": "popo420",
-   "name": "훈제닭다리쌀국수",
-   "listedPriceKrw": 9900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-033",
-   "brandId": "popo420",
-   "name": "얼큰해산물쌀국수",
-   "listedPriceKrw": 7500,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-034",
-   "brandId": "popo420",
-   "name": "비빔쌀국수+직화구이",
-   "listedPriceKrw": 8400,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-035",
-   "brandId": "popo420",
-   "name": "쉬림프나시고랭+직화구이",
-   "listedPriceKrw": 10800,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "popo420-036",
-   "brandId": "popo420",
-   "name": "비빔쌀국수",
-   "listedPriceKrw": 5500,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-037",
-   "brandId": "popo420",
-   "name": "포포쌀국수(고기없음)",
-   "listedPriceKrw": 4900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-038",
-   "brandId": "popo420",
-   "name": "우삼겹쌀국수",
-   "listedPriceKrw": 5900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-039",
-   "brandId": "popo420",
-   "name": "우삼겹쌀국수 특",
-   "listedPriceKrw": 7900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-040",
-   "brandId": "popo420",
-   "name": "마라우삼겹쌀국수",
-   "listedPriceKrw": 6500,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-041",
-   "brandId": "popo420",
-   "name": "마라우삼겹쌀국수 특",
-   "listedPriceKrw": 8500,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-042",
-   "brandId": "popo420",
-   "name": "마라쌀국수(고기없음)",
-   "listedPriceKrw": 6300,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "popo420-043",
-   "brandId": "popo420",
-   "name": "새우빠스(2p)",
-   "listedPriceKrw": 2500,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "popo420-044",
-   "brandId": "popo420",
-   "name": "야채춘권(3p)",
-   "listedPriceKrw": 1000,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "bibigogo-045",
-   "brandId": "bibigogo",
-   "name": "오색비빔밥",
-   "listedPriceKrw": 6500,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "bibigogo-046",
-   "brandId": "bibigogo",
-   "name": "불고기비빔밥",
-   "listedPriceKrw": 7500,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "bibigogo-047",
-   "brandId": "bibigogo",
-   "name": "육회비빔밥",
-   "listedPriceKrw": 7900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "bibigogo-048",
-   "brandId": "bibigogo",
-   "name": "기본카레",
-   "listedPriceKrw": 4900,
-   "cookType": "curry",
-   "isSide": false
-  },
-  {
-   "id": "bibigogo-049",
-   "brandId": "bibigogo",
-   "name": "불고기카레",
-   "listedPriceKrw": 6900,
-   "cookType": "curry",
-   "isSide": false
-  },
-  {
-   "id": "bibigogo-050",
-   "brandId": "bibigogo",
-   "name": "치킨카레",
-   "listedPriceKrw": 6900,
-   "cookType": "curry",
-   "isSide": false
-  },
-  {
-   "id": "bibigogo-051",
-   "brandId": "bibigogo",
-   "name": "새우카레",
-   "listedPriceKrw": 6900,
-   "cookType": "curry",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-052",
-   "brandId": "gwangttuk",
-   "name": "물만두",
-   "listedPriceKrw": 1900,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "gwangttuk-053",
-   "brandId": "gwangttuk",
-   "name": "고추장 불고기",
-   "listedPriceKrw": 7900,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-054",
-   "brandId": "gwangttuk",
-   "name": "왕만두 사골칼제비",
-   "listedPriceKrw": 7900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-055",
-   "brandId": "gwangttuk",
-   "name": "얼큰 왕만두사골칼제비",
-   "listedPriceKrw": 8900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-056",
-   "brandId": "gwangttuk",
-   "name": "뚝배기알밥",
-   "listedPriceKrw": 5900,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-057",
-   "brandId": "gwangttuk",
-   "name": "간장 불고기",
-   "listedPriceKrw": 7900,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-058",
-   "brandId": "gwangttuk",
-   "name": "콩나물불백",
-   "listedPriceKrw": 6500,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-059",
-   "brandId": "gwangttuk",
-   "name": "간장찜닭",
-   "listedPriceKrw": 7900,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-060",
-   "brandId": "gwangttuk",
-   "name": "사골칼제비",
-   "listedPriceKrw": 6900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-061",
-   "brandId": "gwangttuk",
-   "name": "떡왕만두뚝배기",
-   "listedPriceKrw": 7900,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-062",
-   "brandId": "gwangttuk",
-   "name": "얼큰사골칼제비",
-   "listedPriceKrw": 7900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "gwangttuk-063",
-   "brandId": "gwangttuk",
-   "name": "얼큰떡왕만두뚝배기",
-   "listedPriceKrw": 8900,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-064",
-   "brandId": "pokpung",
-   "name": "로제떡볶이",
-   "listedPriceKrw": 6500,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-065",
-   "brandId": "pokpung",
-   "name": "훈제오리포케",
-   "listedPriceKrw": 5900,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-066",
-   "brandId": "pokpung",
-   "name": "훈제연어포케",
-   "listedPriceKrw": 5900,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-067",
-   "brandId": "pokpung",
-   "name": "폭풍라면",
-   "listedPriceKrw": 3500,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-068",
-   "brandId": "pokpung",
-   "name": "폭풍김밥",
-   "listedPriceKrw": 3500,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-069",
-   "brandId": "pokpung",
-   "name": "치즈라면",
-   "listedPriceKrw": 4000,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-070",
-   "brandId": "pokpung",
-   "name": "치즈김밥",
-   "listedPriceKrw": 3800,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-071",
-   "brandId": "pokpung",
-   "name": "만두라면",
-   "listedPriceKrw": 4500,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-072",
-   "brandId": "pokpung",
-   "name": "라볶이",
-   "listedPriceKrw": 5000,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-073",
-   "brandId": "pokpung",
-   "name": "떡라면",
-   "listedPriceKrw": 4000,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-074",
-   "brandId": "pokpung",
-   "name": "닭가슴살포케",
-   "listedPriceKrw": 5900,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-075",
-   "brandId": "pokpung",
-   "name": "라죽",
-   "listedPriceKrw": 4000,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-076",
-   "brandId": "pokpung",
-   "name": "짜파게티",
-   "listedPriceKrw": 4000,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "pokpung-077",
-   "brandId": "pokpung",
-   "name": "참치김밥",
-   "listedPriceKrw": 3800,
-   "cookType": "snack",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-078",
-   "brandId": "tokyoya",
-   "name": "베이컨크림오므라이스",
-   "listedPriceKrw": 7400,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-079",
-   "brandId": "tokyoya",
-   "name": "가정식 도쿄함바그",
-   "listedPriceKrw": 8900,
-   "cookType": "grill",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-080",
-   "brandId": "tokyoya",
-   "name": "우아한 크림함바그",
-   "listedPriceKrw": 8900,
-   "cookType": "grill",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-081",
-   "brandId": "tokyoya",
-   "name": "SO~HOT 함바그",
-   "listedPriceKrw": 8900,
-   "cookType": "grill",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-082",
-   "brandId": "tokyoya",
-   "name": "음료",
-   "listedPriceKrw": null,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "tokyoya-083",
-   "brandId": "tokyoya",
-   "name": "됴쿄야오므라이스",
-   "listedPriceKrw": 6900,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-084",
-   "brandId": "tokyoya",
-   "name": "59오므라이스",
-   "listedPriceKrw": 5900,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-085",
-   "brandId": "tokyoya",
-   "name": "돈코츠라멘",
-   "listedPriceKrw": 7400,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-086",
-   "brandId": "tokyoya",
-   "name": "쇼유라멘",
-   "listedPriceKrw": 7400,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-087",
-   "brandId": "tokyoya",
-   "name": "카라이돈코츠라멘",
-   "listedPriceKrw": 7900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "tokyoya-088",
-   "brandId": "tokyoya",
-   "name": "네기라멘",
-   "listedPriceKrw": 5900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-089",
-   "brandId": "kaohsiung",
-   "name": "가오슝 짬뽕",
-   "listedPriceKrw": 7400,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-090",
-   "brandId": "kaohsiung",
-   "name": "고추잡채덮밥",
-   "listedPriceKrw": 6900,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-091",
-   "brandId": "kaohsiung",
-   "name": "대만식고기덮밥",
-   "listedPriceKrw": 8400,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-092",
-   "brandId": "kaohsiung",
-   "name": "마파두부덮밥",
-   "listedPriceKrw": 6900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-093",
-   "brandId": "kaohsiung",
-   "name": "마파참깨면",
-   "listedPriceKrw": 7900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-094",
-   "brandId": "kaohsiung",
-   "name": "마파참깨덮밥",
-   "listedPriceKrw": 7400,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-095",
-   "brandId": "kaohsiung",
-   "name": "갈비튀김덮밥",
-   "listedPriceKrw": 8900,
-   "cookType": "fried",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-096",
-   "brandId": "kaohsiung",
-   "name": "마늘쫑민찌덮밥",
-   "listedPriceKrw": 5900,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-097",
-   "brandId": "kaohsiung",
-   "name": "자장면",
-   "listedPriceKrw": 6400,
-   "cookType": "wok",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-098",
-   "brandId": "kaohsiung",
-   "name": "우육면",
-   "listedPriceKrw": 7400,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "kaohsiung-099",
-   "brandId": "kaohsiung",
-   "name": "동파육덮밥",
-   "listedPriceKrw": 9400,
-   "cookType": "rice_bowl",
-   "isSide": false
-  },
-  {
-   "id": "jang51-100",
-   "brandId": "jang51",
-   "name": "편육한접시",
-   "listedPriceKrw": 2500,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "jang51-101",
-   "brandId": "jang51",
-   "name": "고기만국밥",
-   "listedPriceKrw": 6500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-102",
-   "brandId": "jang51",
-   "name": "물비빔냉면",
-   "listedPriceKrw": 6500,
-   "cookType": "cold_noodle",
-   "isSide": false
-  },
-  {
-   "id": "jang51-103",
-   "brandId": "jang51",
-   "name": "닭칼국수",
-   "listedPriceKrw": 5900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "jang51-104",
-   "brandId": "jang51",
-   "name": "닭곰탕(밥 포함)",
-   "listedPriceKrw": 5500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-105",
-   "brandId": "jang51",
-   "name": "공기밥 추가",
-   "listedPriceKrw": 1000,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "jang51-106",
-   "brandId": "jang51",
-   "name": "순대국밥",
-   "listedPriceKrw": 6500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-107",
-   "brandId": "jang51",
-   "name": "물냉면",
-   "listedPriceKrw": 6500,
-   "cookType": "cold_noodle",
-   "isSide": false
-  },
-  {
-   "id": "jang51-108",
-   "brandId": "jang51",
-   "name": "광주 크림순대국밥",
-   "listedPriceKrw": 8400,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-109",
-   "brandId": "jang51",
-   "name": "순대만국밥",
-   "listedPriceKrw": 6500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-110",
-   "brandId": "jang51",
-   "name": "얼큰 광주 크림순대국밥",
-   "listedPriceKrw": 8900,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-111",
-   "brandId": "jang51",
-   "name": "얼큰고기만국밥",
-   "listedPriceKrw": 7500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-112",
-   "brandId": "jang51",
-   "name": "얼큰닭칼국수",
-   "listedPriceKrw": 6900,
-   "cookType": "noodle_soup",
-   "isSide": false
-  },
-  {
-   "id": "jang51-113",
-   "brandId": "jang51",
-   "name": "얼큰닭곰탕",
-   "listedPriceKrw": 6500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-114",
-   "brandId": "jang51",
-   "name": "얼큰순대국밥",
-   "listedPriceKrw": 7500,
-   "cookType": "stew",
-   "isSide": false
-  },
-  {
-   "id": "jang51-115",
-   "brandId": "jang51",
-   "name": "손만두",
-   "listedPriceKrw": 2000,
-   "cookType": "side",
-   "isSide": true
-  },
-  {
-   "id": "jang51-116",
-   "brandId": "jang51",
-   "name": "물냉면+손만두",
-   "listedPriceKrw": 8400,
-   "cookType": "cold_noodle",
-   "isSide": false
-  },
-  {
-   "id": "jang51-117",
-   "brandId": "jang51",
-   "name": "물비빔냉면+손만두",
-   "listedPriceKrw": 8400,
-   "cookType": "cold_noodle",
-   "isSide": false
-  },
-  {
-   "id": "jang51-118",
-   "brandId": "jang51",
-   "name": "비빔냉면+손만두",
-   "listedPriceKrw": 8400,
-   "cookType": "cold_noodle",
-   "isSide": false
-  },
-  {
-   "id": "jang51-119",
-   "brandId": "jang51",
-   "name": "비빔냉면",
-   "listedPriceKrw": 6500,
-   "cookType": "cold_noodle",
-   "isSide": false
-  }
- ]
+  "generatedAt": "2026-11-25",
+  "source": {
+    "evidence": "docs/evidence/floweat-handoff-2026-11-24",
+    "priceSource": "https://www.diningcode.com/profile.php?rid=zouqpRLBZlrb",
+    "priceStatus": "제3자 공개 목록의 참고 가격 · 게시일과 오늘 판매 여부 미확인",
+    "asOf": "2026-11-24",
+    "field": {
+      "evidence": "docs/evidence/field-2026-11-25",
+      "asOf": "2026-11-25",
+      "status": "2026-11-25 현장 키오스크 화면에서 읽은 메뉴명·가격. 그 순간의 표시이며 오늘 판매 여부는 알 수 없음",
+      "rows": 91
+    }
+  },
+  "brands": [
+    {
+      "id": "babi",
+      "name": "바비든든",
+      "cuisine": "덮밥",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": "2026-10-12",
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "operator_listed",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 1,
+        "col": 1
+      },
+      "monitor": {
+        "screen": "A",
+        "column": 1,
+        "confirmed": false
+      }
+    },
+    {
+      "id": "bibigogo",
+      "name": "비비고고",
+      "cuisine": "비빔밥과 카레",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": null,
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "operator_listed",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 1,
+        "col": 2
+      },
+      "monitor": {
+        "screen": "B",
+        "column": 5,
+        "confirmed": true
+      }
+    },
+    {
+      "id": "popo420",
+      "name": "포포420",
+      "cuisine": "쌀국수",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": "2026-11-19",
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "operator_listed",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 1,
+        "col": 3
+      },
+      "monitor": {
+        "screen": "A",
+        "column": 2,
+        "confirmed": true
+      }
+    },
+    {
+      "id": "kaohsiung",
+      "name": "가오슝",
+      "cuisine": "대만식 중식",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": null,
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "field_observed",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 1,
+        "col": 4
+      },
+      "monitor": {
+        "screen": "A",
+        "column": 3,
+        "confirmed": true
+      }
+    },
+    {
+      "id": "pokpung",
+      "name": "폭풍분식",
+      "cuisine": "분식과 포케",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": "2026-09-28",
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "operator_listed",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 1,
+        "col": 5
+      },
+      "monitor": {
+        "screen": "A",
+        "column": 4,
+        "confirmed": true
+      }
+    },
+    {
+      "id": "gapjjigae",
+      "name": "값찌개",
+      "cuisine": "찌개",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": null,
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "operator_listed",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 2,
+        "col": 1
+      },
+      "monitor": {
+        "screen": "A",
+        "column": 5,
+        "confirmed": true
+      }
+    },
+    {
+      "id": "gyeongseong",
+      "name": "경성카츠",
+      "cuisine": "돈카츠와 우동",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": "2026-11-20",
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "operator_listed",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 2,
+        "col": 2
+      },
+      "monitor": {
+        "screen": "B",
+        "column": 1,
+        "confirmed": true
+      }
+    },
+    {
+      "id": "tokyoya",
+      "name": "도쿄야",
+      "cuisine": "오므라이스와 라멘",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": null,
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "visit_report",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 2,
+        "col": 3
+      },
+      "monitor": {
+        "screen": "B",
+        "column": 2,
+        "confirmed": true
+      }
+    },
+    {
+      "id": "jang51",
+      "name": "51장국밥",
+      "cuisine": "국밥과 냉면",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": "2026-09-17",
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "visit_report",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 2,
+        "col": 4
+      },
+      "monitor": {
+        "screen": "B",
+        "column": 3,
+        "confirmed": true
+      }
+    },
+    {
+      "id": "gwangttuk",
+      "name": "광뚝",
+      "cuisine": "뚝배기와 칼제비",
+      "verification": "field_verified",
+      "verificationNote": "2026-11-25 현장 키오스크 탭과 호출 모니터에서 확인한 매장이에요. 메뉴별 판매 여부는 실시간으로 알 수 없어요.",
+      "latestOperatorReview": "2026-09-08",
+      "currentCourtNumber": null,
+      "pickupNodeId": null,
+      "earlierVerification": "operator_listed",
+      "fieldVerifiedAt": "2026-11-25",
+      "kioskTab": {
+        "row": 2,
+        "col": 5
+      },
+      "monitor": {
+        "screen": "B",
+        "column": 4,
+        "confirmed": true
+      }
+    }
+  ],
+  "menus": [
+    {
+      "id": "babi-025",
+      "brandId": "babi",
+      "name": "장어덮밥",
+      "listedPriceKrw": 8900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "field",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 8900,
+        "display": "preparing",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-021",
+      "brandId": "babi",
+      "name": "고기든든",
+      "listedPriceKrw": 3900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 3900,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 3900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-020",
+      "brandId": "babi",
+      "name": "고기든든(킹)",
+      "listedPriceKrw": 5900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-018",
+      "brandId": "babi",
+      "name": "제육덮밥",
+      "listedPriceKrw": 3900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 3900,
+      "priceBasis": "field",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 3900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-019",
+      "brandId": "babi",
+      "name": "제육덮밥(킹)",
+      "listedPriceKrw": 5900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-024",
+      "brandId": "babi",
+      "name": "참치마요덮밥(라지)",
+      "listedPriceKrw": 4900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 4900,
+      "priceBasis": "field",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 4900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-022",
+      "brandId": "babi",
+      "name": "치킨마요덮밥(라지)",
+      "listedPriceKrw": 4900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 4900,
+      "priceBasis": "field",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 4900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-026",
+      "brandId": "babi",
+      "name": "스팸마요덮밥(라지)",
+      "listedPriceKrw": 4900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 4900,
+      "priceBasis": "field",
+      "field": {
+        "order": 8,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 4900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-017",
+      "brandId": "babi",
+      "name": "춘천닭갈비덮밥(킹)",
+      "listedPriceKrw": 5900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 9,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "babi-023",
+      "brandId": "babi",
+      "name": "햄볶음김치덮밥",
+      "listedPriceKrw": 4900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 4900,
+      "priceBasis": "field",
+      "field": {
+        "order": 10,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 2.0–2.5초",
+        "priceKrw": 4900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "bibigogo-045",
+      "brandId": "bibigogo",
+      "name": "오색비빔밥",
+      "listedPriceKrw": 6500,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 3.25–3.5초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "bibigogo-048",
+      "brandId": "bibigogo",
+      "name": "기본카레",
+      "listedPriceKrw": 4900,
+      "cookType": "curry",
+      "isSide": false,
+      "referencePriceKrw": 4900,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 3.25–3.5초",
+        "priceKrw": 4900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "bibigogo-050",
+      "brandId": "bibigogo",
+      "name": "치킨카레",
+      "listedPriceKrw": 6900,
+      "cookType": "curry",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 3.25–3.5초",
+        "priceKrw": 6900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "bibigogo-051",
+      "brandId": "bibigogo",
+      "name": "새우카레",
+      "listedPriceKrw": 6900,
+      "cookType": "curry",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 3.25–3.5초",
+        "priceKrw": 6900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "bibigogo-120",
+      "brandId": "bibigogo",
+      "name": "치킨가라아게",
+      "listedPriceKrw": 2000,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": null,
+      "priceBasis": "field_only",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 3.25–3.5초",
+        "priceKrw": 2000,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "bibigogo-121",
+      "brandId": "bibigogo",
+      "name": "새우튀김",
+      "listedPriceKrw": 2000,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": null,
+      "priceBasis": "field_only",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 3.25–3.5초",
+        "priceKrw": 2000,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "bibigogo-122",
+      "brandId": "bibigogo",
+      "name": "밥 추가(반공기)",
+      "listedPriceKrw": 500,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": null,
+      "priceBasis": "field_only",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 3.25–3.5초",
+        "priceKrw": 500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "bibigogo-046",
+      "brandId": "bibigogo",
+      "name": "불고기비빔밥",
+      "listedPriceKrw": 7500,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 7500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "bibigogo-047",
+      "brandId": "bibigogo",
+      "name": "육회비빔밥",
+      "listedPriceKrw": 7900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "bibigogo-049",
+      "brandId": "bibigogo",
+      "name": "불고기카레",
+      "listedPriceKrw": 6900,
+      "cookType": "curry",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-027",
+      "brandId": "popo420",
+      "name": "오징어링튀김",
+      "listedPriceKrw": 1900,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 1900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-028",
+      "brandId": "popo420",
+      "name": "반꿔이",
+      "listedPriceKrw": 1800,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 1800,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-029",
+      "brandId": "popo420",
+      "name": "돈불직화구이",
+      "listedPriceKrw": 3000,
+      "cookType": "grill",
+      "isSide": false,
+      "referencePriceKrw": 3000,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-030",
+      "brandId": "popo420",
+      "name": "고수",
+      "listedPriceKrw": 500,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-031",
+      "brandId": "popo420",
+      "name": "쉬림프나시고랭",
+      "listedPriceKrw": 7900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-032",
+      "brandId": "popo420",
+      "name": "훈제닭다리쌀국수",
+      "listedPriceKrw": 9900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 9900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-033",
+      "brandId": "popo420",
+      "name": "얼큰해산물쌀국수",
+      "listedPriceKrw": 7500,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-034",
+      "brandId": "popo420",
+      "name": "비빔쌀국수+직화구이",
+      "listedPriceKrw": 8400,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 8400,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-035",
+      "brandId": "popo420",
+      "name": "쉬림프나시고랭+직화구이",
+      "listedPriceKrw": 10800,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 10800,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-036",
+      "brandId": "popo420",
+      "name": "비빔쌀국수",
+      "listedPriceKrw": 5500,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 5500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-037",
+      "brandId": "popo420",
+      "name": "포포쌀국수(고기없음)",
+      "listedPriceKrw": 4900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 4900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-038",
+      "brandId": "popo420",
+      "name": "우삼겹쌀국수",
+      "listedPriceKrw": 5900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-039",
+      "brandId": "popo420",
+      "name": "우삼겹쌀국수 특",
+      "listedPriceKrw": 7900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-040",
+      "brandId": "popo420",
+      "name": "마라우삼겹쌀국수",
+      "listedPriceKrw": 6500,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-041",
+      "brandId": "popo420",
+      "name": "마라우삼겹쌀국수 특",
+      "listedPriceKrw": 8500,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 8500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-042",
+      "brandId": "popo420",
+      "name": "마라쌀국수(고기없음)",
+      "listedPriceKrw": 6300,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 6300,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-043",
+      "brandId": "popo420",
+      "name": "새우빠스(2p)",
+      "listedPriceKrw": 2500,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 2500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "popo420-044",
+      "brandId": "popo420",
+      "name": "야채춘권(3p)",
+      "listedPriceKrw": 1000,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 1000,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "kaohsiung-090",
+      "brandId": "kaohsiung",
+      "name": "고추잡채덮밥",
+      "listedPriceKrw": 6900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 6900,
+        "display": "preparing",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-089",
+      "brandId": "kaohsiung",
+      "name": "가오슝 짬뽕",
+      "listedPriceKrw": 7400,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7400,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 7400,
+        "display": "normal",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-091",
+      "brandId": "kaohsiung",
+      "name": "대만식고기덮밥",
+      "listedPriceKrw": 8400,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 8400,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 8400,
+        "display": "normal",
+        "badge": "BEST",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-092",
+      "brandId": "kaohsiung",
+      "name": "마라풍 마파두부덮밥",
+      "listedPriceKrw": 6900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 6900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "화면 가장자리 일부 잘림; 기존 목록과 대조한 명칭이므로 원본 재검수 필요"
+      },
+      "referenceName": "마파두부덮밥"
+    },
+    {
+      "id": "kaohsiung-093",
+      "brandId": "kaohsiung",
+      "name": "마라풍 마파참깨면",
+      "listedPriceKrw": 7900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "field",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 7900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": true,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      },
+      "referenceName": "마파참깨면"
+    },
+    {
+      "id": "kaohsiung-094",
+      "brandId": "kaohsiung",
+      "name": "마라풍 마파참깨덮밥",
+      "listedPriceKrw": 7400,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 7400,
+      "priceBasis": "field",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 7400,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": true,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      },
+      "referenceName": "마파참깨덮밥"
+    },
+    {
+      "id": "kaohsiung-095",
+      "brandId": "kaohsiung",
+      "name": "갈비튀김덮밥",
+      "listedPriceKrw": 8900,
+      "cookType": "fried",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "field",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 8900,
+        "display": "normal",
+        "badge": "BEST",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-096",
+      "brandId": "kaohsiung",
+      "name": "마늘쫑민찌덮밥",
+      "listedPriceKrw": 5900,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 8,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-099",
+      "brandId": "kaohsiung",
+      "name": "동파육덮밥",
+      "listedPriceKrw": 9400,
+      "cookType": "rice_bowl",
+      "isSide": false,
+      "referencePriceKrw": 9400,
+      "priceBasis": "field",
+      "field": {
+        "order": 9,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 9400,
+        "display": "normal",
+        "badge": "BEST",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-097",
+      "brandId": "kaohsiung",
+      "name": "자장면",
+      "listedPriceKrw": 6400,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 6400,
+      "priceBasis": "field",
+      "field": {
+        "order": 10,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 6400,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-098",
+      "brandId": "kaohsiung",
+      "name": "우육면",
+      "listedPriceKrw": 7400,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7400,
+      "priceBasis": "field",
+      "field": {
+        "order": 11,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 7400,
+        "display": "normal",
+        "badge": "BEST",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-123",
+      "brandId": "kaohsiung",
+      "name": "갈비튀김",
+      "listedPriceKrw": 3900,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": null,
+      "priceBasis": "field_only",
+      "field": {
+        "order": 12,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 3900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "kaohsiung-124",
+      "brandId": "kaohsiung",
+      "name": "새우완탕튀김",
+      "listedPriceKrw": 3900,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": null,
+      "priceBasis": "field_only",
+      "field": {
+        "order": 13,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 5.5–5.75초",
+        "priceKrw": 3900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-125",
+      "brandId": "pokpung",
+      "name": "데리야끼 닭다리살포케",
+      "listedPriceKrw": 5900,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": null,
+      "priceBasis": "field_only",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-074",
+      "brandId": "pokpung",
+      "name": "닭가슴살포케",
+      "listedPriceKrw": 5900,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-065",
+      "brandId": "pokpung",
+      "name": "훈제오리포케",
+      "listedPriceKrw": 5900,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-066",
+      "brandId": "pokpung",
+      "name": "훈제연어포케",
+      "listedPriceKrw": 5900,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-064",
+      "brandId": "pokpung",
+      "name": "로제떡볶이",
+      "listedPriceKrw": 6500,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 6500,
+        "display": "preparing",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-068",
+      "brandId": "pokpung",
+      "name": "폭풍김밥",
+      "listedPriceKrw": 3500,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 3500,
+      "priceBasis": "field",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 3500,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-070",
+      "brandId": "pokpung",
+      "name": "치즈김밥",
+      "listedPriceKrw": 3800,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 3800,
+      "priceBasis": "field",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 3800,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-077",
+      "brandId": "pokpung",
+      "name": "참치김밥",
+      "listedPriceKrw": 3800,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 3800,
+      "priceBasis": "field",
+      "field": {
+        "order": 8,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 3800,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-067",
+      "brandId": "pokpung",
+      "name": "폭풍라면(토핑 추가 가능)",
+      "listedPriceKrw": 3500,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 3500,
+      "priceBasis": "field",
+      "field": {
+        "order": 9,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 3500,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      },
+      "referenceName": "폭풍라면"
+    },
+    {
+      "id": "pokpung-075",
+      "brandId": "pokpung",
+      "name": "라죽",
+      "listedPriceKrw": 4000,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 4000,
+      "priceBasis": "field",
+      "field": {
+        "order": 10,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 4000,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-072",
+      "brandId": "pokpung",
+      "name": "라볶이",
+      "listedPriceKrw": 5000,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 5000,
+      "priceBasis": "field",
+      "field": {
+        "order": 11,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.0–7.25초",
+        "priceKrw": 5000,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "pokpung-069",
+      "brandId": "pokpung",
+      "name": "치즈라면",
+      "listedPriceKrw": 4000,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 4000,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "pokpung-071",
+      "brandId": "pokpung",
+      "name": "만두라면",
+      "listedPriceKrw": 4500,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 4500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "pokpung-073",
+      "brandId": "pokpung",
+      "name": "떡라면",
+      "listedPriceKrw": 4000,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 4000,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "pokpung-076",
+      "brandId": "pokpung",
+      "name": "짜파게티",
+      "listedPriceKrw": 4000,
+      "cookType": "snack",
+      "isSide": false,
+      "referencePriceKrw": 4000,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "gapjjigae-006",
+      "brandId": "gapjjigae",
+      "name": "순두부찌개(밥포함)",
+      "listedPriceKrw": 6000,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6000,
+      "priceBasis": "field",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 6000,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "화면 가장자리 일부 잘림; 기존 목록과 대조한 명칭이므로 원본 재검수 필요"
+      }
+    },
+    {
+      "id": "gapjjigae-007",
+      "brandId": "gapjjigae",
+      "name": "바지락순두부(밥포함)",
+      "listedPriceKrw": 6200,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6200,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 6200,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gapjjigae-002",
+      "brandId": "gapjjigae",
+      "name": "우삼겹순두부(밥포함)",
+      "listedPriceKrw": 6900,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 6900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gapjjigae-004",
+      "brandId": "gapjjigae",
+      "name": "스팸순두부(밥포함)",
+      "listedPriceKrw": 6900,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 6900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gapjjigae-008",
+      "brandId": "gapjjigae",
+      "name": "돼지김치찌개(밥포함)",
+      "listedPriceKrw": 6500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gapjjigae-001",
+      "brandId": "gapjjigae",
+      "name": "참치김치찌개(밥포함)",
+      "listedPriceKrw": 6500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gapjjigae-005",
+      "brandId": "gapjjigae",
+      "name": "스팸김치찌개(밥포함)",
+      "listedPriceKrw": 6500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gapjjigae-003",
+      "brandId": "gapjjigae",
+      "name": "우삼겹된장찌개(밥포함)",
+      "listedPriceKrw": 6500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 8,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gapjjigae-009",
+      "brandId": "gapjjigae",
+      "name": "공기밥",
+      "listedPriceKrw": 1000,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 1000,
+      "priceBasis": "field",
+      "field": {
+        "order": 9,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 11.25–12.0초",
+        "priceKrw": 1000,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gyeongseong-015",
+      "brandId": "gyeongseong",
+      "name": "샐러드파스타+등심카츠",
+      "listedPriceKrw": 8900,
+      "cookType": "fried",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "field",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 10.5–10.75초",
+        "priceKrw": 8900,
+        "display": "preparing",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gyeongseong-014",
+      "brandId": "gyeongseong",
+      "name": "등심돈카츠",
+      "listedPriceKrw": 7500,
+      "cookType": "fried",
+      "isSide": false,
+      "referencePriceKrw": 7500,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 10.5–10.75초",
+        "priceKrw": 7500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gyeongseong-012",
+      "brandId": "gyeongseong",
+      "name": "고구마치즈돈카츠",
+      "listedPriceKrw": 8300,
+      "cookType": "fried",
+      "isSide": false,
+      "referencePriceKrw": 8300,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 10.5–10.75초",
+        "priceKrw": 8300,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gyeongseong-016",
+      "brandId": "gyeongseong",
+      "name": "왕돈카츠",
+      "listedPriceKrw": 8900,
+      "cookType": "fried",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "field",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 10.5–10.75초",
+        "priceKrw": 8900,
+        "display": "unknown",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "이름·가격 확인; 손에 일부 가려짐, 상태 확정 금지"
+      }
+    },
+    {
+      "id": "gyeongseong-010",
+      "brandId": "gyeongseong",
+      "name": "우동",
+      "listedPriceKrw": 4900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 4900,
+      "priceBasis": "field",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 10.5–10.75초",
+        "priceKrw": 4900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gyeongseong-011",
+      "brandId": "gyeongseong",
+      "name": "새우튀김 우동",
+      "listedPriceKrw": 6900,
+      "cookType": "fried",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 10.5–10.75초",
+        "priceKrw": 6900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gyeongseong-013",
+      "brandId": "gyeongseong",
+      "name": "김치냄비우동",
+      "listedPriceKrw": 5900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 10.5–10.75초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-082",
+      "brandId": "tokyoya",
+      "name": "음료",
+      "listedPriceKrw": null,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": null,
+      "priceBasis": "reference",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": null,
+        "display": "price_unknown",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "화면에 0 표시. 실제 가격/옵션 확인 전 null, 무료 상품·최저가로 표시 금지."
+      }
+    },
+    {
+      "id": "tokyoya-078",
+      "brandId": "tokyoya",
+      "name": "베이컨크림오므라이스",
+      "listedPriceKrw": 7400,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 7400,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": 7400,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-083",
+      "brandId": "tokyoya",
+      "name": "됴쿄야오므라이스",
+      "listedPriceKrw": 6900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": 6900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-085",
+      "brandId": "tokyoya",
+      "name": "돈코츠라멘",
+      "listedPriceKrw": 7400,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7400,
+      "priceBasis": "field",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": 7400,
+        "display": "normal",
+        "badge": "BEST",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-086",
+      "brandId": "tokyoya",
+      "name": "쇼유라멘",
+      "listedPriceKrw": 7400,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7400,
+      "priceBasis": "field",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": 7400,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-087",
+      "brandId": "tokyoya",
+      "name": "카라이돈코츠라멘",
+      "listedPriceKrw": 7900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "field",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": 7900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-088",
+      "brandId": "tokyoya",
+      "name": "네기라멘",
+      "listedPriceKrw": 5900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": 5900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-079",
+      "brandId": "tokyoya",
+      "name": "가정식 도쿄함바그",
+      "listedPriceKrw": 8900,
+      "cookType": "grill",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "field",
+      "field": {
+        "order": 8,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": 8900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-080",
+      "brandId": "tokyoya",
+      "name": "우아한 크림함바그",
+      "listedPriceKrw": 8900,
+      "cookType": "grill",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "field",
+      "field": {
+        "order": 9,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 9.25–9.5초",
+        "priceKrw": 8900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "tokyoya-081",
+      "brandId": "tokyoya",
+      "name": "SO~HOT 함바그",
+      "listedPriceKrw": 8900,
+      "cookType": "grill",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "tokyoya-084",
+      "brandId": "tokyoya",
+      "name": "59오므라이스",
+      "listedPriceKrw": 5900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "jang51-108",
+      "brandId": "jang51",
+      "name": "광주 크림순대국밥",
+      "listedPriceKrw": 8400,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 8400,
+      "priceBasis": "field",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 8400,
+        "display": "normal",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-110",
+      "brandId": "jang51",
+      "name": "얼큰 광주 크림순대국밥",
+      "listedPriceKrw": 8900,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 8900,
+        "display": "normal",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-111",
+      "brandId": "jang51",
+      "name": "얼큰고기만국밥",
+      "listedPriceKrw": 7500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 7500,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 7500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-101",
+      "brandId": "jang51",
+      "name": "고기만국밥",
+      "listedPriceKrw": 6500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-109",
+      "brandId": "jang51",
+      "name": "순대만국밥",
+      "listedPriceKrw": 6500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-103",
+      "brandId": "jang51",
+      "name": "닭칼국수",
+      "listedPriceKrw": 5900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 5900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-112",
+      "brandId": "jang51",
+      "name": "얼큰닭칼국수",
+      "listedPriceKrw": 6900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "field",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 6900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-104",
+      "brandId": "jang51",
+      "name": "닭곰탕(밥 포함)",
+      "listedPriceKrw": 5500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 5500,
+      "priceBasis": "field",
+      "field": {
+        "order": 8,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 5500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-113",
+      "brandId": "jang51",
+      "name": "얼큰닭곰탕",
+      "listedPriceKrw": 6500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 9,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-100",
+      "brandId": "jang51",
+      "name": "편육한접시",
+      "listedPriceKrw": 2500,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 2500,
+      "priceBasis": "field",
+      "field": {
+        "order": 10,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 2500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-115",
+      "brandId": "jang51",
+      "name": "손만두",
+      "listedPriceKrw": 2000,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 2000,
+      "priceBasis": "field",
+      "field": {
+        "order": 11,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 2000,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-116",
+      "brandId": "jang51",
+      "name": "물냉면+손만두",
+      "listedPriceKrw": 8400,
+      "cookType": "cold_noodle",
+      "isSide": false,
+      "referencePriceKrw": 8400,
+      "priceBasis": "field",
+      "field": {
+        "order": 12,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 8400,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-117",
+      "brandId": "jang51",
+      "name": "물비빔냉면+손만두",
+      "listedPriceKrw": 8400,
+      "cookType": "cold_noodle",
+      "isSide": false,
+      "referencePriceKrw": 8400,
+      "priceBasis": "field",
+      "field": {
+        "order": 13,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 8400,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-118",
+      "brandId": "jang51",
+      "name": "비빔냉면+손만두",
+      "listedPriceKrw": 8400,
+      "cookType": "cold_noodle",
+      "isSide": false,
+      "referencePriceKrw": 8400,
+      "priceBasis": "field",
+      "field": {
+        "order": 14,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5–8.75초",
+        "priceKrw": 8400,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "jang51-114",
+      "brandId": "jang51",
+      "name": "얼큰순대국밥",
+      "listedPriceKrw": 7500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 7500,
+      "priceBasis": "field",
+      "field": {
+        "order": 15,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 8.5초",
+        "priceKrw": 7500,
+        "display": "unknown",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "이름 뒷부분이 손에 가려짐(‘얼큰순대국…’), 가격 7,500 확인 — 기존 목록 명칭과 대조"
+      }
+    },
+    {
+      "id": "jang51-102",
+      "brandId": "jang51",
+      "name": "물비빔냉면",
+      "listedPriceKrw": 6500,
+      "cookType": "cold_noodle",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "jang51-105",
+      "brandId": "jang51",
+      "name": "공기밥 추가",
+      "listedPriceKrw": 1000,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 1000,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "jang51-106",
+      "brandId": "jang51",
+      "name": "순대국밥",
+      "listedPriceKrw": 6500,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "jang51-107",
+      "brandId": "jang51",
+      "name": "물냉면",
+      "listedPriceKrw": 6500,
+      "cookType": "cold_noodle",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "jang51-119",
+      "brandId": "jang51",
+      "name": "비빔냉면",
+      "listedPriceKrw": 6500,
+      "cookType": "cold_noodle",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "gwangttuk-054",
+      "brandId": "gwangttuk",
+      "name": "왕만두 사골칼제비",
+      "listedPriceKrw": 7900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "field",
+      "field": {
+        "order": 1,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 7900,
+        "display": "normal",
+        "badge": "NEW",
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-055",
+      "brandId": "gwangttuk",
+      "name": "얼큰 왕만두사골칼제비",
+      "listedPriceKrw": 8900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "field",
+      "field": {
+        "order": 2,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 8900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-061",
+      "brandId": "gwangttuk",
+      "name": "떡왕만두뚝배기",
+      "listedPriceKrw": 7900,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "field",
+      "field": {
+        "order": 3,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 7900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-126",
+      "brandId": "gwangttuk",
+      "name": "매운찜닭",
+      "listedPriceKrw": 7900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": null,
+      "priceBasis": "field_only",
+      "field": {
+        "order": 4,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 7900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-057",
+      "brandId": "gwangttuk",
+      "name": "간장 불고기",
+      "listedPriceKrw": 7900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "field",
+      "field": {
+        "order": 5,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 7900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-058",
+      "brandId": "gwangttuk",
+      "name": "콩나물불백",
+      "listedPriceKrw": 6500,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 6500,
+      "priceBasis": "field",
+      "field": {
+        "order": 6,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 6500,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-056",
+      "brandId": "gwangttuk",
+      "name": "뚝배기알밥",
+      "listedPriceKrw": 5900,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 5900,
+      "priceBasis": "field",
+      "field": {
+        "order": 7,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 5900,
+        "display": "preparing",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-052",
+      "brandId": "gwangttuk",
+      "name": "물만두",
+      "listedPriceKrw": 1900,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": 1900,
+      "priceBasis": "field",
+      "field": {
+        "order": 8,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 1900,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-127",
+      "brandId": "gwangttuk",
+      "name": "공기밥",
+      "listedPriceKrw": 1000,
+      "cookType": "side",
+      "isSide": true,
+      "referencePriceKrw": null,
+      "priceBasis": "field_only",
+      "field": {
+        "order": 9,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75–8.0초",
+        "priceKrw": 1000,
+        "display": "normal",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "촬영 당시 화면 표기; 구매 가능 여부 실시간 미확인"
+      }
+    },
+    {
+      "id": "gwangttuk-063",
+      "brandId": "gwangttuk",
+      "name": "얼큰떡왕만두뚝배기",
+      "listedPriceKrw": 8900,
+      "cookType": "stew",
+      "isSide": false,
+      "referencePriceKrw": 8900,
+      "priceBasis": "reference",
+      "field": {
+        "order": 10,
+        "date": "2026-11-25",
+        "source": "IMG_0748.MOV 약 7.75초",
+        "priceKrw": null,
+        "display": "unknown",
+        "badge": null,
+        "spicyIcon": false,
+        "note": "이름·가격 일부가 손에 가려짐(‘얼큰떡왕만…’ 8,…) — 메뉴 존재만 확인, 가격은 참고값 유지"
+      }
+    },
+    {
+      "id": "gwangttuk-053",
+      "brandId": "gwangttuk",
+      "name": "고추장 불고기",
+      "listedPriceKrw": 7900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "gwangttuk-059",
+      "brandId": "gwangttuk",
+      "name": "간장찜닭",
+      "listedPriceKrw": 7900,
+      "cookType": "wok",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "gwangttuk-060",
+      "brandId": "gwangttuk",
+      "name": "사골칼제비",
+      "listedPriceKrw": 6900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 6900,
+      "priceBasis": "reference",
+      "field": null
+    },
+    {
+      "id": "gwangttuk-062",
+      "brandId": "gwangttuk",
+      "name": "얼큰사골칼제비",
+      "listedPriceKrw": 7900,
+      "cookType": "noodle_soup",
+      "isSide": false,
+      "referencePriceKrw": 7900,
+      "priceBasis": "reference",
+      "field": null
+    }
+  ]
 }

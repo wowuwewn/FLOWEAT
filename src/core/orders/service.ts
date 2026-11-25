@@ -27,6 +27,12 @@ export class OrderError extends Error {
   }
 }
 
+export type CallOutcome = "called" | "already_ready" | "already_closed" | "not_found" | "invalid";
+export interface CallResult {
+  outcome: CallOutcome;
+  order: Order | null;
+}
+
 export interface TrackResult {
   token: string;
   state: "ok" | "closed" | "expired" | "not_found" | "invalid";
@@ -126,6 +132,23 @@ export class OrderService {
     const order = res.order ?? existing;
     if (res.changed) this.feed.publish(sessionId, await this.repo.latestSeq(sessionId));
     return { order, changed: res.changed };
+  }
+
+  /**
+   * The store's number-entry device: staff type the number printed on the ticket. Resolves
+   * (session, brand, number) → order and marks it ready. Never guesses across brands/sessions.
+   */
+  async callNumber(sessionId: string, brandId: string, number: number, idempotencyKey: string): Promise<CallResult> {
+    if (!SESSION_PATTERN.test(sessionId)) throw new OrderError("INVALID_INPUT", "세션 코드 형식이 올바르지 않아요.");
+    if (!getBrand(brandId)) throw new OrderError("INVALID_INPUT", "매장이 올바르지 않아요.");
+    if (!Number.isInteger(number) || number < 1 || number > 9999) return { outcome: "invalid", order: null };
+    const order = (await this.repo.listOrders(sessionId)).find((o) => o.brandId === brandId && o.displayNumber === number);
+    if (!order) return { outcome: "not_found", order: null };
+    if (order.status === "closed" || order.status === "expired") return { outcome: "already_closed", order };
+    if (order.status === "ready") return { outcome: "already_ready", order };
+    const r = await this.markReady(sessionId, order.id, idempotencyKey);
+    // a concurrent device may have called it a moment earlier: report that instead of a second success
+    return { outcome: r.changed ? "called" : "already_ready", order: r.order };
   }
 
   /** Staff undo within the grace window: ready → accepted. */

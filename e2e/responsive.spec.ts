@@ -14,15 +14,15 @@ async function runSplitLoop(page: Page, prefix: string) {
     if (await t.isVisible().catch(() => false)) await t.click();
   };
   const kiosk = page.frameLocator('iframe[title="모의 키오스크"]');
-  const staff = page.frameLocator('iframe[title="직원 화면"]');
+  const staff = page.frameLocator('iframe[title="매장 호출기"]');
   const student = page.frameLocator('iframe[title="학생 화면"]');
   const monitor = page.frameLocator('iframe[title="호출 모니터"]');
 
   await tab(/키오스크/);
-  await kiosk.getByRole("button", { name: "화면을 눌러 주문하세요" }).click();
-  await kiosk.getByRole("button", { name: /^광뚝/ }).click();
+  await kiosk.getByRole("button", { name: "주문하기" }).click();
+  await kiosk.getByRole("tab", { name: /^광뚝/ }).click();
   await kiosk.locator('section[aria-label$="메뉴"] li button').first().click();
-  await kiosk.getByRole("button", { name: /^포포420/ }).click();
+  await kiosk.getByRole("tab", { name: /^포포420/ }).click();
   await kiosk.getByRole("button", { name: /^우삼겹쌀국수/ }).first().click();
   await kiosk.getByRole("button", { name: /결제하기/ }).click();
   await kiosk.getByRole("button", { name: "모의 결제 완료" }).click();
@@ -33,9 +33,12 @@ async function runSplitLoop(page: Page, prefix: string) {
   await expect(page.locator('section[aria-label="학생 휴대폰"]')).toHaveCSS("visibility", "visible");
   await expect(student.getByTestId("order-card")).toHaveCount(1);
 
-  await tab(/직원/);
-  await staff.getByRole("button", { name: /광뚝 .*번 완료$/ }).click();
-  await expect(page.getByRole("status").filter({ hasText: "완료했어요" })).toBeVisible();
+  await tab(/호출기/);
+  await staff.getByRole("tab", { name: /^광뚝/ }).click();
+  await staff.getByRole("button", { name: /번 입력$/ }).first().click();
+  await staff.getByRole("button", { name: "호출", exact: true }).click();
+  await expect(staff.getByRole("status")).toContainText("호출했어요");
+  await expect(page.getByRole("status").filter({ hasText: "호출했어요" })).toBeVisible();
 
   await tab(/학생/);
   await expect(student.getByText("준비 완료")).toBeVisible();

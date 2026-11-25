@@ -24,7 +24,7 @@ type Mode = "tabs" | "duo" | "trio-short" | "trio";
 const SURFACES: Record<Surface, { label: string; short: string; title: string }> = {
   student: { label: "학생 휴대폰", short: "학생 앱", title: "학생 화면" },
   kiosk: { label: "모의 키오스크", short: "키오스크", title: "모의 키오스크" },
-  staff: { label: "직원 화면", short: "직원", title: "직원 화면" },
+  staff: { label: "매장 호출기", short: "호출기", title: "매장 호출기" },
   monitor: { label: "호출 모니터", short: "모니터", title: "호출 모니터" },
 };
 const ORDER: Surface[] = ["student", "kiosk", "staff", "monitor"];
@@ -46,8 +46,8 @@ type Step = 0 | 1 | 2 | 3;
 const STEPS: { title: string; hint: string; go: Surface }[] = [
   { title: "키오스크에서 주문", hint: "두 매장의 메뉴를 담으면 번호표가 매장마다 1장씩 나와요.", go: "kiosk" },
   { title: "번호표를 학생 앱에 연결", hint: "번호표의 ‘이 기기에서 열기’를 누르면 QR을 찍은 것처럼 학생 앱에 연결돼요.", go: "kiosk" },
-  { title: "직원 화면에서 한 매장만 완료", hint: "‘완료’를 누른 주문만 바뀌고, 다른 매장 주문은 그대로예요.", go: "staff" },
-  { title: "학생 앱과 모니터 확인", hint: "완료한 번호만 학생 앱 알림과 호출 모니터에 떠요.", go: "student" },
+  { title: "호출기에 한 매장 번호 입력", hint: "매장을 고르고 영수증 번호를 눌러 ‘호출’해요. 다른 매장 주문은 그대로예요.", go: "staff" },
+  { title: "학생 앱과 모니터 확인", hint: "호출한 번호만 학생 앱 알림과 호출 모니터에 떠요.", go: "student" },
 ];
 
 export default function SplitDemo() {
@@ -120,13 +120,13 @@ export default function SplitDemo() {
     undone.forEach((o) => k.ready.delete(o.id));
     if (undone.length) {
       const o = undone[0];
-      setToast({ id: `${o.id}-undo`, text: `${getBrand(o.brandId)?.name ?? ""} ${o.displayNumber}번 완료를 되돌렸어요. 학생 앱 알림과 모니터 번호도 함께 내려갔어요.` });
+      setToast({ id: `${o.id}-undo`, text: `${getBrand(o.brandId)?.name ?? ""} ${o.displayNumber}번 호출을 취소했어요. 학생 앱 알림과 모니터 번호도 함께 내려갔어요.` });
     }
     if (added.length) setBadge((b) => ({ ...b, staff: !isVisible("staff") || b.staff }));
     if (turned.length) {
       const o = turned[0];
       setBadge((b) => ({ ...b, student: !isVisible("student"), monitor: !isVisible("monitor") }));
-      setToast({ id: o.id, text: `${getBrand(o.brandId)?.name ?? ""} ${o.displayNumber}번을 완료했어요. 학생 앱 알림과 호출 모니터에 떴어요.` });
+      setToast({ id: o.id, text: `${getBrand(o.brandId)?.name ?? ""} ${o.displayNumber}번을 호출했어요. 학생 앱 알림과 호출 모니터에 떴어요.` });
       // on tablet / short desktop the monitor shares space with staff: show it once the number is up
       if (mode !== "tabs" && layout.area.monitor === layout.area.staff) setTimeout(() => focus("monitor"), 1400);
     }

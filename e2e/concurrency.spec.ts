@@ -14,10 +14,10 @@ test("many tabs and contexts: completion reaches every student tab fast; undo wi
   // order two brands at the kiosk
   const kiosk = await ctx.newPage();
   await kiosk.goto(`/kiosk?s=${session}&k=L1`);
-  await kiosk.getByRole("button", { name: "화면을 눌러 주문하세요" }).click();
-  await kiosk.getByRole("button", { name: /^바비든든/ }).click();
+  await kiosk.getByRole("button", { name: "주문하기" }).click();
+  await kiosk.getByRole("tab", { name: /^바비든든/ }).click();
   await kiosk.getByRole("button", { name: /^제육덮밥/ }).first().click();
-  await kiosk.getByRole("button", { name: /^포포420/ }).click();
+  await kiosk.getByRole("tab", { name: /^포포420/ }).click();
   await kiosk.getByRole("button", { name: /^우삼겹쌀국수/ }).first().click();
   await kiosk.getByRole("button", { name: /결제하기/ }).click();
   await kiosk.getByRole("button", { name: "모의 결제 완료" }).click();
@@ -41,15 +41,15 @@ test("many tabs and contexts: completion reaches every student tab fast; undo wi
   const split = await ctx.newPage();
   await split.goto(`/demo/split?s=${session}`);
   const staff = await ctx.newPage();
-  await staff.goto(`/staff?s=${session}&b=babi`);
+  await staff.goto(`/staff/board?s=${session}&b=babi`);
   await expect(staff.getByTestId("staff-order")).toHaveCount(1);
 
   // a different browser (another phone) following its own order in the same session
   const other = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const otherKiosk = await other.newPage();
   await otherKiosk.goto(`/kiosk?s=${session}&k=R2`);
-  await otherKiosk.getByRole("button", { name: "화면을 눌러 주문하세요" }).click();
-  await otherKiosk.getByRole("button", { name: /^광뚝/ }).click();
+  await otherKiosk.getByRole("button", { name: "주문하기" }).click();
+  await otherKiosk.getByRole("tab", { name: /^광뚝/ }).click();
   await otherKiosk.locator('section[aria-label$="메뉴"] li button').first().click();
   await otherKiosk.getByRole("button", { name: /결제하기/ }).click();
   await otherKiosk.getByRole("button", { name: "모의 결제 완료" }).click();

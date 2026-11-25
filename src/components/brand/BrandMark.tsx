@@ -1,5 +1,3 @@
-import { brands } from "@/core/catalog";
-
 /**
  * Neutral brand marker: first letter on a soft tile. Deliberately NOT the stores' real logos
  * or colours (we have no rights to them) — the hue only helps tell rows apart.
@@ -17,8 +15,11 @@ const HUES = [
   ["#e8f1dc", "#4a6b16"],
 ] as const;
 
+// fixed per brand (not by list position) so reordering brands never recolours them
+const HUE_ORDER = ["gapjjigae", "gyeongseong", "babi", "popo420", "bibigogo", "gwangttuk", "pokpung", "tokyoya", "kaohsiung", "jang51"];
+
 export function brandHue(brandId: string) {
-  const i = Math.max(0, brands.findIndex((b) => b.id === brandId));
+  const i = Math.max(0, HUE_ORDER.indexOf(brandId));
   return HUES[i % HUES.length];
 }
 

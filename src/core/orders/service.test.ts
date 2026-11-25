@@ -144,4 +144,38 @@ describe("token hashing", () => {
     const snap = await svc.waitSession("SESB", -1, 0);
     expect(snap.orders).toHaveLength(0);
   });
+
+  it("number device: calls only (session, brand, number); wrong / cross-brand / duplicate / received are refused", async () => {
+    const { svc } = setup();
+    const r = await svc.placeOrder({ sessionId: "CALL1", kioskId: "L1", lines: [{ menuId: bibim.id, qty: 1 }, { menuId: jjigae.id, qty: 1 }] });
+    const [b, g] = r.tickets.map((t) => t.order);
+    expect((await svc.callNumber("CALL1", "bibigogo", 9999, "c0")).outcome).toBe("not_found");
+    // the gapjjigae number typed on the bibigogo device never calls the gapjjigae order
+    const cross = await svc.callNumber("CALL1", "bibigogo", g.displayNumber, "c1");
+    if (g.displayNumber !== b.displayNumber) expect(cross.outcome).toBe("not_found");
+    const [, gTrack] = await svc.track(r.tickets.map((t) => t.token));
+    expect(gTrack.order?.status).toBe("accepted");
+    // same number in another session is a different order
+    expect((await svc.callNumber("CALL2", "bibigogo", b.displayNumber, "c2")).outcome).toBe("not_found");
+    const ok = await svc.callNumber("CALL1", "bibigogo", b.displayNumber, "c3");
+    expect(ok.outcome).toBe("called");
+    expect(ok.order?.id).toBe(b.id);
+    expect((await svc.callNumber("CALL1", "bibigogo", b.displayNumber, "c4")).outcome).toBe("already_ready");
+    await svc.closeByToken(r.tickets[0].token);
+    expect((await svc.callNumber("CALL1", "bibigogo", b.displayNumber, "c5")).outcome).toBe("already_closed");
+    expect((await svc.callNumber("CALL1", "bibigogo", 0, "c6")).outcome).toBe("invalid");
+    await expect(svc.callNumber("CALL1", "nope", 100, "c7")).rejects.toThrow();
+  });
+
+  it("number device: two devices calling the same number at once change it once; undo works after a call", async () => {
+    const { svc } = setup();
+    const r = await svc.placeOrder({ sessionId: "CALL3", kioskId: "L1", lines: [{ menuId: bibim.id, qty: 1 }] });
+    const n = r.tickets[0].order.displayNumber;
+    const results = await Promise.all(Array.from({ length: 6 }, (_, i) => svc.callNumber("CALL3", "bibigogo", n, `dev${i}`)));
+    expect(results.filter((x) => x.outcome === "called")).toHaveLength(1);
+    expect(results.filter((x) => x.outcome === "already_ready")).toHaveLength(5);
+    const undone = await svc.undoReady("CALL3", r.tickets[0].order.id, "u1");
+    expect(undone.changed).toBe(true);
+    expect((await svc.callNumber("CALL3", "bibigogo", n, "again")).outcome).toBe("called");
+  });
 });

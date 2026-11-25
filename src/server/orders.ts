@@ -99,7 +99,8 @@ export function clientId(req: Request): string {
   return `claimed:${xff[0] ?? "direct"}`;
 }
 
-export const LIMITS = { perClient: 40, global: 400, perSession: 120, windowMs: 60_000 };
+// FLOWEAT_RATE_PER_CLIENT only exists so the E2E suite (every browser is 127.0.0.1) can run its ~60 writes a minute
+export const LIMITS = { perClient: Number(process.env.FLOWEAT_RATE_PER_CLIENT) || 40, global: 400, perSession: 120, windowMs: 60_000 };
 
 export function rateLimited(req: Request, sessionId?: string): boolean {
   const w = LIMITS.windowMs;

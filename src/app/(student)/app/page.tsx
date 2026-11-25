@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getBrand } from "@/core/catalog";
+import { brands as allBrands, getBrand } from "@/core/catalog";
 import { queueInsight, seatInsight } from "@/core/insight";
-import { kioskById, ZONES } from "@/core/layout";
+import { kioskById, pickupHint, ZONES } from "@/core/layout";
 import { DATA_MODE_LABEL, popularTimes, type KioskView } from "@/core/world";
 import { CommonsMap, type MapLayer } from "@/components/map/CommonsMap";
 import { Wordmark } from "@/components/brand/Logo";
@@ -64,6 +64,8 @@ export default function HomePage() {
               <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">{layer === "seats" ? seatInsight(world) : queueInsight(world)}</p>
             </header>
 
+            {active.length === 0 && <ArrivalGuide />}
+
             <div role="tablist" aria-label="지도 정보" className="mt-4 grid grid-cols-3 rounded-[14px] bg-floor p-1">
               {LAYERS.map((l) => (
                 <button
@@ -97,7 +99,7 @@ export default function HomePage() {
 
 /** Map sized to the space between the top chips and the sheet edge, so its controls are never under the sheet. */
 function MobileMap() {
-  const { world, selected, setSelected, layer } = useStudent();
+  const { world, selected, setSelected, layer, active } = useStudent();
   const box = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
   useEffect(() => {
@@ -110,7 +112,7 @@ function MobileMap() {
   return (
     <div ref={box} className="absolute inset-x-0 top-12 bottom-8">
       {world && size && size.h > 120 && (
-        <CommonsMap kiosks={world.kiosks} selected={selected} onSelect={setSelected} layer={layer} width={size.w} height={size.h} fitHalf={10.2} padBottom={34} />
+        <CommonsMap kiosks={world.kiosks} selected={selected} onSelect={setSelected} layer={layer} width={size.w} height={size.h} fitHalf={10.2} padBottom={34} highlightBrands={active.map((r) => r.order!.brandId)} />
       )}
     </div>
   );
@@ -284,29 +286,88 @@ function PickupLayer() {
   const { world, active } = useStudent();
   if (!world) return null;
   const mine = new Set(active.map((r) => r.order!.brandId));
+  const list = [...world.brands].sort((a, b) => Number(mine.has(b.id)) - Number(mine.has(a.id)));
   return (
     <section className="mt-3" aria-label="수령">
-      <p className="text-[14px] leading-relaxed text-ink-2">번호가 뜨면 각 매장 카운터에서 받아요. 카운터 위치는 아직 확인 전이라 지도에 표시하지 않아요.</p>
+      <p className="text-[14px] leading-relaxed text-ink-2">
+        하늘색 <b className="text-ink">호출 모니터</b>에 번호가 뜨면 <b className="text-ink">영수증</b>을 가지고 매장 카운터에서 받아요. 위치는 정문 옆 안내도를 따른 대략 위치예요.
+      </p>
       <ul className="-mx-2 mt-2">
-        {world.brands.map((b) => (
-          <li key={b.id}>
-            <Link href={`/app/menu/${b.id}`} className={`flex items-center gap-3 rounded-2xl px-2 py-2.5 active:bg-floor ${mine.has(b.id) ? "bg-ice" : ""}`}>
-              <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-floor text-[14px] font-bold text-navy">{b.name.slice(0, 1)}</span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-[15.5px] font-semibold">
-                  {b.name}
-                  {mine.has(b.id) && <span className="ml-1.5 text-[12.5px] font-bold text-blue-ink">내 주문</span>}
+        {list.map((b) => {
+          const h = pickupHint(b.id);
+          const mon = allBrands.find((x) => x.id === b.id)?.monitor;
+          return (
+            <li key={b.id}>
+              <Link href={`/app/menu/${b.id}`} className={`flex items-center gap-3 rounded-2xl px-2 py-2.5 active:bg-floor ${mine.has(b.id) ? "bg-ice" : ""}`}>
+                <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-floor text-[14px] font-bold text-navy">{b.name.slice(0, 1)}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15.5px] font-semibold">
+                    {b.name}
+                    {mine.has(b.id) && <span className="ml-1.5 text-[12.5px] font-bold text-blue-ink">내 주문</span>}
+                  </span>
+                  <span className={`block text-[12.5px] leading-snug ${h.sure ? "text-ink-2" : "text-ink-3"}`}>{h.where}</span>
+                  {mon && <span className="block text-[12px] text-ink-3">호출 모니터 {mon.screen === "A" ? "1" : "2"} · {mon.column}번째 열</span>}
                 </span>
-                <span className="block text-[13px] text-ink-3">{b.cuisine}</span>
-              </span>
-              <span className="text-right">
-                <span className="num block text-[16px] font-bold">{prepText(b.p50, b.p80)}</span>
-                <span className="block text-[12px] text-ink-3">주문 후 준비</span>
-              </span>
-            </Link>
-          </li>
-        ))}
+                <span className="shrink-0 text-right">
+                  <span className="num block text-[16px] font-bold">{prepText(b.p50, b.p80)}</span>
+                  <span className="block text-[12px] text-ink-3">주문 후 준비</span>
+                </span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
+      <p className="mt-2 text-[12.5px] leading-relaxed text-ink-3">
+        안내도 사진 오른쪽이 잘려 비비고고·도쿄야·광뚝의 자리는 확인 전이고, 가오슝은 현장 사진(폭풍분식 옆)으로 추정했어요. 모니터 1의 첫 열은 사진에서 잘려 바비든든으로 추정했어요. 앱 화면만으로 음식을 받을 수 있다고 보장하지 않아요.
+      </p>
+    </section>
+  );
+}
+
+/** First visit: the four things to know at the door, in the order you need them. */
+function ArrivalGuide() {
+  const { setLayer } = useStudent();
+  const [open, setOpen] = useState(false);
+  const steps: { t: string; d: string; act?: () => void; href?: string }[] = [
+    { t: "정문 양옆 키오스크", d: "왼쪽·오른쪽에 3대씩, 모두 같은 메뉴예요. 줄이 짧은 쪽을 고르세요.", act: () => setLayer("queue") },
+    { t: "메뉴와 준비시간", d: "10개 매장을 한 키오스크에서 주문해요. 매장마다 영수증(번호표)이 따로 나와요.", href: "/app/menu" },
+    { t: "영수증 QR 찍기", d: "영수증의 FLOWEAT QR을 찍으면 준비됐을 때 알려 드려요. 영수증은 버리지 마세요.", href: "/app/scan" },
+    { t: "모니터에 번호가 뜨면", d: "매장 카운터에서 영수증을 보여 주고 받아요. 위치는 ‘수령’ 지도에서.", act: () => setLayer("pickup") },
+  ];
+  return (
+    <section className="mt-4 rounded-2xl bg-floor px-4 py-3" aria-label="처음 왔다면">
+      <button onClick={() => setOpen((v) => !v)} aria-expanded={open} className="flex w-full items-center justify-between text-left">
+        <span className="text-[15px] font-bold">처음 왔다면, 도착해서 이렇게</span>
+        <span className="text-[13px] font-semibold text-ink-3">{open ? "접기" : "4단계 보기"}</span>
+      </button>
+      {open && (
+        <ol className="mt-2 space-y-2">
+          {steps.map((st, i) => {
+            const body = (
+              <>
+                <span className="num grid size-6 shrink-0 place-items-center rounded-full bg-navy text-[12.5px] font-bold text-white">{i + 1}</span>
+                <span className="min-w-0">
+                  <span className="block text-[14.5px] font-semibold">{st.t}</span>
+                  <span className="block text-[13px] leading-snug text-ink-2">{st.d}</span>
+                </span>
+              </>
+            );
+            return (
+              <li key={st.t}>
+                {st.href ? (
+                  <Link href={st.href} className="flex gap-2.5 rounded-xl p-1.5 active:bg-white">
+                    {body}
+                  </Link>
+                ) : (
+                  <button onClick={st.act} className="flex w-full gap-2.5 rounded-xl p-1.5 text-left active:bg-white">
+                    {body}
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      )}
     </section>
   );
 }

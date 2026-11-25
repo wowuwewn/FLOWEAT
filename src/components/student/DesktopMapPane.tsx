@@ -7,7 +7,7 @@ import { useStudent } from "./StudentProvider";
 
 /** Desktop-only persistent map (left side), synced with the panel selection. */
 export function DesktopMapPane() {
-  const { world, selected, setSelected, layer } = useStudent();
+  const { world, selected, setSelected, layer, active } = useStudent();
   const router = useRouter();
   const path = usePathname();
   const box = useRef<HTMLDivElement>(null);
@@ -37,6 +37,7 @@ export function DesktopMapPane() {
             padBottom={72}
             pitch={size.h / size.w > 0.62 ? 76 : 70}
             noticeTop={64}
+            highlightBrands={active.map((r) => r.order!.brandId)}
             onSelect={(id) => {
               setSelected(id);
               if (id && path !== "/app") router.push("/app");
@@ -44,7 +45,7 @@ export function DesktopMapPane() {
           />
         )}
       </div>
-      <p className="absolute bottom-4 left-6 rounded-full bg-white/90 px-3 py-1 text-[12px] text-ink-3 shadow-sm">개념 배치예요. 거리와 크기는 실측이 아니에요. 확대: 두 번 클릭 또는 Ctrl+스크롤</p>
+      <p className="absolute bottom-4 left-6 rounded-full bg-white/90 px-3 py-1 text-[12px] text-ink-3 shadow-sm">정문 안내도 기반 개념 배치예요. 거리와 크기는 실측이 아니에요. 확대: 두 번 클릭 또는 Ctrl+스크롤</p>
     </div>
   );
 }

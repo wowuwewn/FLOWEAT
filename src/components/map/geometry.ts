@@ -6,7 +6,7 @@
  * not a measurement — the UI labels the map "개념 배치".
  * x: lateral (left negative), y: depth from the entrance line, z: height.
  */
-import { KIOSKS } from "@/core/layout";
+import { FLOOR_GUIDE, KIOSKS } from "@/core/layout";
 
 export type V3 = [number, number, number];
 
@@ -50,10 +50,43 @@ const norm = (a: V3): V3 => {
 };
 
 /** Camera behind the entrance looking in. pitch 90 = straight down (2D plan). */
-export function entranceCamera(pitchDeg: number, distance = 17): Camera {
-  const target: V3 = [0, 6.4, 0];
+export function entranceCamera(pitchDeg: number, distance = 17, tx = 0, ty = 6.4): Camera {
+  const target: V3 = [tx, ty, 0];
   const p = (pitchDeg * Math.PI) / 180;
-  return { eye: [0, target[1] - distance * Math.cos(p), distance * Math.sin(p)], target, f: 1 };
+  return { eye: [tx, target[1] - distance * Math.cos(p), distance * Math.sin(p)], target, f: 1 };
+}
+
+/** A framing: camera + the floor rectangle that must fit on screen. Tweened between map layers. */
+export interface ViewSpec {
+  pitch: number;
+  distance: number;
+  tx: number;
+  ty: number;
+  x0: number;
+  x1: number;
+  y0: number;
+  y1: number;
+  /** height of the tallest thing that must stay in frame at the far edge */
+  z: number;
+}
+
+/** Kiosk-focused view (the default): only the entrance area, as before. */
+export function queueView(pitch: number, fitHalf: number): ViewSpec {
+  return { pitch, distance: 17, tx: 0, ty: 6.4, x0: -fitHalf, x1: fitHalf, y0: -0.6, y1: WORLD.verifiedDepth + 1.4, z: 2.4 };
+}
+
+/** Whole-hall view from above the entrance: counters, cafe and the cut-off right side. */
+export function hallView(aspect: number): ViewSpec {
+  const h = FLOOR_GUIDE.hall;
+  // tall screens (phones) crop the cafe side so the counters stay readable
+  const x0 = aspect > 0.9 ? -33 : aspect > 0.62 ? -40 : h.x0 - 1;
+  return { pitch: aspect > 0.75 ? 78 : 62, distance: 95, tx: (x0 + 34) / 2, ty: 18, x0, x1: 34, y0: -1, y1: h.y1Left, z: 1.2 };
+}
+
+export function lerpView(a: ViewSpec, b: ViewSpec, t: number): ViewSpec {
+  const o = {} as ViewSpec;
+  for (const k of Object.keys(a) as (keyof ViewSpec)[]) o[k] = a[k] + (b[k] - a[k]) * t;
+  return o;
 }
 
 export interface Projector {

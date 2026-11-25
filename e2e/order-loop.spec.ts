@@ -30,11 +30,18 @@ async function decodeTicketQrs(page: Page): Promise<string[]> {
   });
 }
 
+/** The store's number-entry device: type the ticket number and press 호출. */
+async function callNumber(staff: Page, number: string) {
+  for (const d of number) await staff.getByRole("button", { name: `숫자 ${d}` }).click();
+  await expect(staff.getByTestId("pad-display")).toHaveText(number);
+  await staff.getByRole("button", { name: "호출", exact: true }).click();
+}
+
 async function orderTwoBrands(kiosk: Page) {
-  await kiosk.getByRole("button", { name: "화면을 눌러 주문하세요" }).click();
-  await kiosk.getByRole("button", { name: /^비비고고/ }).click();
+  await kiosk.getByRole("button", { name: "주문하기" }).click();
+  await kiosk.getByRole("tab", { name: /^비비고고/ }).click();
   await kiosk.getByRole("button", { name: /오색비빔밥/ }).first().click();
-  await kiosk.getByRole("button", { name: /^값찌개/ }).click();
+  await kiosk.getByRole("tab", { name: /^값찌개/ }).click();
   await kiosk.getByRole("button", { name: /순두부찌개\(밥포함\)/ }).first().click();
   await expect(kiosk.getByText("번호표가 2장 나와요")).toBeVisible();
   await kiosk.getByRole("button", { name: /결제하기/ }).click();
@@ -78,11 +85,22 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   await monitor.goto(`/monitor?s=${session}`);
   await expect(monitor.getByTestId("monitor-number")).toHaveCount(0);
 
+  // the store's number device: a wrong number is refused and changes nothing
   const staff = await staffCtx.newPage();
   await staff.goto(`/staff?s=${session}&b=bibigogo`);
-  await expect(staff.getByTestId("staff-order")).toHaveCount(1);
+  await callNumber(staff, "9999");
+  await expect(staff.getByRole("status")).toContainText("9999번 주문이 없어요");
+  await staff.getByRole("button", { name: "모두 지우기" }).click();
+  // the gapjjigae number typed on the bibigogo device does not call the other store's order
+  if (numbers[1] !== numbers[0]) {
+    await callNumber(staff, numbers[1]);
+    await expect(staff.getByRole("status")).toContainText("주문이 없어요");
+    await staff.getByRole("button", { name: "모두 지우기" }).click();
+  }
+  await expect(phone.locator('[data-testid="order-card"][data-status="ready"]')).toHaveCount(0);
   const t0 = Date.now();
-  await staff.getByRole("button", { name: /번 완료$/ }).click();
+  await callNumber(staff, numbers[0]);
+  await expect(staff.getByRole("status")).toContainText("호출했어요");
 
   // only the bibigogo order flips to ready on the phone; the other stays accepted
   await expect(phone.locator('[data-testid="order-card"][data-status="ready"]')).toHaveCount(1, { timeout: 5000 });
@@ -94,9 +112,13 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   console.log(`ready → phone latency ${latency} ms`);
   expect(latency).toBeLessThan(2500);
 
-  // second brand
+  // calling the same number again is reported as a duplicate, not a second change
+  await callNumber(staff, numbers[0]);
+  await expect(staff.getByRole("status")).toContainText("이미 호출된 번호");
+
+  // second brand, on that store's own device
   await staff.goto(`/staff?s=${session}&b=gapjjigae`);
-  await staff.getByRole("button", { name: /번 완료$/ }).click();
+  await callNumber(staff, numbers[1]);
   await expect(phone.locator('[data-testid="order-card"][data-status="ready"]')).toHaveCount(2, { timeout: 5000 });
   await expect(monitor.getByTestId("monitor-number")).toHaveCount(2, { timeout: 5000 });
 
@@ -157,8 +179,8 @@ test("one-device mode: kiosk, staff and order page sync inside one browser", asy
   const ctx = await browser.newContext({ viewport: { width: 900, height: 1200 } });
   const kiosk = await ctx.newPage();
   await kiosk.goto(`/kiosk?s=SOLO1&mode=device`);
-  await kiosk.getByRole("button", { name: "화면을 눌러 주문하세요" }).click();
-  await kiosk.getByRole("button", { name: /^바비든든/ }).click();
+  await kiosk.getByRole("button", { name: "주문하기" }).click();
+  await kiosk.getByRole("tab", { name: /^바비든든/ }).click();
   await kiosk.getByRole("button", { name: /^제육덮밥/ }).first().click();
   await kiosk.getByRole("button", { name: /결제하기/ }).click();
   await kiosk.getByRole("button", { name: "모의 결제 완료" }).click();
@@ -171,6 +193,13 @@ test("one-device mode: kiosk, staff and order page sync inside one browser", asy
 
   const staff = await ctx.newPage();
   await staff.goto(`/staff?s=SOLO1&b=babi`);
+  await callNumber(staff, (await kiosk.getByTestId("ticket-number").textContent())!.trim());
+  await expect(phone.getByTestId("order-card")).toHaveAttribute("data-status", "ready", { timeout: 5000 });
+  // undo on the device withdraws it again
+  await staff.getByRole("button", { name: /호출 취소/ }).click();
+  await expect(phone.getByTestId("order-card")).toHaveAttribute("data-status", "accepted", { timeout: 5000 });
+  // the auxiliary order board still works
+  await staff.goto(`/staff/board?s=SOLO1&b=babi`);
   await staff.getByRole("button", { name: /번 완료$/ }).click();
   await expect(phone.getByTestId("order-card")).toHaveAttribute("data-status", "ready", { timeout: 5000 });
   await ctx.close();

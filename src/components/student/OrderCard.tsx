@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { getBrand } from "@/core/catalog";
+import { pickupHint } from "@/core/layout";
 import type { TrackResult } from "@/core/orders/service";
 import { elapsed, minuteRange, percent, TABLE_LEVEL, since, prepText } from "@/lib/format";
 import { useNow } from "@/client/hooks";
@@ -62,8 +63,11 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
               )}
             </p>
             {o.prepEstimate && now - o.acceptedAt > o.prepEstimate.p80 * 1000 && (
-              <p className="mt-1 text-[12.5px] text-ink-3">예상보다 늦어지고 있어요. 매장에서 완료를 누르면 바로 알려 드려요.</p>
+              <p className="mt-1 text-[12.5px] text-ink-3">예상보다 늦어지고 있어요. 매장에서 번호를 호출하면 바로 알려 드려요.</p>
             )}
+            <p className="mt-2.5 rounded-xl bg-floor px-3 py-2 text-[12.5px] leading-relaxed text-ink-2">
+              받을 때 <b className="text-ink">키오스크 영수증</b>을 챙겨 가세요. 현장은 영수증을 보여 주거나 제출하는 방식이라, 이 앱 화면만으로 받을 수 있다고 보장하지 않아요.
+            </p>
           </div>
         )}
         {isReady && (
@@ -82,17 +86,22 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
       </div>
 
       {isReady && (
-        <div className="border-t border-white/25 px-5 py-3 text-[13.5px]">
-          카운터 위치는 아직 확인 전이라 지도에 표시하지 않아요.
+        <div className="border-t border-white/25 px-5 py-3 text-[13.5px] leading-relaxed">
+          <p>
+            <b>어디서?</b> {pickupHint(o.brandId).where}.{" "}
+            <Link href="/app?layer=pickup" className="font-semibold underline underline-offset-2">
+              지도
+            </Link>
+          </p>
+          <p className="mt-1 opacity-90">카운터에서 영수증을 보여 주거나 제출해 주세요.</p>
           {world && (
-            <>
-              {" "}
+            <p className="mt-1">
               지금 자리는{" "}
               <Link href="/app?layer=seats" className="font-semibold underline underline-offset-2">
                 {TABLE_LEVEL[world.overall.tableLevel].label} ({percent(world.overall.tableRateLow)}–{percent(world.overall.tableRateHigh)})
               </Link>
               .
-            </>
+            </p>
           )}
         </div>
       )}

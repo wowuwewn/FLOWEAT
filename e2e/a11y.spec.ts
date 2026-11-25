@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const PAGES = [
   "/", "/app", "/app?layer=seats", "/app?layer=pickup", "/app/menu", "/app/menu/bibigogo", "/app/orders", "/app/about",
-  "/kiosk", "/staff?b=babi", "/monitor", "/ops", "/demo/split", "/o/AAAAAAAAAAAAAAAAAAAAAA", "/this-page-does-not-exist",
+  "/kiosk", "/staff?b=babi", "/staff/board?b=babi", "/monitor", "/monitor?screen=A", "/ops", "/demo/split", "/o/AAAAAAAAAAAAAAAAAAAAAA", "/this-page-does-not-exist",
 ];
 
 async function audit(page: Page, label: string) {
@@ -33,8 +33,8 @@ test.describe("a11y on a phone", () => {
 
 test("a11y: kiosk menu, cart and payment steps", async ({ page }) => {
   await page.goto("/kiosk?s=AXE01");
-  await page.getByRole("button", { name: "화면을 눌러 주문하세요" }).click();
-  await page.getByRole("button", { name: /^바비든든/ }).click();
+  await page.getByRole("button", { name: "주문하기" }).click();
+  await page.getByRole("tab", { name: /^바비든든/ }).click();
   await page.getByRole("button", { name: /^제육덮밥/ }).first().click();
   await audit(page, "kiosk menu");
   await page.getByRole("button", { name: /결제하기/ }).click();

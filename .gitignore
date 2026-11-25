@@ -15,3 +15,8 @@ playwright-report/
 next-env.d.ts
 .DS_Store
 /data/videos/
+
+# field reference photos stay private (rights unconfirmed, may contain people/receipts)
+**/reference_private/
+*.HEIC
+*.MOV

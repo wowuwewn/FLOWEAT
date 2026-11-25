@@ -14,9 +14,9 @@ import { Qr } from "@/components/Qr";
 
 const SURFACES = [
   { href: "/app", title: "학생 앱", who: "학생", body: "정문에서 본 키오스크 6대의 예상 대기, 자리, 메뉴별 준비시간, 내 주문 알림", tag: "휴대폰" },
-  { href: "/kiosk", title: "모의 키오스크", who: "주문", body: "기존 키오스크처럼 주문하고 브랜드별 번호표와 QR을 받아요. 결제는 모의예요", tag: "세로 화면" },
-  { href: "/staff", title: "직원 주문 관리", who: "매장", body: "들어온 순서대로 티켓을 보고 완료를 한 번 누르면 모니터와 휴대폰에 반영돼요", tag: "태블릿" },
-  { href: "/monitor", title: "호출 모니터", who: "공용 화면", body: "지금처럼 준비된 번호만 보여 줘요", tag: "TV" },
+  { href: "/kiosk", title: "모의 키오스크", who: "주문", body: "실제 학식 키오스크 흐름(매장 탭·메뉴·주문카트·영수증)에 준비시간 예측과 주문 추적 QR을 더했어요. 결제는 모의예요", tag: "세로 화면" },
+  { href: "/staff", title: "매장 호출기", who: "매장", body: "지금 매장처럼 음식이 나오면 영수증 번호만 누르면 돼요. 모니터와 학생 앱에 함께 반영돼요", tag: "직원 기기" },
+  { href: "/monitor", title: "호출 모니터", who: "공용 화면", body: "현장의 하늘색 ‘주문 번호 리스트’ 2화면처럼 매장별 번호를 보여 줘요", tag: "TV" },
   { href: "/ops", title: "AI 분석", who: "운영", body: "영상에서 키오스크별 줄과 테이블 상태를 읽는 과정과 검증 결과", tag: "PC" },
 ];
 
@@ -25,7 +25,7 @@ const STEPS = [
   ["학생 앱에서 줄 비교", "지도에서 줄이 짧아도 느린 키오스크를 찾아보세요. 메뉴별 준비시간도 볼 수 있어요.", "/app"],
   ["키오스크에서 두 브랜드 주문", "번호표가 브랜드별로 2장 나와요.", "/kiosk"],
   ["번호표 QR 연결", "휴대폰 카메라로 찍거나 ‘이 기기에서 열기’를 누르면 회원가입 없이 연결돼요.", "/app/orders"],
-  ["직원 화면에서 한 매장만 완료", "완료는 실제 이벤트예요. 예상 시간이 지나도 저절로 완료되지 않아요.", "/staff"],
+  ["매장 호출기에 번호 입력", "한 매장의 영수증 번호만 눌러 호출해요. 예상 시간이 지나도 저절로 완료되지 않아요.", "/staff"],
   ["모니터와 휴대폰 확인", "완료한 번호만 바뀌고 다른 주문은 그대로예요.", "/monitor"],
 ] as const;
 
@@ -87,7 +87,7 @@ export default function EntryHub() {
             </Link>
           </div>
           {shared ? (
-            <p className="mt-3 text-[13px] text-ink-3">이 시연 서버는 기기 간 주문을 공유해요. 키오스크·직원·모니터·휴대폰을 다른 기기에서 열 수 있어요. 직원 화면은 운영자가 연결해 줘야 해요.</p>
+            <p className="mt-3 text-[13px] text-ink-3">이 시연 서버는 기기 간 주문을 공유해요. 키오스크·호출기·모니터·휴대폰을 다른 기기에서 열 수 있어요. 매장 호출기는 운영자가 연결해 줘야 해요.</p>
           ) : (
             <div className="mt-4 max-w-xl rounded-2xl border border-[#f0d9a8] bg-[#fff8e8] px-4 py-3 text-[13.5px] leading-relaxed text-[#5c3d00]" role="note">
               <p className="font-bold">체험 전에: 이 주소는 ‘한 기기 체험’이에요</p>
@@ -253,7 +253,7 @@ export default function EntryHub() {
                         }}
                         className="h-10 flex-1 rounded-lg bg-navy text-[13.5px] font-semibold text-white"
                       >
-                        직원 기기 연결 QR
+                        매장 호출기 연결 QR
                       </button>
                       <button
                         onClick={() => {
@@ -268,8 +268,8 @@ export default function EntryHub() {
                     </div>
                     {pair && (
                       <div className="flex items-center gap-3">
-                        <Qr value={pair} size={96} label={`세션 ${session} 직원 화면 연결 QR`} />
-                        <p>매장 태블릿으로 찍으면 이 세션의 직원 화면이 열려요. 키는 주소의 # 뒤에 있어 서버 로그에 남지 않아요. 세션 코드만으로는 완료 처리를 할 수 없어요.</p>
+                        <Qr value={pair} size={96} label={`세션 ${session} 매장 호출기 연결 QR`} />
+                        <p>매장 기기로 찍으면 이 세션의 호출기가 열려요. 키는 주소의 # 뒤에 있어 서버 로그에 남지 않아요. 세션 코드만으로는 완료 처리를 할 수 없어요.</p>
                       </div>
                     )}
                   </div>
@@ -299,7 +299,7 @@ export default function EntryHub() {
               </div>
               <div>
                 <dt className="font-bold text-ink">주문·QR·완료 알림 (실제 동작)</dt>
-                <dd>모의 키오스크 주문, 매장별 번호표 QR, 직원 완료, 모니터·학생 화면 반영은 실제 이벤트예요. 결제·학교 키오스크·POS는 모의예요.</dd>
+                <dd>모의 키오스크 주문, 매장별 번호표 QR, 호출기 번호 입력, 모니터·학생 화면 반영은 실제 이벤트예요. 결제·학교 키오스크·POS·매장 호출 장비 연동은 모의예요.</dd>
               </div>
               <div>
                 <dt className="font-bold text-ink">알림의 한계</dt>

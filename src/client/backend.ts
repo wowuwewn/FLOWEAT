@@ -9,7 +9,7 @@
  */
 import { emptyState, MapRepository, type OrderState } from "@/core/orders/memory-repo";
 import type { ChangeFeed } from "@/core/orders/ports";
-import { OrderService, type TrackResult } from "@/core/orders/service";
+import { OrderService, type CallOutcome, type TrackResult } from "@/core/orders/service";
 import type { CartLine, PlaceOrderResult, StaffOrder } from "@/core/orders/types";
 import { toStaff } from "@/core/orders/types";
 import type { ScenarioId } from "@/core/sim/simulator";
@@ -29,6 +29,8 @@ export interface OrderBackend {
   kind: BackendKind;
   placeOrder(sessionId: string, kioskId: string, lines: CartLine[], scenario: ScenarioId): Promise<PlaceOrderResult>;
   setReady(sessionId: string, orderId: string, idempotencyKey: string, undo?: boolean): Promise<{ changed: boolean; order: StaffOrder }>;
+  /** number-entry device: call (brand, ticket number) in this session */
+  callNumber(sessionId: string, brandId: string, number: number, idempotencyKey: string): Promise<{ outcome: CallOutcome; order: StaffOrder | null }>;
   sessionOrders(sessionId: string): Promise<SessionSnapshot>;
   watchSession(sessionId: string, onChange: (s: SessionSnapshot) => void): () => void;
   track(tokens: string[]): Promise<TrackResult[]>;
@@ -167,6 +169,9 @@ export class ServerBackend implements OrderBackend {
   }
   setReady(sessionId: string, orderId: string, idempotencyKey: string, undo = false) {
     return call<{ changed: boolean; order: StaffOrder }>(`/api/sessions/${sessionId}/orders/${orderId}/ready`, { json: { idempotencyKey, undo }, auth: staffAuth(sessionId) });
+  }
+  callNumber(sessionId: string, brandId: string, number: number, idempotencyKey: string) {
+    return call<{ outcome: CallOutcome; order: StaffOrder | null }>(`/api/sessions/${sessionId}/call`, { json: { brandId, number, idempotencyKey }, auth: staffAuth(sessionId) });
   }
   sessionOrders(sessionId: string) {
     return call<SessionSnapshot>(`/api/sessions/${sessionId}/orders`, { auth: staffAuth(sessionId) });
@@ -319,6 +324,10 @@ export class DeviceBackend implements OrderBackend {
     const svc = this.service();
     const r = undo ? await svc.undoReady(sessionId, orderId, idempotencyKey) : await svc.markReady(sessionId, orderId, idempotencyKey);
     return { changed: r.changed, order: toStaff(r.order) };
+  }
+  async callNumber(sessionId: string, brandId: string, number: number, idempotencyKey: string) {
+    const r = await this.service().callNumber(sessionId, brandId, number, idempotencyKey);
+    return { outcome: r.outcome, order: r.order ? toStaff(r.order) : null };
   }
   async sessionOrders(sessionId: string) {
     const r = await this.service().sessionOrders(sessionId);

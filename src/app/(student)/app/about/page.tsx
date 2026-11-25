@@ -4,7 +4,10 @@ import { DataSources } from "@/components/student/DataNote";
 import { catalog } from "@/core/catalog";
 import { LAYOUT_META } from "@/core/layout";
 
-const VERIFY_LABEL = { operator_listed: "운영사 죽전 목록", field_observed: "팀원 현장 관찰", visit_report: "방문기·가격 목록" } as const;
+const VERIFY_LABEL = { field_verified: "현장 키오스크·호출 모니터", operator_listed: "운영사 죽전 목록", field_observed: "팀원 현장 관찰", visit_report: "방문기·가격 목록" } as const;
+
+const fieldSeen = catalog.menus.filter((m) => m.field).length;
+const fieldOnly = catalog.menus.filter((m) => m.priceBasis === "field_only").length;
 
 export default function AboutPage() {
   return (
@@ -28,12 +31,15 @@ export default function AboutPage() {
           {catalog.brands.map((b) => (
             <li key={b.id} className="flex justify-between gap-3 py-2.5 text-[14.5px]">
               <span className="font-semibold">{b.name}</span>
-              <span className="text-right text-ink-2">{VERIFY_LABEL[b.verification]}</span>
+              <span className="text-right text-ink-2">
+                {VERIFY_LABEL[b.verification]}
+                {b.fieldVerifiedAt && <span className="block text-[12px] text-ink-3">{b.fieldVerifiedAt} 확인</span>}
+              </span>
             </li>
           ))}
         </ul>
         <p className="mt-2 text-[12.5px] text-ink-3">
-          {catalog.source.asOf} 기준 조사. 메뉴 {catalog.menus.length}개와 가격은 제3자 공개 목록에서 옮긴 참고값이고, 코트 번호와 수령 위치는 확인 전이라 쓰지 않아요.
+          메뉴 {catalog.menus.length}개 중 {fieldSeen}개는 {catalog.source.field.asOf} 현장 키오스크 화면에서 이름과 가격을 확인했고({fieldOnly}개는 그때 새로 찾은 메뉴), 나머지 {catalog.menus.length - fieldSeen}개는 제3자 공개 목록({catalog.source.asOf} 조사)의 참고값이에요. 촬영 순간의 화면이라 오늘 판매 여부는 알 수 없어요. 코트 번호는 확인 전이라 쓰지 않아요.
         </p>
       </section>
 

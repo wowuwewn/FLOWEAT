@@ -116,7 +116,7 @@ function grids(size: number): Float32Array {
 }
 
 /** Decodes raw YOLOX output [1, N, 85] into detections in source coordinates. */
-export function decodeYolox(output: Float32Array, lb: Letterbox, opts: { scoreThr?: number; classes?: Set<number> } = {}): Detection[] {
+export function decodeYolox(output: Float32Array, lb: Letterbox, opts: { scoreThr?: number; classes?: Set<number>; nmsPerson?: number } = {}): Detection[] {
   const thr = opts.scoreThr ?? 0.3;
   const keep = opts.classes ?? KEEP_CLASSES;
   const g = grids(lb.size);
@@ -143,8 +143,11 @@ export function decodeYolox(output: Float32Array, lb: Letterbox, opts: { scoreTh
     const h = Math.exp(output[o + 3]) * stride;
     dets.push({ x: (cx - w / 2) / lb.scale, y: (cy - h / 2) / lb.scale, w: w / lb.scale, h: h / lb.scale, score: bestScore, cls: best });
   }
-  return nms(dets, 0.45);
+  return nms(dets, 0.45, opts.nmsPerson ?? DEFAULT_PERSON_NMS);
 }
+
+/** People in a line overlap a lot; a looser IoU threshold keeps the person behind. */
+export const DEFAULT_PERSON_NMS = Number(globalThis.process?.env?.FLOWEAT_PERSON_NMS ?? 0.6);
 
 export function iou(a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }): number {
   const x1 = Math.max(a.x, b.x);
@@ -156,12 +159,13 @@ export function iou(a: { x: number; y: number; w: number; h: number }, b: { x: n
   return u > 0 ? inter / u : 0;
 }
 
-/** Class-aware greedy NMS. */
-export function nms(dets: Detection[], thr: number): Detection[] {
+/** Class-aware greedy NMS (separate threshold for people). */
+export function nms(dets: Detection[], thr: number, personThr = thr): Detection[] {
   const sorted = [...dets].sort((a, b) => b.score - a.score);
   const out: Detection[] = [];
   for (const d of sorted) {
-    if (out.every((k) => k.cls !== d.cls || iou(k, d) < thr)) out.push(d);
+    const t = d.cls === COCO.person ? personThr : thr;
+    if (out.every((k) => k.cls !== d.cls || iou(k, d) < t)) out.push(d);
   }
   return out;
 }

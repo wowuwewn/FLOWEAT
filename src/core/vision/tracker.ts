@@ -47,7 +47,8 @@ export class ByteTrackLite {
         const v = iou(tr, d);
         if (v >= this.o.iouThr) pairs.push({ tr, d, v });
       }
-      pairs.sort((a, b) => b.v - a.v);
+      // ByteTrack order: currently tracked first, then recently lost (avoids ID theft)
+      pairs.sort((a, b) => (a.tr.misses === 0 ? 0 : 1) - (b.tr.misses === 0 ? 0 : 1) || b.v - a.v);
       const usedD = new Set<Detection>();
       for (const p of pairs) {
         if (!unmatched.has(p.tr) || usedD.has(p.d)) continue;

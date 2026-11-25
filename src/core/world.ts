@@ -196,7 +196,7 @@ export interface WorldOptions {
   /** live demo orders waiting per brand (accepted, not ready) */
   liveBacklog?: Record<string, number>;
   /** per-kiosk observation override, e.g. from video inference replay */
-  kioskOverride?: Partial<Record<string, { people: number; inServiceElapsed: number | null; source: DataMode }>>;
+  kioskOverride?: Partial<Record<string, { people: number; inServiceElapsed: number | null; source: DataMode; companions?: number; serviceSamples?: number[] }>>;
   /** per-zone table observation override (first N tables of a zone) */
   zoneOverride?: Partial<Record<string, { states: ("occupied" | "apparently_empty" | "uncertain")[]; source: DataMode }>>;
 }
@@ -205,7 +205,13 @@ export function worldAt(engine: Engine, clock: DemoClock, opts: WorldOptions = {
   const sim = engine.today;
   const t = Math.max(DAY_START, Math.min(DAY_END, clock.tSec));
   const i = snapIndex(sim, t);
-  const stats = fitServiceStats(sim.txs, KIOSKS.length, t, engine.etaPrior);
+  // camera-measured kiosk use durations join the kiosk logs as service-time evidence
+  let txs = sim.txs;
+  const observed = KIOSKS.flatMap((k, ki) =>
+    (opts.kioskOverride?.[k.id]?.serviceSamples ?? []).map((d, j) => ({ kiosk: ki, start: t - 60 * (j + 1) - d, end: t - 60 * (j + 1), group: -1, persons: 1 })),
+  );
+  if (observed.length) txs = [...sim.txs, ...observed];
+  const stats = fitServiceStats(txs, KIOSKS.length, t, engine.etaPrior);
 
   const raw = KIOSKS.map((k, ki) => {
     const ov = opts.kioskOverride?.[k.id];

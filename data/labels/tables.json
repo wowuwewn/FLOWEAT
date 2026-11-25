@@ -1,5 +1,5 @@
 {
-"_about": "Claude Code가 2초 간격 프레임을 육안으로 라벨링(사람 검수 필요). 1=그 테이블에 앉아 있음(또는 바로 옆에서 이용 중), 0=앉은 사람 없음.",
+"_about": "Claude Code가 프레임을 육안으로 라벨링(사람 검수 필요). occupied: 1=그 테이블에 앉아 있음, 0=앉은 사람 없음. state(2026-11-25 추가, 1초 단위 재확인): seated=앉아 있음, held=앉은 사람은 없지만 자리 주인이 바로 옆에 있거나 물건(노트북)이 남아 있어 '이용 가능하지 않음', empty=이용 가능. 이 영상에는 실제로 비워진 테이블(empty)이 없다: T2(4–14초)와 T4(20–24초)의 사람은 테이블 옆에 서 있다가 다시 앉는다.",
 "scene": "tables",
 "step": 2,
 "tables": [
@@ -16,6 +16,12 @@
 1,
 1,
 1
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"seated"
 ]
 },
 {
@@ -25,6 +31,12 @@
 1,
 1,
 1
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"seated"
 ]
 },
 {
@@ -34,6 +46,12 @@
 1,
 1,
 1
+],
+"state": [
+"seated",
+"held",
+"seated",
+"seated"
 ]
 },
 {
@@ -43,6 +61,12 @@
 0,
 1,
 1
+],
+"state": [
+"seated",
+"held",
+"seated",
+"seated"
 ]
 },
 {
@@ -52,6 +76,12 @@
 0,
 1,
 1
+],
+"state": [
+"seated",
+"held",
+"seated",
+"seated"
 ]
 },
 {
@@ -61,6 +91,12 @@
 0,
 1,
 1
+],
+"state": [
+"seated",
+"held",
+"seated",
+"seated"
 ]
 },
 {
@@ -70,6 +106,12 @@
 0,
 1,
 1
+],
+"state": [
+"seated",
+"held",
+"seated",
+"seated"
 ]
 },
 {
@@ -79,6 +121,12 @@
 0,
 1,
 1
+],
+"state": [
+"seated",
+"held",
+"seated",
+"seated"
 ]
 },
 {
@@ -88,6 +136,12 @@
 1,
 1,
 1
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"seated"
 ]
 },
 {
@@ -97,6 +151,12 @@
 1,
 1,
 1
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"seated"
 ]
 },
 {
@@ -106,6 +166,12 @@
 1,
 1,
 0
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"held"
 ]
 },
 {
@@ -115,6 +181,12 @@
 1,
 1,
 0
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"held"
 ]
 },
 {
@@ -124,6 +196,12 @@
 1,
 1,
 0
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"held"
 ]
 },
 {
@@ -133,6 +211,12 @@
 1,
 1,
 1
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"seated"
 ]
 },
 {
@@ -142,6 +226,12 @@
 1,
 1,
 1
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"seated"
 ]
 },
 {
@@ -151,6 +241,12 @@
 1,
 1,
 1
+],
+"state": [
+"seated",
+"seated",
+"seated",
+"seated"
 ]
 }
 ]

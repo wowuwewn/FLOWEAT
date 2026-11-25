@@ -1,5 +1,6 @@
 {
-  "generatedAt": "2026-11-24T15:18:21.276Z",
+  "generatedAt": "2026-11-25T01:52:20.662Z",
+  "analyzer": "v2 (multi-lane)",
   "runtime": "onnxruntime-node CPU (4 vCPU, no GPU)",
   "analysisFps": 5,
   "results": [
@@ -13,24 +14,75 @@
         "personCountMAE": 0.1,
         "sessionsTrue": 6,
         "sessionsDetected": 6,
-        "sessionsMatched": 6,
         "sessionDurationMAEsec": 1.5,
-        "inferenceMsMean": 12
+        "inferenceMsMean": 11.6
       },
       "tables": {
         "labelledTableFrames": 64,
         "confusion": {
-          "occ_occ": 56,
+          "occ_occ": 55,
           "occ_unc": 0,
-          "occ_empty": 0,
+          "occ_empty": 1,
           "empty_occ": 4,
           "empty_unc": 4,
           "empty_empty": 0
         },
-        "occupiedShownEmptyRate": 0,
-        "occupiedRecall": 1,
+        "occupiedShownEmptyRate": 0.018,
+        "occupiedRecall": 0.982,
         "emptyShownEmpty": 0,
-        "inferenceMsMean": 25
+        "availability": {
+          "notAvailableFrames": 64,
+          "shownAvailableWrongly": 1,
+          "trueEmptyFrames": 0,
+          "emptyFound": 0
+        },
+        "inferenceMsMean": 25.4
+      },
+      "bank": {
+        "bank": {
+          "frames": 736,
+          "waitingCountMAE": [
+            0.073,
+            1.212,
+            1.168
+          ],
+          "waitingCountMAEAll": 0.818,
+          "orderingAccuracy": [
+            0.955,
+            0.245,
+            0.936
+          ],
+          "overcountShare": 0.014,
+          "servicesTrue": 29,
+          "servicesMatched": 24,
+          "serviceDurationMAEsec": 17.63,
+          "observedWaits": 3,
+          "observedWaitMAEsec": 9.75,
+          "inferenceMsMean": 13,
+          "inferenceMsP95": 20.1
+        },
+        "bank_oblique": {
+          "frames": 736,
+          "waitingCountMAE": [
+            0.326,
+            0.283,
+            1.289
+          ],
+          "waitingCountMAEAll": 0.633,
+          "orderingAccuracy": [
+            0.837,
+            0.927,
+            0.832
+          ],
+          "overcountShare": 0.014,
+          "servicesTrue": 29,
+          "servicesMatched": 27,
+          "serviceDurationMAEsec": 7.7,
+          "observedWaits": 4,
+          "observedWaitMAEsec": 26.9,
+          "inferenceMsMean": 13.4,
+          "inferenceMsP95": 21.5
+        }
       }
     },
     {
@@ -43,24 +95,75 @@
         "personCountMAE": 0.114,
         "sessionsTrue": 6,
         "sessionsDetected": 6,
-        "sessionsMatched": 6,
         "sessionDurationMAEsec": 1.53,
-        "inferenceMsMean": 29.5
+        "inferenceMsMean": 33.6
       },
       "tables": {
         "labelledTableFrames": 64,
         "confusion": {
-          "occ_occ": 56,
+          "occ_occ": 55,
           "occ_unc": 0,
-          "occ_empty": 0,
+          "occ_empty": 1,
           "empty_occ": 4,
           "empty_unc": 4,
           "empty_empty": 0
         },
-        "occupiedShownEmptyRate": 0,
-        "occupiedRecall": 1,
+        "occupiedShownEmptyRate": 0.018,
+        "occupiedRecall": 0.982,
         "emptyShownEmpty": 0,
-        "inferenceMsMean": 47.8
+        "availability": {
+          "notAvailableFrames": 64,
+          "shownAvailableWrongly": 1,
+          "trueEmptyFrames": 0,
+          "emptyFound": 0
+        },
+        "inferenceMsMean": 62.5
+      },
+      "bank": {
+        "bank": {
+          "frames": 736,
+          "waitingCountMAE": [
+            0.073,
+            1.227,
+            0.918
+          ],
+          "waitingCountMAEAll": 0.74,
+          "orderingAccuracy": [
+            0.966,
+            0.333,
+            0.989
+          ],
+          "overcountShare": 0.003,
+          "servicesTrue": 29,
+          "servicesMatched": 25,
+          "serviceDurationMAEsec": 16.5,
+          "observedWaits": 6,
+          "observedWaitMAEsec": 17.43,
+          "inferenceMsMean": 34.6,
+          "inferenceMsP95": 70.6
+        },
+        "bank_oblique": {
+          "frames": 736,
+          "waitingCountMAE": [
+            0.235,
+            0.285,
+            1.269
+          ],
+          "waitingCountMAEAll": 0.596,
+          "orderingAccuracy": [
+            0.814,
+            0.947,
+            0.996
+          ],
+          "overcountShare": 0.005,
+          "servicesTrue": 29,
+          "servicesMatched": 29,
+          "serviceDurationMAEsec": 34.27,
+          "observedWaits": 1,
+          "observedWaitMAEsec": null,
+          "inferenceMsMean": 31.6,
+          "inferenceMsP95": 56.3
+        }
       }
     }
   ]

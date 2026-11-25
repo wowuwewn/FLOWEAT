@@ -7,20 +7,23 @@
  */
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { decodeYolox, MODELS, preprocess, type Detection } from "@/core/vision/detector";
-import type { TableState } from "@/core/vision/analysis";
+import { ROLES, type TableState } from "@/core/vision/analysis";
 import { SCENES } from "@/core/vision/scenes";
 import type { WorldOptions } from "@/core/world";
 
-export const ROLE_NAMES = ["other", "service", "queue", "passer", "seated"] as const;
+export const ROLE_NAMES = ROLES;
 export const TABLE_STATES: TableState[] = ["apparently_empty", "occupied", "uncertain"];
+export const TABLE_REASONS = ["person", "bag_hold", "brief_absence", "tableware", "occluded", "empty", "warming_up"] as const;
 
 export interface ReplayFrame {
   t: number;
-  p: [number, number, number, number, number, number][];
+  /** [id, x, y, w, h, roleIndex, lane] */
+  p: [number, number, number, number, number, number, number][];
   i: [number, number, number, number, number][];
-  s?: [number, number];
-  q?: [number, number];
-  tb?: number[];
+  /** per lane: [inUse, elapsed(-1), waiting, companions, passing] */
+  l: [number, number, number, number, number][];
+  /** per table: [stateIndex, persons, reasonIndex] */
+  tb: [number, number, number][];
 }
 export interface Replay {
   scene: string;
@@ -31,7 +34,8 @@ export interface Replay {
   duration: number;
   generatedAt: string;
   stats: { frames: number; inferenceMsMean: number; inferenceMsP95: number; runtime: string };
-  sessions: { start: number; end: number }[];
+  sessions: { lane: number; start: number; end: number }[];
+  waits: { lane: number; join: number; start: number }[];
   frames: ReplayFrame[];
 }
 
@@ -92,24 +96,26 @@ export function useVisionLinked(): boolean {
 }
 
 /** World overrides from the replays, looping each video on the wall clock (same on all devices). */
-export function visionOverrides(counter: Replay | null, tables: Replay | null, nowMs: number): Pick<WorldOptions, "kioskOverride" | "zoneOverride"> {
+export function visionOverrides(lanesReplay: Replay | null, tables: Replay | null, nowMs: number): Pick<WorldOptions, "kioskOverride" | "zoneOverride"> {
   const out: Pick<WorldOptions, "kioskOverride" | "zoneOverride"> = {};
-  const counterScene = SCENES.find((s) => s.id === "counter")!;
-  const tablesScene = SCENES.find((s) => s.id === "tables")!;
-  if (counter) {
-    const f = frameAt(counter, (nowMs / 1000) % counter.duration);
-    out.kioskOverride = {
-      [counterScene.mapsTo.kioskId!]: {
-        people: f.q?.[0] ?? 0,
-        inServiceElapsed: f.s && f.s[0] ? Math.max(0, f.s[1]) : null,
-        source: "recorded_inference",
-      },
-    };
+  if (lanesReplay) {
+    const scene = SCENES.find((s) => s.id === lanesReplay.scene)!;
+    const tv = (nowMs / 1000) % lanesReplay.duration;
+    const f = frameAt(lanesReplay, tv);
+    out.kioskOverride = {};
+    scene.lanes.forEach((lane, i) => {
+      const l = f.l[i];
+      if (!l) return;
+      // most recent completed uses on this kiosk (seconds), newest first
+      const samples = lanesReplay.sessions.filter((s) => s.lane === i && s.end <= tv).slice(-6).reverse().map((s) => s.end - s.start);
+      out.kioskOverride![lane.kioskId] = { people: l[2], inServiceElapsed: l[0] ? Math.max(0, l[1]) : null, companions: l[3], serviceSamples: samples, source: "recorded_inference" };
+    });
   }
   if (tables) {
+    const scene = SCENES.find((s) => s.id === tables.scene)!;
     const f = frameAt(tables, (nowMs / 1000) % tables.duration);
     out.zoneOverride = {
-      [tablesScene.mapsTo.zoneId!]: { states: (f.tb ?? []).map((s) => TABLE_STATES[s]), source: "recorded_inference" },
+      [scene.mapsTo.zoneId!]: { states: f.tb.map((s) => TABLE_STATES[s[0]]), source: "recorded_inference" },
     };
   }
   return out;

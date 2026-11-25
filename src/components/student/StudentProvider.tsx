@@ -71,13 +71,13 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const sessionOrders = useSessionOrders(backend, demo?.session);
   const liveBacklog = useMemo(() => liveBacklogOf(sessionOrders.orders), [sessionOrders.orders]);
   const linked = useVisionLinked();
-  const [replays, setReplays] = useState<{ counter: Replay; tables: Replay } | null>(null);
+  const [replays, setReplays] = useState<{ lanes: Replay; tables: Replay } | null>(null);
   useEffect(() => {
     if (!linked || replays) return;
-    Promise.all([loadReplay("counter"), loadReplay("tables")]).then(([counter, tables]) => setReplays({ counter, tables })).catch(() => {});
+    Promise.all([loadReplay("bank_oblique"), loadReplay("tables")]).then(([lanes, tables]) => setReplays({ lanes, tables })).catch(() => {});
   }, [linked, replays]);
   const tick = useNow(linked ? 2000 : 60_000);
-  const overrides = linked && replays ? visionOverrides(replays.counter, replays.tables, tick) : {};
+  const overrides = linked && replays ? visionOverrides(replays.lanes, replays.tables, tick) : {};
   const { world, engine } = useWorld(demo?.scenario, { liveBacklog, ...overrides });
 
   const [alert, setAlert] = useState<ReadyAlert | null>(null);

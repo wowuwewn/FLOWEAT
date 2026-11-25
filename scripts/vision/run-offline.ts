@@ -12,16 +12,18 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { decodeYolox, MODELS, preprocess, type Detection } from "../../src/core/vision/detector";
-import { SceneAnalyzer, type FrameOut } from "../../src/core/vision/analysis";
+import { ROLES, SceneAnalyzer, type FrameOut } from "../../src/core/vision/analysis";
 import { SCENES } from "../../src/core/vision/scenes";
 import { readFrames, probe } from "./frames";
 
 const SOURCES: Record<string, string> = {
   counter: "one-by-one-person-detection.mp4",
   tables: "classroom.mp4",
+  bank: "bank.mp4",
+  bank_oblique: "bank_oblique.mp4",
 };
-const ROLE = { other: 0, service: 1, queue: 2, passer: 3, seated: 4 } as const;
 const TSTATE = { apparently_empty: 0, occupied: 1, uncertain: 2 } as const;
+const REASONS = ["person", "bag_hold", "brief_absence", "tableware", "occluded", "empty", "warming_up"];
 
 export async function runScene(sceneId: string, modelId: string, fps: number, videoDir: string, opts: { write?: boolean; onDetections?: (i: number, d: Detection[]) => void } = {}) {
   const scene = SCENES.find((s) => s.id === sceneId)!;
@@ -62,28 +64,29 @@ export async function runScene(sceneId: string, modelId: string, fps: number, vi
     generatedAt: new Date().toISOString(),
     dataMode: "recorded_inference",
     stats,
-    sessions: analyzer.sessions.map((s) => ({ start: +s.start.toFixed(2), end: +s.end.toFixed(2) })),
+    sessions: analyzer.sessions.map((s) => ({ lane: s.lane, start: +s.start.toFixed(2), end: +s.end.toFixed(2) })),
+    waits: analyzer.waits.map((w) => ({ lane: w.lane, join: +w.join.toFixed(2), start: +w.start.toFixed(2) })),
     frames: frames.map((f) => ({
       t: +f.t.toFixed(2),
-      p: f.persons.map((p) => [p.id, r1(p.x), r1(p.y), r1(p.w), r1(p.h), ROLE[p.role]]),
+      p: f.persons.map((p) => [p.id, r1(p.x), r1(p.y), r1(p.w), r1(p.h), ROLES.indexOf(p.role), p.lane]),
       i: f.items.map((i) => [i.cls, r1(i.x), r1(i.y), r1(i.w), r1(i.h)]),
-      ...(f.service ? { s: [f.service.inUse ? 1 : 0, f.service.elapsed === null ? -1 : +f.service.elapsed.toFixed(1)] } : {}),
-      ...(f.queue ? { q: [f.queue.waiting, f.queue.passing] } : {}),
-      ...(f.tables ? { tb: f.tables.map((t) => TSTATE[t.state]) } : {}),
+      l: f.lanes.map((l) => [l.inUse ? 1 : 0, l.elapsed === null ? -1 : +l.elapsed.toFixed(1), l.waiting, l.companions, l.passing]),
+      tb: f.tables.map((t) => [TSTATE[t.state], t.persons, REASONS.indexOf(t.reason)]),
     })),
   };
   if (opts.write !== false) {
     mkdirSync(join(process.cwd(), "public/vision"), { recursive: true });
     writeFileSync(join(process.cwd(), `public/vision/${sceneId}.json`), JSON.stringify(compact));
   }
-  return { compact, stats, frames, sessions: analyzer.sessions };
+  return { compact, stats, frames, sessions: analyzer.sessions, waits: analyzer.waits };
 }
 
 function transcode(sceneId: string, videoDir: string) {
   const out = join(process.cwd(), "public/media", `${sceneId}.mp4`);
-  if (existsSync(out)) return;
   mkdirSync(join(process.cwd(), "public/media"), { recursive: true });
-  execFileSync("ffmpeg", ["-v", "error", "-y", "-i", join(videoDir, SOURCES[sceneId]), "-vf", "scale=960:540,fps=15", "-c:v", "libx264", "-crf", "30", "-preset", "slow", "-pix_fmt", "yuv420p", "-an", "-movflags", "+faststart", out]);
+  if (!existsSync(out)) execFileSync("ffmpeg", ["-v", "error", "-y", "-i", join(videoDir, SOURCES[sceneId]), "-vf", "scale=960:540,fps=15", "-c:v", "libx264", "-crf", "30", "-preset", "slow", "-pix_fmt", "yuv420p", "-an", "-movflags", "+faststart", out]);
+  const webm = out.replace(".mp4", ".webm");
+  if (!existsSync(webm)) execFileSync("ffmpeg", ["-v", "error", "-y", "-i", out, "-c:v", "libvpx-vp9", "-crf", "38", "-b:v", "0", "-row-mt", "1", "-deadline", "good", "-cpu-used", "4", "-an", webm]);
 }
 
 if (process.argv[1]?.endsWith("run-offline.ts")) {

@@ -15,13 +15,14 @@ export function ClockChip() {
         onClick={() => setOpen(true)}
         className="flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-[12.5px] font-semibold text-ink-2"
         aria-haspopup="dialog"
+        aria-label={`시뮬레이션 시각 ${world ? formatClock(world.clock.tSec) : ""}, 데이터 출처 보기`}
       >
         <span className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-blue opacity-40 motion-reduce:hidden" />
           <span className="relative inline-flex size-2 rounded-full bg-blue" />
         </span>
         <span>
-          시연 <span className="num">{world ? formatClock(world.clock.tSec) : "–:–"}</span>
+          시뮬레이션 <span className="num">{world ? formatClock(world.clock.tSec) : "–:–"}</span>
         </span>
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title="지금 보는 정보는 시연용이에요">

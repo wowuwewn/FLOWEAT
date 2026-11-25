@@ -57,6 +57,11 @@ export function removeMyOrder(token: string) {
   save(myOrders().filter((o) => o.token !== token));
 }
 
+/** Demo reset: stop following every order on this device. */
+export function clearMyOrders() {
+  save([]);
+}
+
 function subscribe(cb: () => void) {
   const onStorage = (e: StorageEvent) => e.key === KEY && cb();
   window.addEventListener(EVENT, cb);

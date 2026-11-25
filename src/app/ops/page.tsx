@@ -63,8 +63,8 @@ export default function OpsPage() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1320px] gap-4 px-4 py-4 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <section className="rounded-2xl bg-white p-4" aria-labelledby="stage-h">
+      <main className="mx-auto grid max-w-[1320px] items-start gap-4 px-3 py-4 sm:px-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <section className="min-w-0 rounded-2xl bg-white p-3 sm:p-4" aria-labelledby="stage-h">
           <h2 id="stage-h" className="sr-only">
             테스트 영상 분석
           </h2>
@@ -110,8 +110,11 @@ export default function OpsPage() {
                 </select>
               </label>
             )}
-            <span className="text-ink-3">{mode === "replay" ? (replay ? `${replay.model}, 서버 CPU 사전 분석 ${replay.stats.inferenceMsMean}ms/프레임` : "불러오는 중…") : liveStatus}</span>
           </div>
+          <p className="mt-2 flex items-start gap-2 text-[12.5px] leading-relaxed text-ink-2" aria-live="polite">
+            <span className={`mt-1.5 size-2 shrink-0 rounded-full ${mode === "live" ? "bg-free" : "bg-blue"}`} aria-hidden />
+            <span>{mode === "replay" ? (replay ? `${replay.model}, 서버 CPU에서 미리 분석한 결과를 영상과 맞춰 재생 (${replay.stats.inferenceMsMean}ms/프레임)` : "불러오는 중…") : liveStatus || "준비하는 중…"}</span>
+          </p>
           <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-ink-2" aria-label="범례">
             {(Object.keys(ROLE_LABEL) as Role[]).map((r) => (
               <li key={r} className="flex items-center gap-1.5">
@@ -121,25 +124,27 @@ export default function OpsPage() {
             ))}
             <li>● 판정 기준점 ({scene.anchor === "top" ? "머리" : scene.anchor === "bottom" ? "발" : "몸 중심"})</li>
           </ul>
-        </section>
-
-        <aside className="space-y-4">
-          <Signals scene={scene} frame={frame} replay={replay} />
-          <CameraView scene={scene} />
-          <section className="rounded-2xl bg-white p-4" aria-labelledby="link-h">
-            <h2 id="link-h" className="text-[15px] font-bold">
-              학생 앱에 연결
-            </h2>
-            <p className="mt-1 text-[13px] leading-relaxed text-ink-2">
-              켜면 권장 카메라 영상의 줄 인원·이용 중 여부·측정된 이용 시간이 왼쪽 키오스크 3대에, 테이블 영상이 중앙 칸막이석 4개에 들어가요. 나머지는 시뮬레이션이에요.
-            </p>
-            <button role="switch" aria-checked={linked} onClick={() => setVisionLinked(!linked)} className={`mt-3 flex h-11 w-full items-center justify-between rounded-xl px-4 text-[14.5px] font-semibold ${linked ? "bg-blue text-white" : "bg-[#f0f2f6]"}`}>
+          <div className="mt-3 flex flex-col gap-3 rounded-xl bg-[#f5f6f9] p-3 sm:flex-row sm:items-center" aria-labelledby="link-h">
+            <div className="min-w-0 flex-1">
+              <h2 id="link-h" className="text-[14px] font-bold">
+                학생 앱에 연결
+              </h2>
+              <p className="text-[12.5px] leading-relaxed text-ink-2">
+                켜면 권장 카메라 영상의 줄 인원·이용 중 여부·이용 시간이 왼쪽 키오스크 3대에, 테이블 영상이 중앙 칸막이석 4개에 들어가요. 나머지는 시뮬레이션이에요.
+              </p>
+            </div>
+            <button role="switch" aria-checked={linked} onClick={() => setVisionLinked(!linked)} className={`flex h-11 shrink-0 items-center justify-between gap-3 rounded-xl px-4 text-[14px] font-semibold sm:w-[200px] ${linked ? "bg-blue text-white" : "bg-white ring-1 ring-line"}`}>
               {linked ? "연결됨 (이 브라우저)" : "연결 안 됨"}
               <span className={`h-6 w-11 rounded-full p-0.5 ${linked ? "bg-white/30" : "bg-line-2"}`}>
                 <span className={`block size-5 rounded-full bg-white transition-transform ${linked ? "translate-x-5" : ""}`} />
               </span>
             </button>
-          </section>
+          </div>
+        </section>
+
+        <aside className="space-y-4">
+          <Signals scene={scene} frame={frame} replay={replay} />
+          <CameraView scene={scene} />
         </aside>
 
         <Evaluation />
@@ -172,19 +177,50 @@ function Stage({ scene, replay, mode, modelId, onFrame, onStatus }: { scene: Sce
       pts.forEach(([x, y], i) => (i ? ctx.lineTo(x * W, y * H) : ctx.moveTo(x * W, y * H)));
       ctx.closePath();
     };
+    // every label claims a rectangle; later labels try other spots or are skipped (box colour still tells the role)
+    let placed: { x: number; y: number; w: number; h: number }[] = [];
+    const free = (r: { x: number; y: number; w: number; h: number }) =>
+      r.x >= 0 && r.y >= 0 && r.x + r.w <= W && r.y + r.h <= H && placed.every((q) => r.x + r.w + 2 <= q.x || q.x + q.w + 2 <= r.x || r.y + r.h + 2 <= q.y || q.y + q.h + 2 <= r.y);
+    // keep labels legible when the 960px canvas is shown small (phones): grow them in canvas units
+    let k = 1;
     const tag = (text: string, x: number, y: number, bg: string) => {
-      ctx.font = "700 14px 'Pretendard Variable', sans-serif";
+      ctx.font = `700 ${14 * k}px 'Pretendard Variable', sans-serif`;
       const tw = ctx.measureText(text).width;
+      const w = tw + 16 * k;
+      const h = 24 * k;
+      const spots = [0, -1.15, 1.15, -2.3, 2.3].map((m) => ({ x: Math.min(W - w, Math.max(0, x - w / 2)), y: y - h / 2 + m * h, w, h }));
+      const r = spots.find(free);
+      if (!r) return;
+      placed.push(r);
       ctx.fillStyle = bg;
       ctx.beginPath();
-      ctx.roundRect(x - tw / 2 - 8, y - 12, tw + 16, 24, 12);
+      ctx.roundRect(r.x, r.y, w, h, h / 2);
       ctx.fill();
       ctx.fillStyle = "#fff";
-      ctx.fillText(text, x - tw / 2, y + 5);
+      ctx.fillText(text, r.x + 8 * k, r.y + h * 0.7);
+    };
+
+    // centroid count labels (Supervision-style zone annotation)
+    const drawZoneTags = (f: FrameOut | null) => {
+      scene.lanes.forEach((l, i) => {
+        const lo = f?.lanes[i];
+        const [cx, cy] = centroid(l.queue);
+        tag(`${l.kioskId} 대기 ${lo?.waiting ?? 0}`, cx * W, cy * H, LANE_COLOR[i % LANE_COLOR.length]);
+        const [sx, sy] = centroid(l.service);
+        if (lo?.inUse) tag(`${l.kioskId} 주문 중 ${Math.round(lo.elapsed ?? 0)}초`, sx * W, sy * H + 22, "#0b1f4d");
+      });
+      scene.tables.forEach((t, i) => {
+        const tt = f?.tables[i];
+        const [cx, cy] = centroid(t.poly);
+        tag(`${t.label} ${tt ? STATE_LABEL[tt.state] : "…"}`, cx * W, cy * H, tt ? STATE_COLOR[tt.state] : "#8b94a5");
+      });
     };
 
     const draw = (f: FrameOut | null) => {
       ctx.clearRect(0, 0, W, H);
+      placed = [];
+      const shown = canvas.current?.clientWidth || W;
+      k = Math.min(2.2, Math.max(1, (W / shown) * 0.8));
       scene.lanes.forEach((l, i) => {
         const c = LANE_COLOR[i % LANE_COLOR.length];
         poly(l.queue);
@@ -211,6 +247,7 @@ function Stage({ scene, replay, mode, modelId, onFrame, onStatus }: { scene: Sce
         ctx.stroke();
       });
       if (f) {
+        const pending: (() => void)[] = [];
         for (const it of f.items) {
           ctx.strokeStyle = "#f2b705";
           ctx.lineWidth = 2;
@@ -225,32 +262,33 @@ function Stage({ scene, replay, mode, modelId, onFrame, onStatus }: { scene: Sce
           ctx.lineWidth = 2.5;
           ctx.strokeRect(p.x, p.y, p.w, p.h);
           const label = `${ROLE_LABEL[p.role]}`;
-          ctx.font = "700 12px 'Pretendard Variable', sans-serif";
-          const tw = ctx.measureText(label).width;
-          ctx.fillStyle = c;
-          ctx.fillRect(p.x, p.y - 17, tw + 8, 17);
-          ctx.fillStyle = "#fff";
-          ctx.fillText(label, p.x + 4, p.y - 4.5);
+          pending.push(() => {
+            ctx.font = `700 ${12 * k}px 'Pretendard Variable', sans-serif`;
+            const lw = ctx.measureText(label).width + 8 * k;
+            const lh = 17 * k;
+            const spot = [
+              { x: p.x, y: p.y - lh, w: lw, h: lh },
+              { x: p.x, y: p.y + 2, w: lw, h: lh },
+              { x: p.x, y: p.y + p.h + 2, w: lw, h: lh },
+            ].find(free);
+            if (spot) {
+              placed.push(spot);
+              ctx.fillStyle = c;
+              ctx.fillRect(spot.x, spot.y, lw, lh);
+              ctx.fillStyle = "#fff";
+              ctx.fillText(label, spot.x + 4 * k, spot.y + lh * 0.74);
+            }
+          });
           const ay = scene.anchor === "top" ? p.y : scene.anchor === "bottom" ? p.y + p.h : p.y + p.h / 2;
           ctx.beginPath();
           ctx.arc(p.x + p.w / 2, ay, 4, 0, Math.PI * 2);
           ctx.fillStyle = c;
           ctx.fill();
         }
-      }
-      // centroid count labels (Supervision-style zone annotation)
-      scene.lanes.forEach((l, i) => {
-        const lo = f?.lanes[i];
-        const [cx, cy] = centroid(l.queue);
-        tag(`${l.kioskId} 대기 ${lo?.waiting ?? 0}`, cx * W, cy * H, LANE_COLOR[i % LANE_COLOR.length]);
-        const [sx, sy] = centroid(l.service);
-        if (lo?.inUse) tag(`주문 중 ${Math.round(lo.elapsed ?? 0)}초`, sx * W, sy * H + 22, "#0b1f4d");
-      });
-      scene.tables.forEach((t, i) => {
-        const tt = f?.tables[i];
-        const [cx, cy] = centroid(t.poly);
-        tag(`${t.label} ${tt ? STATE_LABEL[tt.state] : "…"}`, cx * W, cy * H, tt ? STATE_COLOR[tt.state] : "#8b94a5");
-      });
+        // zone summaries claim space first (they matter most), then per-person labels fill the gaps
+        drawZoneTags(f);
+        pending.forEach((fn) => fn());
+      } else drawZoneTags(null);
     };
 
     const tick = async () => {
@@ -270,7 +308,7 @@ function Stage({ scene, replay, mode, modelId, onFrame, onStatus }: { scene: Sce
           if (ms.length > 30) ms.shift();
           latest = analyzer.step(r.dets, t);
           onFrame(latest);
-          onStatus(`${det.modelId}, ${det.backend === "webgpu" ? "WebGPU" : `WASM ${det.threads}스레드`}, 이 기기에서 ${(ms.reduce((a, b) => a + b, 0) / ms.length).toFixed(0)}ms/프레임`);
+          onStatus(`${det.modelId}, ${det.backend === "webgpu" ? "WebGPU" : `WASM ${det.threads}스레드`}, 이 기기에서 ${(ms.reduce((a, b) => a + b, 0) / ms.length).toFixed(0)}ms/프레임 · ${det.choice.reason}`);
         } finally {
           busy = false;
         }
@@ -283,8 +321,8 @@ function Stage({ scene, replay, mode, modelId, onFrame, onStatus }: { scene: Sce
       if (mode === "live") {
         onStatus("모델을 내려받고 준비하는 중…");
         try {
-          det = await createLiveDetector(modelId);
-          onStatus(`${det.modelId} 준비됨 (${det.backend === "webgpu" ? "WebGPU" : "WASM"})`);
+          det = await createLiveDetector(modelId, (m) => !stopped && onStatus(m));
+          onStatus(`${det.modelId} 준비됨 · ${det.choice.reason}`);
         } catch (e) {
           onStatus(`이 브라우저에서는 직접 분석을 시작하지 못했어요. 기록된 분석 재생을 쓰세요. (${(e as Error).message?.slice(0, 60)})`);
         }

@@ -61,7 +61,7 @@ export interface Projector {
   eye: V3;
 }
 
-export function projector(cam: Camera, view: { w: number; h: number; pad: number }, fitPts: V3[]): Projector {
+export function projector(cam: Camera, view: { w: number; h: number; pad: number; padBottom?: number; alignBottom?: boolean }, fitPts: V3[]): Projector {
   const fwd = norm(sub(cam.target, cam.eye));
   const upRef: V3 = Math.abs(fwd[2]) > 0.99 ? [0, 1, 0] : [0, 0, 1];
   const right = norm(cross(fwd, upRef));
@@ -76,9 +76,11 @@ export function projector(cam: Camera, view: { w: number; h: number; pad: number
   const x1 = Math.max(...pts.map((q) => q.x));
   const y0 = Math.min(...pts.map((q) => q.y));
   const y1 = Math.max(...pts.map((q) => q.y));
-  const s = Math.min((view.w - 2 * view.pad) / (x1 - x0), (view.h - 2 * view.pad) / (y1 - y0));
+  const pb = view.padBottom ?? view.pad;
+  const s = Math.min((view.w - 2 * view.pad) / (x1 - x0), (view.h - view.pad - pb) / (y1 - y0));
   const ox = (view.w - (x1 - x0) * s) / 2 - x0 * s;
-  const oy = (view.h - (y1 - y0) * s) / 2 - y0 * s;
+  // spare height goes above the scene (into the unverified space), keeping the entrance near the bottom
+  const oy = view.alignBottom ? view.h - pb - y1 * s : (view.h - (y1 - y0) * s) / 2 - y0 * s;
   const fn = ((p: V3) => {
     const r = raw(p);
     return { x: r.x * s + ox, y: r.y * s + oy, depth: r.depth };

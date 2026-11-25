@@ -31,7 +31,7 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
         <span className={`grid size-10 shrink-0 place-items-center rounded-xl text-[17px] font-[800] ${isReady ? "bg-white/20" : "bg-white/12"}`}>{brand?.name.slice(0, 1)}</span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[16px] font-bold">{brand?.name}</p>
-          <p className="text-[12px] opacity-75">1947 COMMONS 번호표</p>
+          <p className="text-[12px] opacity-75">키오스크 체험 주문 · 번호표</p>
         </div>
         <p className={`num shrink-0 leading-none font-[800] tracking-[-0.04em] ${large ? "text-[52px]" : "text-[40px]"}`}>{o.displayNumber}</p>
       </div>

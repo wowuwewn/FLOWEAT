@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getBrand } from "@/core/catalog";
 import { queueInsight, seatInsight } from "@/core/insight";
 import { kioskById, ZONES } from "@/core/layout";
@@ -31,11 +31,7 @@ export default function HomePage() {
           </span>
           <ClockChip />
         </div>
-        {world && (
-          <div className="absolute inset-x-0 bottom-6 top-10">
-            <CommonsMap kiosks={world.kiosks} selected={selected} onSelect={setSelected} layer={layer} height={430} />
-          </div>
-        )}
+        <MobileMap />
       </div>
 
       <div className="relative z-10 -mt-6 min-h-[60vh] rounded-t-[28px] bg-white shadow-[0_-10px_30px_rgba(15,26,51,.08)] lg:mt-0 lg:min-h-dvh lg:rounded-none lg:shadow-none">
@@ -95,6 +91,27 @@ export default function HomePage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/** Map sized to the space between the top chips and the sheet edge, so its controls are never under the sheet. */
+function MobileMap() {
+  const { world, selected, setSelected, layer } = useStudent();
+  const box = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setSize({ w: Math.round(e.contentRect.width), h: Math.round(e.contentRect.height) }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div ref={box} className="absolute inset-x-0 top-12 bottom-8">
+      {world && size && size.h > 120 && (
+        <CommonsMap kiosks={world.kiosks} selected={selected} onSelect={setSelected} layer={layer} width={size.w} height={size.h} fitHalf={10.2} padBottom={34} />
+      )}
     </div>
   );
 }

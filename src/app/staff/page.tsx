@@ -10,6 +10,8 @@ import { Logo } from "@/components/brand/Logo";
 import { elapsed, prepText } from "@/lib/format";
 
 type Age = "fresh" | "due" | "late";
+/** Demo-only view: every brand's tickets on one screen, so one person can run the whole loop. */
+const ALL = "all";
 const AGE_STYLE: Record<Age, { head: string; label: string }> = {
   fresh: { head: "bg-[#2a3550] text-white", label: "" },
   due: { head: "bg-[#f2b630] text-[#2a1d00]", label: "평소 시간 지남" },
@@ -22,9 +24,11 @@ export default function StaffPage() {
   const demo = useDemoContext();
   const [brandId, setBrandId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [inFrame, setInFrame] = useState(false);
+  useEffect(() => setInFrame(window.top !== window.self), []);
   useEffect(() => {
     const b = savedStaffBrand();
-    if (b && getBrand(b)) setBrandId(b);
+    if (b && (b === ALL || getBrand(b))) setBrandId(b);
     setReady(true);
   }, []);
   const { orders, loaded } = useSessionOrders(backend, demo?.session);
@@ -32,7 +36,11 @@ export default function StaffPage() {
   const [pending, setPending] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
 
-  const mine = useMemo(() => orders.filter((o) => o.brandId === brandId), [orders, brandId]);
+  const mine = useMemo(() => (brandId === ALL ? orders : orders.filter((o) => o.brandId === brandId)), [orders, brandId]);
+  useEffect(() => {
+    // switching stores must not keep the picker's scroll position (header would start hidden)
+    window.scrollTo(0, 0);
+  }, [brandId]);
   const open = mine.filter((o) => o.status === "accepted").sort((a, b) => a.acceptedAt - b.acceptedAt);
   const done = mine.filter((o) => o.status === "ready" || o.status === "closed").sort((a, b) => (b.readyAt ?? 0) - (a.readyAt ?? 0)).slice(0, 10);
   const allDay = useMemo(() => {
@@ -76,7 +84,21 @@ export default function StaffPage() {
           </div>
           <h1 className="mt-3 text-[28px] font-bold">어느 매장 화면인가요?</h1>
           <p className="mt-1 text-[15px] opacity-75">한 번 고르면 이 기기에 저장돼요.</p>
-          <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <button
+            onClick={() => {
+              saveStaffBrand(ALL);
+              setBrandId(ALL);
+            }}
+            className="mt-6 flex w-full items-center justify-between gap-4 rounded-2xl bg-blue px-5 py-4 text-left hover:brightness-110"
+          >
+            <span>
+              <span className="block text-[19px] font-bold">모든 매장 한 화면에서</span>
+              <span className="block text-[13.5px] opacity-85">시연용 · 매장 10곳의 주문을 한 화면에서 완료해 볼 수 있어요</span>
+            </span>
+            <span aria-hidden className="text-[22px]">→</span>
+          </button>
+          <p className="mt-6 text-[13px] font-semibold opacity-60">또는 한 매장만</p>
+          <ul className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {brands.map((b) => (
               <li key={b.id}>
                 <button
@@ -97,15 +119,16 @@ export default function StaffPage() {
     );
   }
 
-  const brand = getBrand(brandId)!;
+  const isAll = brandId === ALL;
+  const brand = isAll ? null : getBrand(brandId)!;
   return (
     <div className="flex min-h-dvh flex-col bg-[#11192b] text-white">
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-white/10 px-5 py-3">
         <div className="flex flex-1 items-center gap-3">
           <Logo size={26} tone="white" />
           <div>
-            <p className="text-[12px] opacity-70">주문 관리 (모의 · 실제 매장 시스템 아님)</p>
-            <h1 className="text-[22px] leading-tight font-bold">{brand.name}</h1>
+            <p className="text-[12px] whitespace-nowrap opacity-70">주문 관리 · 모의 화면</p>
+            <h1 className="text-[22px] leading-tight font-bold">{brand ? brand.name : "모든 매장 (시연)"}</h1>
           </div>
         </div>
         <dl className="flex gap-6 text-center">
@@ -139,7 +162,7 @@ export default function StaffPage() {
             <div className="grid h-full min-h-[260px] place-items-center rounded-2xl ring-1 ring-white/10">
               <div className="text-center">
                 <p className="text-[22px] font-bold">조리할 주문이 없어요</p>
-                <p className="mt-1 text-[15px] opacity-70">키오스크에서 {brand.name} 메뉴를 주문하면 여기에 바로 나타나요.</p>
+                <p className="mt-1 text-[15px] opacity-70">키오스크에서 {brand ? `${brand.name} 메뉴를` : "아무 매장이나"} 주문하면 여기에 바로 나타나요.</p>
               </div>
             </div>
           ) : (
@@ -160,7 +183,10 @@ export default function StaffPage() {
                       data-testid="staff-order"
                     >
                       <div className={`flex items-baseline justify-between px-4 py-2.5 ${st.head}`}>
-                        <span className="num text-[34px] leading-none font-[800] tracking-[-0.04em]">{o.displayNumber}</span>
+                        <span>
+                          {isAll && <span className="block text-[12.5px] font-bold opacity-90">{getBrand(o.brandId)?.name}</span>}
+                          <span className="num text-[34px] leading-none font-[800] tracking-[-0.04em]">{o.displayNumber}</span>
+                        </span>
                         <span className="text-right">
                           <span className="num block text-[15px] font-bold">{elapsed(o.acceptedAt, now)}</span>
                           <span className="block text-[11.5px] font-semibold opacity-85">{st.label || `${idx + 1}번째`}</span>
@@ -179,7 +205,7 @@ export default function StaffPage() {
                         onClick={() => act(o)}
                         disabled={pending.has(o.id)}
                         className="h-14 bg-free text-[19px] font-bold text-white active:brightness-95 disabled:opacity-60"
-                        aria-label={`${o.displayNumber}번 완료`}
+                        aria-label={`${isAll ? `${getBrand(o.brandId)?.name} ` : ""}${o.displayNumber}번 완료`}
                       >
                         완료
                       </button>
@@ -217,6 +243,7 @@ export default function StaffPage() {
             const canUndo = o.status === "ready" && o.readyAt && now - o.readyAt < 10_000;
             return (
               <span key={o.id} className="flex items-center gap-2 rounded-full bg-white/10 py-1 pr-1 pl-3">
+                {isAll && <span className="text-[12px] font-semibold opacity-80">{getBrand(o.brandId)?.name}</span>}
                 <span className="num text-[16px] font-bold">{o.displayNumber}</span>
                 <span className="text-[12px] opacity-70">{o.status === "closed" ? "수령 확인" : "완료"}</span>
                 {canUndo ? (
@@ -230,10 +257,15 @@ export default function StaffPage() {
             );
           })}
           <span className="ml-auto text-[12px] opacity-60">
-            세션 {demo?.session} {info?.kind === "device" ? "· 한 기기 체험" : ""}{" "}
-            <Link href="/" className="underline">
-              체험 홈
-            </Link>
+            세션 {demo?.session} {info?.kind === "device" ? "· 한 기기 체험" : ""}
+            {!inFrame && (
+              <>
+                {" · "}
+                <Link href="/" className="underline">
+                  체험 홈
+                </Link>
+              </>
+            )}
           </span>
         </div>
       </footer>

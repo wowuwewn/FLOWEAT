@@ -45,7 +45,10 @@ export default function EntryHub() {
     <div className="min-h-dvh bg-[#f3f4f7] text-ink">
       <header className="mx-auto flex max-w-[1180px] items-center justify-between px-5 pt-6">
         <Wordmark size={21} />
-        <span className="rounded-full border border-line bg-white px-3 py-1 text-[12.5px] font-semibold text-ink-2">2026 「AI로 바꾸는 단국 라이프」 출품 시제품</span>
+        <span className="rounded-full border border-line bg-white px-3 py-1 text-[12.5px] font-semibold whitespace-nowrap text-ink-2">
+          <span className="sm:hidden">2026 공모전 출품작</span>
+          <span className="hidden sm:inline">2026 「AI로 바꾸는 단국 라이프」 출품 시제품</span>
+        </span>
       </header>
 
       <section className="mx-auto mt-6 grid max-w-[1180px] items-center gap-6 px-5 lg:grid-cols-[1.05fr_1fr]">
@@ -69,7 +72,7 @@ export default function EntryHub() {
           <p className="mt-3 text-[13px] text-ink-3">
             {shared
               ? "이 시연 서버는 기기 간 주문을 공유해요. 키오스크·직원·모니터·휴대폰을 다른 기기에서 열 수 있어요."
-              : "이 배포는 공용 저장소 없이 동작해요. 주문은 이 브라우저 안에서만 오가니 ‘한 화면에서 전체 체험’을 권해요."}
+              : "이 배포는 공용 저장소 없이 동작해요. 주문은 이 브라우저 안에서만 오가니 ‘한 화면에서 전체 체험’을 권해요. 휴대폰에서는 화면을 바꿔 가며 키오스크·학생 앱·직원·모니터를 모두 써 볼 수 있어요."}
           </p>
         </div>
         <div className="overflow-hidden rounded-[28px] bg-white shadow-[0_20px_50px_rgba(15,26,51,.10)]">

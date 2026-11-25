@@ -34,22 +34,33 @@ interface Props {
   overlay?: (P: (p: V3) => { x: number; y: number }) => React.ReactNode;
   /** hide ETA pills (for small explanatory minimaps) */
   hideLabels?: boolean;
+  /** lateral half-width (m) that must fit on screen at first view */
+  fitHalf?: number;
+  /** reserve space at the bottom (controls / captions) and push spare height into the fog */
+  padBottom?: number;
+  /** px from the top for the layer notice chip (clear of overlaid headers) */
+  noticeTop?: number;
 }
 
-export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue", pitch = 68, height = 420, width = 390, interactive = true, className, overlay, hideLabels }: Props) {
+const LAYER_NOTICE: Partial<Record<MapLayer, string>> = {
+  seats: "좌석 위치는 확인 전이라 지도에 그리지 않고 목록으로 보여 드려요",
+  pickup: "수령 카운터 위치는 확인 전이라 지도에 표시하지 않아요",
+};
+
+export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue", pitch = 68, height = 420, width = 390, interactive = true, className, overlay, hideLabels, fitHalf = WORLD.viewHalf, padBottom, noticeTop = 4 }: Props) {
   const W = width;
   const H = height;
   const P = useMemo(() => {
     const f = WORLD.floor;
     const fit: V3[] = [
-      [-WORLD.viewHalf, -0.6, 0],
-      [WORLD.viewHalf, -0.6, 0],
-      [-WORLD.viewHalf, WORLD.verifiedDepth + 1.4, 0],
-      [WORLD.viewHalf, WORLD.verifiedDepth + 1.4, 0],
+      [-fitHalf, -0.6, 0],
+      [fitHalf, -0.6, 0],
+      [-fitHalf, WORLD.verifiedDepth + 1.4, 0],
+      [fitHalf, WORLD.verifiedDepth + 1.4, 0],
       [0, WORLD.kioskDepth[3], 2.4],
     ];
-    return projector(entranceCamera(pitch), { w: W, h: H, pad: 10 }, fit);
-  }, [pitch, W, H]);
+    return projector(entranceCamera(pitch), { w: W, h: H, pad: 10, padBottom: padBottom ?? 10, alignBottom: padBottom != null }, fit);
+  }, [pitch, W, H, fitHalf, padBottom]);
 
   // ---------------------------------------------------------------- zoom & pan
   const [view, setView] = useState({ k: 1, x: 0, y: 0 });
@@ -112,6 +123,17 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
         onPointerUp: (e: React.PointerEvent) => {
           pointers.current.delete(e.pointerId);
           if (pointers.current.size < 2) gesture.current.startDist = undefined;
+          // touch double-tap zoom (mobile browsers do not reliably fire dblclick)
+          if (e.pointerType !== "mouse" && gesture.current.moved < 8 && pointers.current.size === 0) {
+            const t = performance.now();
+            const last = gesture.current.lastTap;
+            if (last && t - last < 320) {
+              gesture.current.lastTap = undefined;
+              const p = toLocal(e.clientX, e.clientY);
+              if (view.k > 2.4) setView({ k: 1, x: 0, y: 0 });
+              else zoomAt(p.x, p.y, 1.6);
+            } else gesture.current.lastTap = t;
+          }
         },
         onPointerCancel: (e: React.PointerEvent) => pointers.current.delete(e.pointerId),
         onWheel: (e: React.WheelEvent) => {
@@ -121,6 +143,7 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
           zoomAt(p.x, p.y, e.deltaY < 0 ? 1.15 : 1 / 1.15);
         },
         onDoubleClick: (e: React.MouseEvent) => {
+          if ((e.nativeEvent as PointerEvent).pointerType === "touch") return;
           const p = toLocal(e.clientX, e.clientY);
           if (view.k > 2.4) setView({ k: 1, x: 0, y: 0 });
           else zoomAt(p.x, p.y, 1.6);
@@ -266,7 +289,9 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
   });
 
   const door = P([0, -0.1, 0]);
-  const fogLabel = P([0, WORLD.verifiedDepth + 1.3, 0]);
+  const fogEdge = P([0, WORLD.verifiedDepth + 1.3, 0]);
+  // keep the fog caption clear of the deepest ETA pills (which sit ~40px above their kiosks)
+  const fogLabel = { x: fogEdge.x, y: Math.max(16, fogEdge.y - 34) };
 
   return (
     <div
@@ -311,9 +336,11 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
             <path key={i} d={d} stroke="#cfd5de" strokeWidth={0.6} fill="none" />
           ))}
           <path d={pathOf([P([f.x0, WORLD.verifiedDepth, 0]), P([f.x1, WORLD.verifiedDepth, 0])], false)} stroke="#9aa5b8" strokeWidth={1.2} strokeDasharray="5 5" fill="none" />
-          <text x={fogLabel.x} y={fogLabel.y} textAnchor="middle" fontSize={11.5} fontWeight={600} fill="#5b6578">
-            {layer === "seats" ? "좌석 위치는 확인 전이라 아래 목록으로 보여 드려요" : layer === "pickup" ? "수령 카운터 위치는 확인 전이에요" : "아직 확인 전인 공간"}
-          </text>
+          {!LAYER_NOTICE[layer] && (
+            <text x={fogLabel.x} y={fogLabel.y} textAnchor="middle" fontSize={11.5} fontWeight={600} fill="#5b6578">
+              아직 확인 전인 공간
+            </text>
+          )}
           {drawables.map((d) => d.el)}
           {/* glass door threshold */}
           <path d={pathOf([P([-WORLD.door, -0.24, 0]), P([WORLD.door, -0.24, 0]), P([WORLD.door, 0, 0]), P([-WORLD.door, 0, 0])])} fill="#bcd2f4" stroke="#8fb0e6" strokeWidth={1} />
@@ -327,6 +354,11 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
           </g>
         </g>
       </svg>
+      {LAYER_NOTICE[layer] && !hideLabels && (
+        <p style={{ top: noticeTop }} className="pointer-events-none absolute inset-x-0 mx-auto w-fit max-w-[calc(100%-24px)] rounded-full bg-white/95 px-3 py-1.5 text-center text-[12px] leading-snug font-semibold text-ink-2 shadow-[0_2px_8px_rgba(15,26,51,.12)]" role="note">
+          {LAYER_NOTICE[layer]}
+        </p>
+      )}
       {interactive && (
         <div className="absolute right-3 bottom-3 flex items-center gap-1.5">
           {view.k > 1.01 && (

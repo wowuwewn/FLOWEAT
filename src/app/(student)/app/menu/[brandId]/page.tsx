@@ -1,11 +1,12 @@
 "use client";
 import { notFound } from "next/navigation";
 import { use } from "react";
+import { BrandMark } from "@/components/brand/BrandMark";
 import { PageHeader } from "@/components/student/Chrome";
 import { useStudent } from "@/components/student/StudentProvider";
 import { COOK_TYPE_LABEL, getBrand, menusOf } from "@/core/catalog";
 import { prepForMenu } from "@/core/world";
-import { minuteRange, won, prepText } from "@/lib/format";
+import { won, prepText } from "@/lib/format";
 
 export default function BrandPage({ params }: { params: Promise<{ brandId: string }> }) {
   const { brandId } = use(params);
@@ -20,38 +21,52 @@ export default function BrandPage({ params }: { params: Promise<{ brandId: strin
   return (
     <div className="pb-6">
       <PageHeader title={brand.name} back="/app/menu" />
-      <section className="mx-3 rounded-[var(--radius-sheet)] bg-surface px-5 pt-4 pb-4">
-        <p className="text-[14px] text-ink-2">{brand.cuisine}</p>
-        <p className="mt-2 text-[14px] text-ink-2">주문 후 준비까지 보통</p>
-        <p className="num text-[38px] leading-tight font-[780] tracking-[-0.03em]">{view ? prepText(view.p50, view.p80) : "–"}</p>
-        {view && (
-          <p className="num text-[13.5px] text-ink-3">
-            지금 이 매장에 밀린 주문 {view.backlog}건을 반영했어요{view.liveOrders ? ` (시연 주문 ${view.liveOrders}건 포함)` : ""}.
-          </p>
-        )}
-        <p className="mt-3 border-t border-line pt-3 text-[13.5px] text-ink-2">{brand.verificationNote}</p>
+      <section className="mx-3 rounded-[var(--radius-sheet)] bg-surface px-5 pt-5 pb-4">
+        <div className="flex items-center gap-3">
+          <BrandMark brandId={brand.id} name={brand.name} size={52} />
+          <div className="min-w-0">
+            <p className="text-[14px] text-ink-2">{brand.cuisine}</p>
+            <p className="text-[13px] text-ink-3">메인 {mains.length}개{sides.length ? ` · 사이드 ${sides.length}개` : ""}</p>
+          </div>
+        </div>
+        <div className="mt-4 rounded-2xl bg-floor px-4 py-3">
+          <p className="text-[13.5px] font-semibold text-ink-2">주문 후 준비까지 보통</p>
+          <p className="num text-[36px] leading-tight font-[800] tracking-[-0.03em]">{view ? prepText(view.p50, view.p80) : "–"}</p>
+          {view && (
+            <p className="num text-[13px] text-ink-3">
+              지금 밀린 주문 {view.backlog}건 반영{view.liveOrders ? ` · 이 체험의 실제 주문 ${view.liveOrders}건 포함` : " · 시뮬레이션 기준"}
+            </p>
+          )}
+        </div>
+        <p className="mt-3 text-[13px] text-ink-3">{brand.verificationNote}</p>
       </section>
 
       <section className="mx-3 mt-3 rounded-[var(--radius-card)] bg-surface py-1" aria-label="메뉴">
-        <ul>
+        <h2 className="px-5 pt-3 pb-1 text-[13px] font-bold text-ink-3">메뉴</h2>
+        <ul className="divide-y divide-line/70">
           {mains.map((m) => {
             const e = engine && world ? prepForMenu(engine, world.clock, m.id, view?.liveOrders ?? 0) : null;
+            const ok = e && Number.isFinite(e.p50);
             return (
               <li key={m.id} id={m.id} className="flex items-center gap-3 px-5 py-3 target:bg-ice">
                 <span className="min-w-0 flex-1">
                   <span className="block text-[15.5px] font-semibold">{m.name}</span>
-                  <span className="block text-[13px] text-ink-3">
-                    {won(m.listedPriceKrw)}, {COOK_TYPE_LABEL[m.cookType]}
+                  <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[13px] text-ink-3">
+                    <span className="num font-semibold text-ink-2">{won(m.listedPriceKrw)}</span>
+                    <span className="rounded-full bg-floor px-2 py-0.5 text-[11.5px] font-semibold">{COOK_TYPE_LABEL[m.cookType]}</span>
                   </span>
                 </span>
-                <span className="num text-[16px] font-bold">{e && Number.isFinite(e.p50) ? prepText(e.p50, e.p80) : "정보 부족"}</span>
+                <span className="shrink-0 text-right">
+                  <span className="num block text-[16px] font-bold">{ok ? prepText(e.p50, e.p80) : "정보 부족"}</span>
+                  {ok && <span className="block text-[11.5px] text-ink-3">준비 예상</span>}
+                </span>
               </li>
             );
           })}
         </ul>
         {sides.length > 0 && (
           <>
-            <h2 className="px-5 pt-3 pb-1 text-[13px] font-bold text-ink-3">사이드</h2>
+            <h2 className="border-t border-line px-5 pt-3 pb-1 text-[13px] font-bold text-ink-3">사이드</h2>
             <ul>
               {sides.map((m) => (
                 <li key={m.id} id={m.id} className="flex items-center justify-between px-5 py-2.5 text-[15px]">

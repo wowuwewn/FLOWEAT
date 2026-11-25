@@ -33,6 +33,10 @@ export function DesktopMapPane() {
             layer={layer}
             width={size.w}
             height={size.h}
+            fitHalf={12.6}
+            padBottom={72}
+            pitch={size.h / size.w > 0.62 ? 76 : 70}
+            noticeTop={64}
             onSelect={(id) => {
               setSelected(id);
               if (id && path !== "/app") router.push("/app");

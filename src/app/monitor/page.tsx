@@ -4,6 +4,7 @@ import { brands } from "@/core/catalog";
 import { monitorOrders } from "@/core/orders/service";
 import { useBackend, useDemoContext, useNow, useSessionOrders, useWorld } from "@/client/hooks";
 import { formatClock, simulatedReadyNumbers } from "@/core/world";
+import { Logo } from "@/components/brand/Logo";
 
 /** Shared pickup monitor: ready numbers only, per brand — mirrors the existing screens. */
 export default function MonitorPage() {
@@ -28,10 +29,13 @@ export default function MonitorPage() {
   }, [ready]);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#0a1b3d] text-white">
+    <div className="flex min-h-dvh flex-col bg-[#0b1f4d] text-white">
       <header className="flex items-end justify-between px-[3vw] pt-[2.4vw] pb-[1.4vw]">
         <div>
-          <h1 className="text-[clamp(28px,3.4vw,64px)] leading-none font-[800] tracking-[-0.03em]">준비된 주문</h1>
+          <h1 className="flex items-center gap-[1vw] text-[clamp(28px,3.4vw,64px)] leading-none font-[800] tracking-[-0.03em]">
+            <Logo size={44} tone="white" />
+            준비된 주문
+          </h1>
           <p className="mt-[0.6vw] text-[clamp(14px,1.3vw,24px)] opacity-75">번호가 보이면 매장 카운터에서 받아 가세요</p>
         </div>
         <p className="num text-right text-[clamp(20px,2.2vw,40px)] font-bold opacity-90">
@@ -44,7 +48,7 @@ export default function MonitorPage() {
           const nums = ready.filter((o) => o.brandId === b.id).slice(0, 6);
           const sims = (simNums[b.id] ?? []).slice(0, Math.max(0, 5 - nums.length));
           return (
-            <section key={b.id} className="flex flex-col bg-[#0a1b3d] px-[1.4vw] pt-[1.2vw] pb-[1.6vw]" aria-label={`${b.name} 준비 완료 번호`}>
+            <section key={b.id} className="flex flex-col bg-[#0b1f4d] px-[1.4vw] pt-[1.2vw] pb-[1.6vw]" aria-label={`${b.name} 준비 완료 번호`}>
               <h2 className="border-b border-white/15 pb-[0.6vw] text-[clamp(16px,1.5vw,28px)] font-bold">{b.name}</h2>
               <ul className="mt-[0.8vw] flex flex-wrap gap-x-[1.2vw] gap-y-[0.4vw]">
                 {nums.map((o) => {

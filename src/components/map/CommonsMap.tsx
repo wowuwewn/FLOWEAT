@@ -115,7 +115,8 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
         },
         onPointerCancel: (e: React.PointerEvent) => pointers.current.delete(e.pointerId),
         onWheel: (e: React.WheelEvent) => {
-          if (!e.ctrlKey && Math.abs(e.deltaY) < 4) return;
+          // plain wheel keeps scrolling the page; Ctrl+wheel / trackpad pinch zooms
+          if (!e.ctrlKey) return;
           const p = toLocal(e.clientX, e.clientY);
           zoomAt(p.x, p.y, e.deltaY < 0 ? 1.15 : 1 / 1.15);
         },
@@ -268,7 +269,12 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
   const fogLabel = P([0, WORLD.verifiedDepth + 1.3, 0]);
 
   return (
-    <div className={`relative overflow-hidden ${className ?? ""}`} style={{ touchAction: interactive ? "none" : "auto" }}>
+    <div
+      className={`relative overflow-hidden ${className ?? ""}`}
+      data-testid="commons-map"
+      // not zoomed: vertical swipes scroll the page (the map never traps the sheet); zoomed: drag pans the map
+      style={{ touchAction: interactive && view.k > 1.01 ? "none" : "pan-y" }}
+    >
       <svg
         ref={svgRef}
         viewBox={`0 0 ${W} ${H}`}
@@ -321,13 +327,22 @@ export function CommonsMap({ kiosks, selected = null, onSelect, layer = "queue",
           </g>
         </g>
       </svg>
-      {interactive && view.k > 1.01 && (
-        <button
-          onClick={() => setView({ k: 1, x: 0, y: 0 })}
-          className="absolute right-3 bottom-3 rounded-full bg-white/95 px-3 py-1.5 text-[12.5px] font-semibold text-ink-2 shadow-[0_2px_8px_rgba(15,26,51,.15)]"
-        >
-          정문 시점으로
-        </button>
+      {interactive && (
+        <div className="absolute right-3 bottom-3 flex items-center gap-1.5">
+          {view.k > 1.01 && (
+            <button onClick={() => setView({ k: 1, x: 0, y: 0 })} className="h-9 rounded-full bg-white/95 px-3 text-[12.5px] font-semibold text-ink-2 shadow-[0_2px_8px_rgba(15,26,51,.15)]">
+              정문 시점으로
+            </button>
+          )}
+          <div className="flex overflow-hidden rounded-full bg-white/95 shadow-[0_2px_8px_rgba(15,26,51,.15)]">
+            <button aria-label="지도 확대" onClick={() => zoomAt(W / 2, H / 2, 1.4)} className="grid size-9 place-items-center text-[18px] font-bold text-ink-2">
+              +
+            </button>
+            <button aria-label="지도 축소" onClick={() => zoomAt(W / 2, H / 2, 1 / 1.4)} disabled={view.k <= 1.01} className="grid size-9 place-items-center border-l border-line text-[18px] font-bold text-ink-2 disabled:opacity-35">
+              −
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

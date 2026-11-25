@@ -39,7 +39,7 @@ export default function MenuPage() {
                 const e = engine && world ? prepForMenu(engine, world.clock, m.id) : null;
                 return (
                   <li key={m.id}>
-                    <Link href={`/menu/${m.brandId}#${m.id}`} className="flex items-center gap-3 px-5 py-3 active:bg-floor">
+                    <Link href={`/app/menu/${m.brandId}#${m.id}`} className="flex items-center gap-3 px-5 py-3 active:bg-floor">
                       <span className="min-w-0 flex-1">
                         <span className="block text-[15.5px] font-semibold">{m.name}</span>
                         <span className="block text-[13px] text-ink-3">
@@ -59,7 +59,7 @@ export default function MenuPage() {
           <ul>
             {(world?.brands ?? catalog.brands.map((b) => ({ ...b, p20: NaN, p50: NaN, p80: NaN, backlog: 0 }))).map((b) => (
               <li key={b.id}>
-                <Link href={`/menu/${b.id}`} className="flex items-center gap-3 px-5 py-3.5 active:bg-floor">
+                <Link href={`/app/menu/${b.id}`} className="flex items-center gap-3 px-5 py-3.5 active:bg-floor">
                   <span className="min-w-0 flex-1">
                     <span className="block text-[16px] font-semibold">{b.name}</span>
                     <span className="block text-[13px] text-ink-3">{b.cuisine}</span>

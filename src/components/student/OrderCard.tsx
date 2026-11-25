@@ -26,22 +26,27 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
       data-testid="order-card"
       data-status={o.status}
     >
-      <div className="px-5 pt-4 pb-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className={`text-[16px] font-bold ${isReady ? "" : "text-ink"}`}>{brand?.name}</p>
-            <p className={`text-[13px] ${isReady ? "opacity-85" : "text-ink-3"}`}>
-              {o.items.map((i) => `${i.name}${i.qty > 1 ? ` ${i.qty}개` : ""}`).join(", ")}
-            </p>
-          </div>
-          <p className={`num shrink-0 leading-none font-[800] tracking-[-0.04em] ${large ? "text-[56px]" : "text-[40px]"} ${isReady ? "" : "text-navy"}`}>
-            {o.displayNumber}
-          </p>
+      {/* pass header: merchant first, then the number people listen for */}
+      <div className={`flex items-center gap-3 px-5 pt-4 pb-3 ${isReady ? "" : "bg-navy text-white"}`}>
+        <span className={`grid size-10 shrink-0 place-items-center rounded-xl text-[17px] font-[800] ${isReady ? "bg-white/20" : "bg-white/12"}`}>{brand?.name.slice(0, 1)}</span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[16px] font-bold">{brand?.name}</p>
+          <p className="text-[12px] opacity-75">1947 COMMONS 번호표</p>
         </div>
+        <p className={`num shrink-0 leading-none font-[800] tracking-[-0.04em] ${large ? "text-[52px]" : "text-[40px]"}`}>{o.displayNumber}</p>
+      </div>
+      <div className="relative h-0" aria-hidden>
+        <span className="absolute top-[-8px] -left-2 size-4 rounded-full bg-floor" />
+        <span className="absolute top-[-8px] -right-2 size-4 rounded-full bg-floor" />
+      </div>
+      <div className="px-5 pt-3 pb-4">
+        <p className={`text-[13px] ${isReady ? "opacity-85" : "text-ink-3"}`}>
+          {o.items.map((i) => `${i.name}${i.qty > 1 ? ` ${i.qty}개` : ""}`).join(", ")}
+        </p>
 
         {/* two real states only: accepted → ready */}
-        <ol className="mt-4 grid grid-cols-2 gap-1.5" aria-label="진행 상태">
-          <li className={`h-1.5 rounded-full ${isReady ? "bg-white" : "bg-navy"}`} aria-label="접수됨" />
+        <ol className="mt-3 grid grid-cols-2 gap-1.5" aria-label="진행 상태">
+          <li className={`h-1.5 rounded-full ${isReady ? "bg-white" : "bg-blue"}`} aria-label="접수됨" />
           <li className={`h-1.5 rounded-full ${isReady ? "bg-white" : "bg-line"}`} aria-label={isReady ? "준비 완료" : "준비 완료 전"} />
         </ol>
 
@@ -83,7 +88,7 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
             <>
               {" "}
               지금 자리는{" "}
-              <Link href="/dining" className="font-semibold underline underline-offset-2">
+              <Link href="/app?layer=seats" className="font-semibold underline underline-offset-2">
                 {TABLE_LEVEL[world.overall.tableLevel].label} ({percent(world.overall.tableRateLow)}–{percent(world.overall.tableRateHigh)})
               </Link>
               .

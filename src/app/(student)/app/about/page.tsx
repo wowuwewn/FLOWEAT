@@ -9,7 +9,7 @@ const VERIFY_LABEL = { operator_listed: "운영사 죽전 목록", field_observe
 export default function AboutPage() {
   return (
     <div className="pb-8">
-      <PageHeader title="데이터와 출처" back="/" />
+      <PageHeader title="데이터와 출처" back="/app" />
       <section className="mx-3 rounded-[var(--radius-card)] bg-surface px-5 py-5">
         <DataSources />
       </section>

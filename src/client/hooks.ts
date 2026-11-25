@@ -6,6 +6,23 @@ import type { ScenarioId } from "@/core/sim/simulator";
 import { demoClock, getEngine, worldAt, type Engine, type World, type WorldOptions } from "@/core/world";
 import { backendInfo, getBackend, type BackendInfo, type OrderBackend } from "./backend";
 import { currentScenario, currentSession } from "./session";
+import { setDemoTimeOverride } from "@/core/world";
+
+/** ?t=12:20 pins the demo clock for this tab (recordings, screenshots). ?t=live clears it. */
+function applyTimeOverride() {
+  try {
+    const q = new URLSearchParams(location.search).get("t");
+    if (q === "live") sessionStorage.removeItem("floweat.t");
+    else if (q && /^\d{1,2}:\d{2}$/.test(q)) sessionStorage.setItem("floweat.t", q);
+    const v = sessionStorage.getItem("floweat.t");
+    if (v) {
+      const [h, m] = v.split(":").map(Number);
+      setDemoTimeOverride(h * 3600 + m * 60);
+    }
+  } catch {
+    /* ignore */
+  }
+}
 
 export function useBackend(): { backend: OrderBackend | null; info: BackendInfo | null } {
   const [backend, setBackend] = useState<OrderBackend | null>(null);
@@ -23,6 +40,7 @@ export function useBackend(): { backend: OrderBackend | null; info: BackendInfo 
 export function useDemoContext() {
   const [ctx, setCtx] = useState<{ session: string; scenario: ScenarioId } | null>(null);
   useEffect(() => {
+    applyTimeOverride();
     const update = () => setCtx({ session: currentSession(), scenario: currentScenario() });
     update();
     window.addEventListener("floweat:scenario", update);
@@ -79,6 +97,7 @@ export function useWorld(scenario: ScenarioId | undefined, opts?: WorldOptions):
   const [engine, setEngine] = useState<Engine | null>(null);
   useEffect(() => {
     if (!scenario) return;
+    applyTimeOverride();
     // build after first paint so the shell renders immediately
     const id = setTimeout(() => setEngine(getEngine(demoClock(Date.now()).dateKey, scenario)), 0);
     return () => clearTimeout(id);

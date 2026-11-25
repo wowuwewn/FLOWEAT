@@ -6,8 +6,17 @@ import { brands, getBrand } from "@/core/catalog";
 import type { StaffOrder } from "@/core/orders/types";
 import { useBackend, useDemoContext, useNow, useSessionOrders } from "@/client/hooks";
 import { saveStaffBrand, savedStaffBrand } from "@/client/session";
-import { elapsed, minuteRange, prepText } from "@/lib/format";
+import { Logo } from "@/components/brand/Logo";
+import { elapsed, prepText } from "@/lib/format";
 
+type Age = "fresh" | "due" | "late";
+const AGE_STYLE: Record<Age, { head: string; label: string }> = {
+  fresh: { head: "bg-[#2a3550] text-white", label: "" },
+  due: { head: "bg-[#f2b630] text-[#2a1d00]", label: "평소 시간 지남" },
+  late: { head: "bg-[#d8343a] text-white", label: "늦어지는 중" },
+};
+
+/** Kitchen display (mock): tickets in arrival order, one tap to complete. */
 export default function StaffPage() {
   const { backend, info } = useBackend();
   const demo = useDemoContext();
@@ -25,10 +34,12 @@ export default function StaffPage() {
 
   const mine = useMemo(() => orders.filter((o) => o.brandId === brandId), [orders, brandId]);
   const open = mine.filter((o) => o.status === "accepted").sort((a, b) => a.acceptedAt - b.acceptedAt);
-  const done = mine
-    .filter((o) => o.status === "ready" || o.status === "closed")
-    .sort((a, b) => (b.readyAt ?? 0) - (a.readyAt ?? 0))
-    .slice(0, 8);
+  const done = mine.filter((o) => o.status === "ready" || o.status === "closed").sort((a, b) => (b.readyAt ?? 0) - (a.readyAt ?? 0)).slice(0, 10);
+  const allDay = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const o of open) for (const i of o.items) m.set(i.name, (m.get(i.name) ?? 0) + i.qty);
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [open]);
 
   const act = async (o: StaffOrder, undo = false) => {
     if (!backend || !demo) return;
@@ -47,15 +58,24 @@ export default function StaffPage() {
     }
   };
 
-  if (!ready) return <div className="min-h-dvh bg-floor" />;
+  const ageOf = (o: StaffOrder): Age => {
+    if (!o.prepEstimate) return "fresh";
+    const w = (now - o.acceptedAt) / 1000;
+    return w > o.prepEstimate.p80 ? "late" : w > o.prepEstimate.p50 ? "due" : "fresh";
+  };
+
+  if (!ready) return <div className="min-h-dvh bg-[#11192b]" />;
 
   if (!brandId) {
     return (
-      <div className="min-h-dvh bg-floor px-5 py-8">
+      <div className="min-h-dvh bg-[#11192b] px-5 py-8 text-white">
         <div className="mx-auto max-w-3xl">
-          <p className="text-[14px] font-semibold text-ink-3">직원용 주문 관리 (모의)</p>
-          <h1 className="mt-1 text-[26px] font-bold">어느 매장 화면인가요?</h1>
-          <p className="mt-1 text-[15px] text-ink-2">한 번 고르면 이 기기에 저장돼요.</p>
+          <div className="flex items-center gap-2">
+            <Logo size={24} tone="white" />
+            <p className="text-[14px] font-semibold opacity-80">주문 관리 (모의)</p>
+          </div>
+          <h1 className="mt-3 text-[28px] font-bold">어느 매장 화면인가요?</h1>
+          <p className="mt-1 text-[15px] opacity-75">한 번 고르면 이 기기에 저장돼요.</p>
           <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {brands.map((b) => (
               <li key={b.id}>
@@ -64,10 +84,10 @@ export default function StaffPage() {
                     saveStaffBrand(b.id);
                     setBrandId(b.id);
                   }}
-                  className="flex h-24 w-full flex-col justify-center rounded-[var(--radius-tile)] bg-surface px-5 text-left"
+                  className="flex h-24 w-full flex-col justify-center rounded-2xl bg-white/8 px-5 text-left ring-1 ring-white/10 hover:bg-white/12"
                 >
                   <span className="text-[19px] font-bold">{b.name}</span>
-                  <span className="text-[13.5px] text-ink-3">{b.cuisine}</span>
+                  <span className="text-[13.5px] opacity-70">{b.cuisine}</span>
                 </button>
               </li>
             ))}
@@ -79,124 +99,143 @@ export default function StaffPage() {
 
   const brand = getBrand(brandId)!;
   return (
-    <div className="min-h-dvh bg-floor">
-      <header className="sticky top-0 z-10 flex flex-wrap items-center gap-x-6 gap-y-2 bg-navy px-6 py-4 text-white">
-        <div className="flex-1">
-          <p className="text-[13px] opacity-80">주문 관리 (모의)</p>
-          <h1 className="text-[24px] leading-tight font-bold">{brand.name}</h1>
+    <div className="flex min-h-dvh flex-col bg-[#11192b] text-white">
+      <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-white/10 px-5 py-3">
+        <div className="flex flex-1 items-center gap-3">
+          <Logo size={26} tone="white" />
+          <div>
+            <p className="text-[12px] opacity-70">주문 관리 (모의 · 실제 매장 시스템 아님)</p>
+            <h1 className="text-[22px] leading-tight font-bold">{brand.name}</h1>
+          </div>
         </div>
         <dl className="flex gap-6 text-center">
           <div>
-            <dt className="text-[12.5px] opacity-80">조리할 주문</dt>
+            <dt className="text-[12px] opacity-70">조리할 주문</dt>
             <dd className="num text-[26px] leading-tight font-bold" data-testid="open-count">
               {open.length}
             </dd>
           </div>
           <div>
-            <dt className="text-[12.5px] opacity-80">완료</dt>
-            <dd className="num text-[26px] leading-tight font-bold">{mine.filter((o) => o.status !== "accepted").length}</dd>
+            <dt className="text-[12px] opacity-70">늦어지는 중</dt>
+            <dd className="num text-[26px] leading-tight font-bold text-[#ff8a8e]">{open.filter((o) => ageOf(o) === "late").length}</dd>
           </div>
         </dl>
-        <button
-          onClick={() => {
-            setBrandId(null);
-          }}
-          className="rounded-full border border-white/30 px-4 py-2 text-[14px] font-semibold"
-        >
+        <button onClick={() => setBrandId(null)} className="rounded-full px-4 py-2 text-[14px] font-semibold ring-1 ring-white/25">
           매장 바꾸기
         </button>
       </header>
 
-      <main className="mx-auto max-w-5xl px-5 py-5">
-        {error && (
-          <p role="alert" className="mb-4 rounded-xl bg-very-bg px-4 py-3 font-semibold text-very">
-            {error}
-          </p>
-        )}
-        {!loaded ? (
-          <p className="py-16 text-center text-ink-3">주문을 불러오는 중…</p>
-        ) : open.length === 0 ? (
-          <div className="rounded-[var(--radius-card)] bg-surface px-6 py-14 text-center">
-            <p className="text-[20px] font-bold">조리할 주문이 없어요</p>
-            <p className="mt-1 text-[15px] text-ink-2">키오스크에서 {brand.name} 메뉴를 주문하면 여기에 바로 나타나요.</p>
-          </div>
-        ) : (
-          <ul className="grid gap-3 lg:grid-cols-2" aria-label="조리할 주문">
-            <AnimatePresence initial={false}>
-              {open.map((o) => {
-                const waited = now - o.acceptedAt;
-                const late = o.prepEstimate && waited > o.prepEstimate.p80 * 1000;
-                return (
-                  <motion.li
-                    key={o.id}
-                    layout
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: 40 }}
-                    className="flex items-stretch gap-4 rounded-[var(--radius-card)] bg-surface p-4"
-                    data-testid="staff-order"
-                  >
-                    <div className="w-24 shrink-0">
-                      <p className="num text-[44px] leading-none font-[800] tracking-[-0.04em] text-navy">{o.displayNumber}</p>
-                      <p className={`num mt-2 text-[14px] font-semibold ${late ? "text-busy" : "text-ink-3"}`}>{elapsed(o.acceptedAt, now)} 지남</p>
-                    </div>
-                    <ul className="min-w-0 flex-1 space-y-1 text-[17px]">
-                      {o.items.map((i) => (
-                        <li key={i.menuId} className="flex justify-between gap-2">
-                          <span className="truncate">{i.name}</span>
-                          <span className="num font-bold">{i.qty}</span>
-                        </li>
-                      ))}
-                      {o.prepEstimate && (
-                        <li className="pt-1 text-[13px] text-ink-3">예측 {prepText(o.prepEstimate.p50, o.prepEstimate.p80)}</li>
-                      )}
-                    </ul>
-                    <button
-                      onClick={() => act(o)}
-                      disabled={pending.has(o.id)}
-                      className="w-28 shrink-0 rounded-2xl bg-free text-[20px] font-bold text-white active:scale-[.98] disabled:opacity-60"
-                      aria-label={`${o.displayNumber}번 완료`}
-                    >
-                      완료
-                    </button>
-                  </motion.li>
-                );
-              })}
-            </AnimatePresence>
-          </ul>
-        )}
+      {error && (
+        <p role="alert" className="mx-5 mt-3 rounded-xl bg-very px-4 py-3 font-semibold">
+          {error}
+        </p>
+      )}
 
-        {done.length > 0 && (
-          <section className="mt-8" aria-labelledby="done-h">
-            <h2 id="done-h" className="mb-2 text-[15px] font-bold text-ink-2">
-              최근 완료 (모니터와 학생 휴대폰에 표시됨)
-            </h2>
-            <ul className="flex flex-wrap gap-2">
-              {done.map((o) => {
-                const canUndo = o.status === "ready" && o.readyAt && now - o.readyAt < 10_000;
-                return (
-                  <li key={o.id} className="flex items-center gap-2 rounded-full bg-surface py-1.5 pr-1.5 pl-4">
-                    <span className="num text-[18px] font-bold">{o.displayNumber}</span>
-                    <span className="text-[13px] text-ink-3">{o.status === "closed" ? "수령 확인" : "완료"}</span>
-                    {canUndo ? (
-                      <button onClick={() => act(o, true)} className="rounded-full bg-floor px-3 py-1.5 text-[13px] font-semibold">
-                        되돌리기 {Math.ceil((10_000 - (now - o.readyAt!)) / 1000)}
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <main className="min-w-0 flex-1 overflow-x-auto p-4">
+          {!loaded ? (
+            <p className="py-16 text-center opacity-70">주문을 불러오는 중…</p>
+          ) : open.length === 0 ? (
+            <div className="grid h-full min-h-[260px] place-items-center rounded-2xl ring-1 ring-white/10">
+              <div className="text-center">
+                <p className="text-[22px] font-bold">조리할 주문이 없어요</p>
+                <p className="mt-1 text-[15px] opacity-70">키오스크에서 {brand.name} 메뉴를 주문하면 여기에 바로 나타나요.</p>
+              </div>
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-3 sm:flex-row sm:items-start" aria-label="조리할 주문 (들어온 순서)">
+              <AnimatePresence initial={false}>
+                {open.map((o, idx) => {
+                  const age = ageOf(o);
+                  const st = AGE_STYLE[age];
+                  return (
+                    <motion.li
+                      key={o.id}
+                      layout
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.96 }}
+                      transition={{ duration: 0.22 }}
+                      className="flex w-full shrink-0 flex-col overflow-hidden rounded-2xl bg-white text-ink sm:w-[250px]"
+                      data-testid="staff-order"
+                    >
+                      <div className={`flex items-baseline justify-between px-4 py-2.5 ${st.head}`}>
+                        <span className="num text-[34px] leading-none font-[800] tracking-[-0.04em]">{o.displayNumber}</span>
+                        <span className="text-right">
+                          <span className="num block text-[15px] font-bold">{elapsed(o.acceptedAt, now)}</span>
+                          <span className="block text-[11.5px] font-semibold opacity-85">{st.label || `${idx + 1}번째`}</span>
+                        </span>
+                      </div>
+                      <ul className="flex-1 space-y-1.5 px-4 py-3 text-[17px]">
+                        {o.items.map((i) => (
+                          <li key={i.menuId} className="flex gap-2">
+                            <span className="num w-7 shrink-0 font-[800] text-blue-ink">{i.qty}</span>
+                            <span className="font-semibold">{i.name}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      {o.prepEstimate && <p className="px-4 pb-2 text-[12.5px] text-ink-3">예측 {prepText(o.prepEstimate.p50, o.prepEstimate.p80)} · 실제 완료는 아래 버튼으로만</p>}
+                      <button
+                        onClick={() => act(o)}
+                        disabled={pending.has(o.id)}
+                        className="h-14 bg-free text-[19px] font-bold text-white active:brightness-95 disabled:opacity-60"
+                        aria-label={`${o.displayNumber}번 완료`}
+                      >
+                        완료
                       </button>
-                    ) : (
-                      <span className="w-1" />
-                    )}
-                  </li>
-                );
-              })}
+                    </motion.li>
+                  );
+                })}
+              </AnimatePresence>
             </ul>
-          </section>
-        )}
-      </main>
-      <footer className="px-6 pb-6 text-[12.5px] text-ink-3">
-        실제 매장 주문 시스템이 아닌 시연용 화면이에요. 세션 {demo?.session} {info?.kind === "device" ? "· 한 기기 체험" : ""}{" "}
-        <Link href="/demo" className="underline">
-          시연 허브
-        </Link>
+          )}
+        </main>
+
+        <aside className="border-t border-white/10 p-4 lg:w-[260px] lg:border-t-0 lg:border-l" aria-labelledby="allday-h">
+          <h2 id="allday-h" className="text-[14px] font-bold opacity-80">
+            지금 만들 품목 합계
+          </h2>
+          {allDay.length === 0 ? (
+            <p className="mt-2 text-[14px] opacity-60">없음</p>
+          ) : (
+            <ul className="mt-2 space-y-1.5">
+              {allDay.map(([name, n]) => (
+                <li key={name} className="flex justify-between gap-2 text-[16px]">
+                  <span className="truncate">{name}</span>
+                  <span className="num font-[800]">{n}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </aside>
+      </div>
+
+      <footer className="border-t border-white/10 px-5 py-3">
+        <div className="flex flex-wrap items-center gap-2" aria-label="최근 완료">
+          <span className="mr-1 text-[13px] font-semibold opacity-70">최근 완료 (모니터·학생 휴대폰에 표시됨)</span>
+          {done.map((o) => {
+            const canUndo = o.status === "ready" && o.readyAt && now - o.readyAt < 10_000;
+            return (
+              <span key={o.id} className="flex items-center gap-2 rounded-full bg-white/10 py-1 pr-1 pl-3">
+                <span className="num text-[16px] font-bold">{o.displayNumber}</span>
+                <span className="text-[12px] opacity-70">{o.status === "closed" ? "수령 확인" : "완료"}</span>
+                {canUndo ? (
+                  <button onClick={() => act(o, true)} className="rounded-full bg-white px-3 py-1 text-[12.5px] font-bold text-ink">
+                    되돌리기 {Math.ceil((10_000 - (now - o.readyAt!)) / 1000)}
+                  </button>
+                ) : (
+                  <span className="w-1" />
+                )}
+              </span>
+            );
+          })}
+          <span className="ml-auto text-[12px] opacity-60">
+            세션 {demo?.session} {info?.kind === "device" ? "· 한 기기 체험" : ""}{" "}
+            <Link href="/" className="underline">
+              체험 홈
+            </Link>
+          </span>
+        </div>
       </footer>
     </div>
   );

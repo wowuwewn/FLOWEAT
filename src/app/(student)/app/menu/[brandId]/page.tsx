@@ -19,7 +19,7 @@ export default function BrandPage({ params }: { params: Promise<{ brandId: strin
 
   return (
     <div className="pb-6">
-      <PageHeader title={brand.name} back="/menu" />
+      <PageHeader title={brand.name} back="/app/menu" />
       <section className="mx-3 rounded-[var(--radius-sheet)] bg-surface px-5 pt-4 pb-4">
         <p className="text-[14px] text-ink-2">{brand.cuisine}</p>
         <p className="mt-2 text-[14px] text-ink-2">주문 후 준비까지 보통</p>

@@ -26,7 +26,7 @@ export function ClockChip() {
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title="지금 보는 정보는 시연용이에요">
         <DataSources />
-        <Link href="/about" className="mt-4 block rounded-2xl bg-floor py-3.5 text-center text-[15px] font-semibold text-navy" onClick={() => setOpen(false)}>
+        <Link href="/app/about" className="mt-4 block rounded-2xl bg-floor py-3.5 text-center text-[15px] font-semibold text-navy" onClick={() => setOpen(false)}>
           데이터와 출처 자세히
         </Link>
       </Sheet>

@@ -17,7 +17,7 @@ export const WORLD = {
   kioskDepth: [0, 2.6, 6.0, 9.4] as const, // y by schematic depth index 1..3
   userOffset: 0.95, // user stands this far outside the kiosk
   slot: 0.78, // spacing between people in a line
-  floor: { x0: -12.5, x1: 12.5, y0: 0, y1: 15.5 },
+  floor: { x0: -12.5, x1: 12.5, y0: 0, y1: 60 },
   verifiedDepth: 11.6, // beyond this the space is unverified → fog
   door: 2.2,
 };

@@ -27,7 +27,7 @@ export default function MyOrdersPage() {
       <PageHeader
         title="내 주문"
         right={
-          <Link href="/scan" className="flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-[14px] font-semibold text-white">
+          <Link href="/app/scan" className="flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-[14px] font-semibold text-white">
             <IconScan className="size-5" />
             QR 스캔
           </Link>
@@ -44,7 +44,7 @@ export default function MyOrdersPage() {
           <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
             키오스크에서 주문한 뒤 번호표의 QR을 찍으면, 음식이 준비됐을 때 여기에서 알려 드려요. 친구 번호표도 같이 찍어 두면 한 화면에서 볼 수 있어요.
           </p>
-          <Link href="/scan" className="mt-5 inline-block rounded-2xl bg-navy px-6 py-3.5 font-semibold text-white">
+          <Link href="/app/scan" className="mt-5 inline-block rounded-2xl bg-navy px-6 py-3.5 font-semibold text-white">
             QR 스캔하기
           </Link>
         </div>

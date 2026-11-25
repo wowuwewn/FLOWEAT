@@ -60,7 +60,7 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
 
   // phone scans both tickets (different device = separate browser context)
   const phone = await phoneCtx.newPage();
-  await phone.goto(`/?s=${session}`);
+  await phone.goto(`/app?s=${session}`);
   for (const u of urls) {
     await phone.goto(new URL(u).pathname);
     await expect(phone.getByText(/이 휴대폰에 주문을 연결했어요/)).toBeVisible();
@@ -68,7 +68,7 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   // re-scan does not duplicate
   await phone.goto(new URL(urls[0]).pathname);
   await expect(phone.getByText("이미 연결된 주문이에요.")).toBeVisible();
-  await phone.goto("/orders");
+  await phone.goto("/app/orders");
   await expect(phone.getByTestId("order-card")).toHaveCount(2);
 
   // monitor & staff

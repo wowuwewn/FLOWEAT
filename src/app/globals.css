@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 /*
- * FLOWEAT design tokens — "Entrance View"
+ * FLOWEAT design tokens — "Commons Floor" (v2)
+ * Brand blue follows the real blue "1947 COMMONS" signage; navy for text and dark surfaces.
  * Base: cool tile-gray floor + white surfaces (1947 COMMONS interior), DKU-inspired navy/blue.
  * Oak & brick appear ONLY inside the space map. Congestion colours are a separate scale and
  * always ship with text.
@@ -9,11 +10,11 @@
 @theme {
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 
-  --color-navy: #0e2b63;
-  --color-navy-2: #183a7a;
-  --color-blue: #2160e0;
-  --color-blue-ink: #1a4fc0;
-  --color-ice: #e9f0ff;
+  --color-navy: #0b1f4d;
+  --color-navy-2: #16306e;
+  --color-blue: #2448db;
+  --color-blue-ink: #1d3fc4;
+  --color-ice: #eaefff;
   --color-floor: #eef0f3;
   --color-surface: #ffffff;
   --color-ink: #111a2e;

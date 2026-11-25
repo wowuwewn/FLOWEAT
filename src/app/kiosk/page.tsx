@@ -334,8 +334,8 @@ export default function KioskPage() {
           <span>모의 키오스크, {kiosk?.label ?? kioskId} 기기로 설정됨</span>
           <span>
             {demo ? <>세션 {demo.session}</> : null} {info?.kind === "device" ? "· 한 기기 체험" : ""}{" "}
-            <Link href="/demo" className="underline">
-              시연 허브
+            <Link href="/" className="underline">
+              체험 홈
             </Link>
           </span>
         </footer>

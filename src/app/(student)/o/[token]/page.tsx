@@ -56,7 +56,7 @@ export default function OrderLandingPage({ params }: { params: Promise<{ token: 
 
   return (
     <div className="pb-6">
-      <PageHeader title="내 주문" back="/orders" />
+      <PageHeader title="내 주문" back="/app/orders" />
       {added !== null && live.state === "ok" && (
         <p role="status" className="mx-5 mb-3 text-[14px] text-ink-2">
           {added ? "이 휴대폰에 주문을 연결했어요. 준비되면 알려 드릴게요." : "이미 연결된 주문이에요."}
@@ -67,7 +67,7 @@ export default function OrderLandingPage({ params }: { params: Promise<{ token: 
       </div>
       <p className="mx-5 mt-4 text-[13px] leading-relaxed text-ink-3">
         이 화면을 켜 두면 준비됐을 때 소리와 진동으로 알려 드려요. 화면을 닫으면 알림이 오지 않을 수 있어요.{" "}
-        <Link href="/orders" className="font-semibold text-ink-2 underline underline-offset-2">
+        <Link href="/app/orders" className="font-semibold text-ink-2 underline underline-offset-2">
           알림 설정
         </Link>
       </p>
@@ -81,10 +81,10 @@ function Problem({ title, body }: { title: string; body: string }) {
       <h1 className="text-[22px] font-bold">{title}</h1>
       <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{body}</p>
       <div className="mt-6 flex gap-2">
-        <Link href="/scan" className="flex-1 rounded-2xl bg-navy py-3.5 text-center font-semibold text-white">
+        <Link href="/app/scan" className="flex-1 rounded-2xl bg-navy py-3.5 text-center font-semibold text-white">
           QR 다시 찍기
         </Link>
-        <Link href="/" className="flex-1 rounded-2xl bg-surface py-3.5 text-center font-semibold">
+        <Link href="/app" className="flex-1 rounded-2xl bg-surface py-3.5 text-center font-semibold">
           홈으로
         </Link>
       </div>

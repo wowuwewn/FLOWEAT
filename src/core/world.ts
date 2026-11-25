@@ -25,8 +25,8 @@ export const HISTORY_DAYS = 6;
 
 // ---------------------------------------------------------------- clock
 const KST_OFFSET = 9 * 3600 * 1000;
-const LOOP_START = 11 * 3600 + 50 * 60;
-const LOOP_LEN = 60 * 60;
+const LOOP_START = 12 * 3600;
+const LOOP_LEN = 45 * 60;
 
 export interface DemoClock {
   dateKey: string;
@@ -35,8 +35,15 @@ export interface DemoClock {
   realTime: boolean;
 }
 
+/** Optional fixed demo time (seconds of day), set by ?t=HH:MM for recordings and tests. */
+let fixedT: number | null = null;
+export function setDemoTimeOverride(tSec: number | null) {
+  fixedT = tSec;
+}
+
 export function demoClock(nowMs: number): DemoClock {
   const kst = new Date(nowMs + KST_OFFSET);
+  if (fixedT !== null) return { dateKey: kst.toISOString().slice(0, 10), tSec: fixedT + (Math.floor(nowMs / 1000) % 60), realTime: false };
   const dateKey = kst.toISOString().slice(0, 10);
   const secOfDay = kst.getUTCHours() * 3600 + kst.getUTCMinutes() * 60 + kst.getUTCSeconds();
   if (secOfDay >= 11 * 3600 && secOfDay < 13 * 3600 + 50 * 60) return { dateKey, tSec: secOfDay, realTime: true };
@@ -352,4 +359,55 @@ export function simulatedReadyNumbers(engine: Engine, tSec: number, windowSec = 
   }
   for (const k of Object.keys(out)) out[k].sort((a, b) => b.readyAt - a.readyAt);
   return out;
+}
+
+export interface TimeSlot {
+  t: number;
+  usual: number;
+  today: number | null;
+  forecast: number | null;
+  isNow: boolean;
+}
+
+/**
+ * Google-style "popular times": per 10-minute slot, the usual level (mean of history days),
+ * today's observed level up to now, and the short-term forecast for the next slots.
+ */
+export function popularTimes(engine: Engine, world: World, metric: "lines" | "tables", from = 11 * 3600, to = 14 * 3600): { slots: TimeSlot[]; vsUsual: "busier" | "quieter" | "usual" | "unknown" } {
+  const slot = 600;
+  const today = metric === "lines" ? engine.todayLines : engine.todayTables;
+  const hist = engine.history.map(metric === "lines" ? linesSeries : tablesSeries);
+  const at = (s: Series, t: number) => {
+    let sum = 0;
+    let n = 0;
+    for (let x = t; x < t + slot; x += SNAP_SEC) {
+      const i = Math.round((x - s.t0) / s.step);
+      if (i >= 0 && i < s.values.length) {
+        sum += s.values[i];
+        n++;
+      }
+    }
+    return n ? sum / n : 0;
+  };
+  const now = world.clock.tSec;
+  const fc = metric === "lines" ? world.forecast.lines : world.forecast.tables;
+  const slots: TimeSlot[] = [];
+  for (let t = from; t < to; t += slot) {
+    const usual = hist.reduce((a, s) => a + at(s, t), 0) / Math.max(1, hist.length);
+    const isNow = now >= t && now < t + slot;
+    const past = t + slot <= now || isNow;
+    let forecast: number | null = null;
+    if (fc && t > now && t <= now + 15 * 60) {
+      const p = fc.reduce((best, q) => (Math.abs(now + q.horizonSec - (t + slot / 2)) < Math.abs(now + best.horizonSec - (t + slot / 2)) ? q : best), fc[0]);
+      forecast = p.value;
+    }
+    slots.push({ t, usual, today: past ? at(today, t) : null, forecast, isNow });
+  }
+  const cur = slots.find((s) => s.isNow);
+  let vsUsual: "busier" | "quieter" | "usual" | "unknown" = "unknown";
+  if (cur && cur.today !== null && cur.usual > (metric === "lines" ? 3 : 0.05)) {
+    const r = cur.today / cur.usual;
+    vsUsual = r > 1.15 ? "busier" : r < 0.85 ? "quieter" : "usual";
+  }
+  return { slots, vsUsual };
 }

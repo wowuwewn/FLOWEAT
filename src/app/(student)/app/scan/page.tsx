@@ -88,7 +88,7 @@ export default function ScanPage() {
 
   return (
     <div className="pb-6">
-      <PageHeader title="번호표 QR 스캔" back="/orders" />
+      <PageHeader title="번호표 QR 스캔" back="/app/orders" />
       <div className="relative mx-3 aspect-square overflow-hidden rounded-[var(--radius-sheet)] bg-[#0b1630]">
         <video ref={video} className="size-full object-cover" playsInline muted aria-label="카메라 미리보기" />
         <div className="pointer-events-none absolute inset-[18%] rounded-3xl border-[3px] border-white/85" aria-hidden />

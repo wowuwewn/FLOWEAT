@@ -8,9 +8,9 @@ import { IconBowl, IconNow, IconTicket } from "../icons";
 import { useStudent } from "./StudentProvider";
 
 const TABS = [
-  { href: "/", label: "지금", Icon: IconNow, match: (p: string) => p === "/" || p.startsWith("/queue") || p.startsWith("/dining") },
-  { href: "/menu", label: "메뉴", Icon: IconBowl, match: (p: string) => p.startsWith("/menu") },
-  { href: "/orders", label: "내 주문", Icon: IconTicket, match: (p: string) => p.startsWith("/orders") || p.startsWith("/o/") || p.startsWith("/scan") },
+  { href: "/app", label: "지금", Icon: IconNow, match: (p: string) => p === "/app" },
+  { href: "/app/menu", label: "메뉴", Icon: IconBowl, match: (p: string) => p.startsWith("/app/menu") },
+  { href: "/app/orders", label: "내 주문", Icon: IconTicket, match: (p: string) => p.startsWith("/app/orders") || p.startsWith("/o/") || p.startsWith("/app/scan") },
 ];
 
 export function TabBar() {
@@ -18,7 +18,7 @@ export function TabBar() {
   const { active } = useStudent();
   const readyCount = active.filter((r) => r.order?.status === "ready").length;
   return (
-    <nav aria-label="주요 화면" className="fixed inset-x-0 bottom-0 z-40 flex justify-center">
+    <nav aria-label="주요 화면" className="fixed inset-x-0 bottom-0 z-40 flex justify-center lg:left-auto lg:w-[460px]">
       <div className="safe-bottom w-full max-w-[480px] border-t border-line bg-surface/95 pt-1.5 backdrop-blur">
         <ul className="grid grid-cols-3">
           {TABS.map(({ href, label, Icon, match }) => {
@@ -32,7 +32,7 @@ export function TabBar() {
                 >
                   <Icon className="size-[23px]" />
                   {label}
-                  {href === "/orders" && active.length > 0 && (
+                  {href === "/app/orders" && active.length > 0 && (
                     <span
                       className={`num absolute top-0.5 left-[calc(50%+8px)] min-w-[18px] rounded-full px-1 text-center text-[11px] leading-[18px] font-bold text-white ${readyCount ? "bg-free" : "bg-blue"}`}
                       aria-label={`진행 중인 주문 ${active.length}건`}
@@ -55,7 +55,7 @@ export function OrderIsland() {
   const { active, alert, dismissAlert } = useStudent();
   const reduce = useReducedMotion();
   const path = usePathname();
-  const hidden = path.startsWith("/orders") || path.startsWith("/o/");
+  const hidden = path.startsWith("/app/orders") || path.startsWith("/o/") || path === "/app";
   const ready = active.filter((r) => r.order?.status === "ready");
   const waiting = active.filter((r) => r.order?.status === "accepted");
   const first = ready[0] ?? waiting[0];
@@ -73,7 +73,7 @@ export function OrderIsland() {
             transition={{ type: "spring", damping: 24, stiffness: 300 }}
             className="pointer-events-auto mb-2 overflow-hidden rounded-[22px] bg-free text-white shadow-[0_10px_30px_rgba(18,128,90,.35)]"
           >
-            <Link href="/orders" onClick={dismissAlert} className="block px-5 pt-4 pb-4">
+            <Link href="/app/orders" onClick={dismissAlert} className="block px-5 pt-4 pb-4">
               <p className="text-[13px] font-semibold opacity-90">준비 완료</p>
               <p className="mt-0.5 text-[22px] leading-tight font-bold">
                 {alert.brandName} <span className="num">{alert.displayNumber}</span>번
@@ -96,7 +96,7 @@ export function OrderIsland() {
             className="pointer-events-auto"
           >
             <Link
-              href="/orders"
+              href="/app/orders"
               className={`flex items-center gap-3 rounded-full py-2 pr-4 pl-2 text-white shadow-[0_6px_20px_rgba(14,43,99,.28)] ${ready.length ? "bg-free" : "bg-navy"}`}
             >
               <span className="num grid h-9 min-w-9 place-items-center rounded-full bg-white/15 px-2 text-[15px] font-bold">

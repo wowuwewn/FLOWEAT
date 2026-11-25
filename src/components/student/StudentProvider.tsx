@@ -8,6 +8,7 @@ import type { BackendInfo, OrderBackend } from "@/client/backend";
 import { liveBacklogOf, useBackend, useDemoContext, useNow, useSessionOrders, useTracked, useWorld } from "@/client/hooks";
 import { loadReplay, useVisionLinked, visionOverrides, type Replay } from "@/client/vision";
 import { useMyOrders, type MyOrderRef } from "@/client/my-orders";
+import type { MapLayer } from "@/components/map/CommonsMap";
 
 export interface ReadyAlert {
   token: string;
@@ -28,6 +29,11 @@ interface Ctx {
   active: TrackResult[];
   alert: ReadyAlert | null;
   dismissAlert: () => void;
+  /** map ↔ list selection and active map layer, shared by mobile and desktop panes */
+  selected: string | null;
+  setSelected: (id: string | null) => void;
+  layer: MapLayer;
+  setLayer: (l: MapLayer) => void;
 }
 
 const StudentCtx = createContext<Ctx | null>(null);
@@ -124,6 +130,12 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   }, [tracked]);
 
   const dismissAlert = useCallback(() => setAlert(null), []);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [layer, setLayer] = useState<MapLayer>("queue");
+  useEffect(() => {
+    const l = new URLSearchParams(location.search).get("layer");
+    if (l === "seats" || l === "pickup" || l === "queue") setLayer(l);
+  }, []);
   const active = useMemo(
     () => (tracked ?? []).filter((r) => r.state === "ok" && r.order && (r.order.status === "accepted" || r.order.status === "ready")),
     [tracked],
@@ -131,6 +143,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
 
   const value: Ctx = {
     backend, info, session: demo?.session ?? null, scenario: demo?.scenario ?? null, world, engine, refs, tracked, active, alert, dismissAlert,
+    selected, setSelected, layer, setLayer,
   };
   return <StudentCtx.Provider value={value}>{children}</StudentCtx.Provider>;
 }

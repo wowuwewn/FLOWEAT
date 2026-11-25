@@ -60,7 +60,42 @@ export function demoClock(nowMs: number): DemoClock {
   const secOfDay = kst.getUTCHours() * 3600 + kst.getUTCMinutes() * 60 + kst.getUTCSeconds();
   if (followRealTime && secOfDay >= 11 * 3600 && secOfDay < 13 * 3600 + 50 * 60) return { dateKey, tSec: secOfDay, realTime: true };
   const loop = Math.floor(nowMs / 1000) % LOOP_LEN;
-  return { dateKey, tSec: LOOP_START + loop, realTime: false };
+  return { dateKey, tSec: peakLoopStart(dateKey) + loop, realTime: false };
+}
+
+/**
+ * "점심 피크 반복" must actually show that day's peak: the simulated peak moves ±6 min and varies in
+ * height day to day, so the 45-minute loop starts at the busiest 45 minutes (total people in all lines)
+ * of the simulated day between 11:20 and 13:30. Falls back to 12:00.
+ */
+const loopStarts = new Map<string, number>();
+export function peakLoopStart(dateKey: string): number {
+  const hit = loopStarts.get(dateKey);
+  if (hit !== undefined) return hit;
+  let best = LOOP_START;
+  try {
+    const sim = simulateDay(dateKey, "peak");
+    const n = sim.snapTimes.length;
+    const total = new Float64Array(n);
+    for (const q of sim.queuePeople) for (let i = 0; i < n; i++) total[i] += q[i];
+    const win = Math.round(LOOP_LEN / SNAP_SEC);
+    let bestSum = -1;
+    for (let i = 0; i + win < n; i++) {
+      const t = sim.snapTimes[i];
+      if (t < 11 * 3600 + 20 * 60 || t + LOOP_LEN > 13 * 3600 + 30 * 60) continue;
+      let sum = 0;
+      for (let j = i; j < i + win; j++) sum += total[j];
+      if (sum > bestSum) {
+        bestSum = sum;
+        best = Math.round(t / 60) * 60;
+      }
+    }
+  } catch {
+    /* keep 12:00 */
+  }
+  if (loopStarts.size > 8) loopStarts.delete(loopStarts.keys().next().value!);
+  loopStarts.set(dateKey, best);
+  return best;
 }
 
 export function formatClock(tSec: number): string {

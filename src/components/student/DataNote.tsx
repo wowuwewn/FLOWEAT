@@ -53,7 +53,7 @@ export function DataSources() {
   return (
     <div>
       <p className="text-[14.5px] text-ink-2">
-        {world?.clock.realTime ? "지금 실제 점심시간 시각에 맞춰" : "점심 피크(12:00–12:45)를 반복해서"} 시뮬레이션하고 있어요. 학교·운영사 시스템과 연결된 실제 현장 데이터가 아니에요.
+        {world?.clock.realTime ? "지금 실제 점심시간 시각에 맞춰" : "그날 시뮬레이션에서 가장 붐비는 점심 45분을 반복해서"} 시뮬레이션하고 있어요. 학교·운영사 시스템과 연결된 실제 현장 데이터가 아니에요.
       </p>
       <dl className="mt-4 divide-y divide-line">
         {rows.map(([k, v]) => (

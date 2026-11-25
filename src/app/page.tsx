@@ -212,7 +212,7 @@ export default function EntryHub() {
                 className="mt-1 size-4 accent-[#2448db]"
               />
               <span>
-                <b className="text-ink">실제 시각 연동</b> (선택) — 기본은 점심 피크(12:00–12:45)를 반복해요. 켜면 실제 점심시간(11:00–13:50)에만 지금 시각으로 시뮬레이션해요.
+                <b className="text-ink">실제 시각 연동</b> (선택) — 기본은 그날 가장 붐비는 점심 45분(보통 11:40–12:40 사이)을 반복해요. 켜면 실제 점심시간(11:00–13:50)에만 지금 시각으로 시뮬레이션해요.
               </span>
             </label>
             {shared && (

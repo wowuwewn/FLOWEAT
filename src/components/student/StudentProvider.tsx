@@ -130,7 +130,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
         chime();
         if (typeof Notification !== "undefined" && Notification.permission === "granted" && document.visibilityState === "hidden") {
           try {
-            new Notification(`${brandName} ${r.order.displayNumber}번 준비됐어요`, { body: "매장 카운터에서 받아 가세요.", tag: r.token });
+            new Notification(`${brandName} ${r.order.displayNumber}번 준비됐어요`, { body: "영수증을 가지고 매장 카운터에서 받아 가세요.", tag: r.token });
           } catch {
             /* some mobile browsers only allow notifications from a service worker */
           }

@@ -78,7 +78,7 @@ export function OrderIsland() {
               <p className="mt-0.5 text-[22px] leading-tight font-bold">
                 {alert.brandName} <span className="num">{alert.displayNumber}</span>번
               </p>
-              <p className="mt-1 text-[14px] opacity-95">{alert.brandName} 카운터에서 받아 가세요.</p>
+              <p className="mt-1 text-[14px] opacity-95">{alert.brandName} 카운터에서 영수증을 보여 주고 받아 가세요.</p>
             </Link>
             <button onClick={dismissAlert} className="w-full border-t border-white/25 py-2.5 text-[14px] font-semibold">
               확인

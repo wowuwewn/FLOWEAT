@@ -122,8 +122,8 @@ export default function StaffPage() {
   const isAll = brandId === ALL;
   const brand = isAll ? null : getBrand(brandId)!;
   return (
-    <div className="flex min-h-dvh flex-col bg-[#11192b] text-white">
-      <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-white/10 px-5 py-3">
+    <div className="flex h-dvh flex-col overflow-hidden bg-[#11192b] text-white">
+      <header className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-2 border-b border-white/10 px-5 py-3">
         <div className="flex flex-1 items-center gap-3">
           <Logo size={26} tone="white" />
           <div>
@@ -154,12 +154,12 @@ export default function StaffPage() {
         </p>
       )}
 
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <main className="min-w-0 flex-1 overflow-x-auto p-4">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
+        <main className="min-w-0 flex-1 overflow-x-auto p-4 lg:overflow-y-auto">
           {!loaded ? (
             <p className="py-16 text-center opacity-70">주문을 불러오는 중…</p>
           ) : open.length === 0 ? (
-            <div className="grid h-full min-h-[260px] place-items-center rounded-2xl ring-1 ring-white/10">
+            <div className="grid h-full min-h-[150px] place-items-center rounded-2xl px-4 py-6 text-center ring-1 ring-white/10">
               <div className="text-center">
                 <p className="text-[22px] font-bold">조리할 주문이 없어요</p>
                 <p className="mt-1 text-[15px] opacity-70">키오스크에서 {brand ? `${brand.name} 메뉴를` : "아무 매장이나"} 주문하면 여기에 바로 나타나요.</p>
@@ -217,7 +217,7 @@ export default function StaffPage() {
           )}
         </main>
 
-        <aside className="border-t border-white/10 p-4 lg:w-[260px] lg:border-t-0 lg:border-l" aria-labelledby="allday-h">
+        <aside className="shrink-0 border-t border-white/10 p-4 lg:w-[260px] lg:overflow-y-auto lg:border-t-0 lg:border-l" aria-labelledby="allday-h">
           <h2 id="allday-h" className="text-[14px] font-bold opacity-80">
             지금 만들 품목 합계
           </h2>
@@ -236,7 +236,7 @@ export default function StaffPage() {
         </aside>
       </div>
 
-      <footer className="border-t border-white/10 px-5 py-3">
+      <footer className="shrink-0 border-t border-white/10 px-5 py-3">
         <div className="flex flex-wrap items-center gap-2" aria-label="최근 완료">
           <span className="mr-1 text-[13px] font-semibold opacity-70">최근 완료 (모니터·학생 휴대폰에 표시됨)</span>
           {done.map((o) => {

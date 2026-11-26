@@ -31,22 +31,28 @@ test("two-finger pinch on the map zooms it (pointer events)", async ({ page }) =
   const svg = page.getByTestId("commons-map").first().locator("svg").first();
   await expect(svg).toBeVisible();
   await expect(page.getByRole("button", { name: "처음 보기로" })).toHaveCount(0);
+  // the map re-lays itself out once data and size arrive; pinch only after that
+  await expect(page.getByRole("button", { name: /^왼쪽 정문 쪽,/ })).toBeVisible();
+  await page.waitForTimeout(800);
   // synthesize a pinch-out with two pointers (Playwright cannot drive real iOS multi-touch)
-  await svg.evaluate((el) => {
-    const r = el.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    const fire = (type: string, id: number, x: number, y: number) =>
-      el.dispatchEvent(new PointerEvent(type, { pointerId: id, pointerType: "touch", clientX: x, clientY: y, bubbles: true, isPrimary: id === 1, buttons: type === "pointerup" ? 0 : 1 }));
-    fire("pointerdown", 1, cx - 20, cy);
-    fire("pointerdown", 2, cx + 20, cy);
-    for (let i = 1; i <= 10; i++) {
-      fire("pointermove", 1, cx - 20 - i * 8, cy);
-      fire("pointermove", 2, cx + 20 + i * 8, cy);
-    }
-    fire("pointerup", 1, cx - 100, cy);
-    fire("pointerup", 2, cx + 100, cy);
-  });
+  await expect(async () => {
+    await svg.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const fire = (type: string, id: number, x: number, y: number) =>
+        el.dispatchEvent(new PointerEvent(type, { pointerId: id, pointerType: "touch", clientX: x, clientY: y, bubbles: true, isPrimary: id === 1, buttons: type === "pointerup" ? 0 : 1 }));
+      fire("pointerdown", 1, cx - 20, cy);
+      fire("pointerdown", 2, cx + 20, cy);
+      for (let i = 1; i <= 10; i++) {
+        fire("pointermove", 1, cx - 20 - i * 8, cy);
+        fire("pointermove", 2, cx + 20 + i * 8, cy);
+      }
+      fire("pointerup", 1, cx - 100, cy);
+      fire("pointerup", 2, cx + 100, cy);
+    });
+    await expect(page.getByRole("button", { name: "처음 보기로" })).toBeVisible({ timeout: 1500 });
+  }).toPass({ timeout: 15_000 });
   await expect(page.getByRole("button", { name: "처음 보기로" })).toBeVisible();
 });
 

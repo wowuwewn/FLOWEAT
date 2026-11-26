@@ -510,8 +510,9 @@ export function CommonsMap({
             {!narrow && <ConceptNote />}
           </div>
           {narrow && (
-            <div className="pointer-events-none absolute left-4" style={{ top: noticeTop - 2 }}>
-              <ConceptNote />
+            // phones: in the gap between the top chips (logo | clock), clear of the map content
+            <div className="pointer-events-none absolute left-1/2 -translate-x-1/2" style={{ top: Math.max(14, noticeTop - 40) }}>
+              <ConceptNote short />
             </div>
           )}
         </>
@@ -614,8 +615,12 @@ function FlowLine({ pts, k }: { pts: { x: number; y: number }[]; k: number }) {
   );
 }
 
-function ConceptNote() {
-  return <span className="t-micro font-semibold whitespace-nowrap text-ink-3 [text-shadow:0_0_3px_#eceef1,0_0_3px_#eceef1,0_0_3px_#eceef1]">개념 배치 · 실제와 달라요</span>;
+function ConceptNote({ short }: { short?: boolean }) {
+  return (
+    <span className="t-micro font-semibold whitespace-nowrap text-ink-3 [text-shadow:0_0_3px_#eceef1,0_0_3px_#eceef1,0_0_3px_#eceef1]" title="개념 배치 · 실제와 달라요">
+      {short ? "개념 배치" : "개념 배치 · 실제와 달라요"}
+    </span>
+  );
 }
 
 function cxy(p: { x: number; y: number }) {

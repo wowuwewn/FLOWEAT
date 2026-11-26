@@ -30,3 +30,14 @@ test("map-first home does not get in the way of menu, seats and order tracking",
   await page.getByRole("button", { name: "지도 확대" }).click();
   await expect(page.getByRole("button", { name: "처음 보기로" })).toBeVisible();
 });
+
+test("360° preview opens over the whole app, moves between spots and closes", async ({ page }) => {
+  await page.goto("/app?t=12:20");
+  await page.getByRole("button", { name: "360° 둘러보기" }).click();
+  const dialog = page.getByRole("dialog", { name: "식당 미리보기 VR" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("tab", { name: "매장 카운터" }).click();
+  await expect(dialog.getByRole("tab", { name: "매장 카운터" })).toHaveAttribute("aria-selected", "true");
+  await dialog.getByRole("button", { name: "닫기" }).click();
+  await expect(dialog).toBeHidden();
+});

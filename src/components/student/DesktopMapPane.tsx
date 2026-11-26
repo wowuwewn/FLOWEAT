@@ -2,6 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CommonsMap } from "@/components/map/CommonsMap";
+import { VRButton } from "@/components/map/VRButton";
 import { Wordmark } from "@/components/brand/Logo";
 import { useStudent } from "./StudentProvider";
 
@@ -38,6 +39,7 @@ export function DesktopMapPane() {
             highlightBrands={active.map((r) => r.order!.brandId)}
             focusBrand={brandFocus}
             zones={world.zones}
+            extra={<VRButton kiosks={world.kiosks} zones={world.zones} highlightBrands={active.map((r) => r.order!.brandId)} highlightLabels={Object.fromEntries(active.map((r) => [r.order!.brandId, String(r.order!.displayNumber)]))} />}
             highlightLabels={Object.fromEntries(active.map((r) => [r.order!.brandId, String(r.order!.displayNumber)]))}
             onSelect={(id) => {
               setSelected(id);

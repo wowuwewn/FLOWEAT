@@ -67,6 +67,8 @@ interface Props {
   focusBrand?: string | null;
   /** seat zones (for colouring the concept table layout on the seats layer) */
   zones?: ZoneView[];
+  /** extra controls shown bottom-left (e.g. the VR preview button) */
+  extra?: React.ReactNode;
 }
 
 /** Frame a world rectangle into the viewport (y up in world, down on screen). */
@@ -121,6 +123,7 @@ export function CommonsMap({
   highlightLabels = {},
   focusBrand = null,
   zones = [],
+  extra,
 }: Props) {
   const W = width;
   const H = height;
@@ -469,11 +472,6 @@ export function CommonsMap({
           </g>
         )}
 
-        {!hideLabels && (
-          <text x={12} y={H - Math.max(10, padBottom - 14)} fontSize={11} fontWeight={600} fill="#5f6772" paintOrder="stroke" stroke="#eceef1" strokeWidth={3} pointerEvents="none">
-            개념 배치 · 실제와 달라요
-          </text>
-        )}
         <g pointerEvents="none">
           <text x={door.x} y={door.y + 17} textAnchor="middle" fontSize={12} fontWeight={700} fill="#191b1f" paintOrder="stroke" stroke="#eceef1" strokeWidth={3}>
             정문
@@ -482,6 +480,12 @@ export function CommonsMap({
         {overlay?.((p) => P(p))}
       </svg>
 
+      {!hideLabels && (
+        <div className="absolute left-3 flex items-center gap-2" style={{ bottom: narrow ? Math.max(4, padBottom - 8) : padBottom + 8 }}>
+          {extra}
+          <span className="t-micro font-semibold text-ink-3 [text-shadow:0_0_3px_#eceef1,0_0_3px_#eceef1]">개념 배치 · 실제와 달라요</span>
+        </div>
+      )}
       {interactive && (
         <div
           className={`absolute right-3 flex overflow-hidden rounded-xl bg-white shadow-[0_1px_4px_rgba(16,24,40,.16)] ${narrow ? "flex-row [&>button]:size-9 [&>button+button]:border-t-0 [&>button+button]:border-l" : "flex-col"}`}

@@ -5,6 +5,7 @@ import { brands as allBrands, getBrand } from "@/core/catalog";
 import { kioskById, pickupShort, ZONES } from "@/core/layout";
 import { popularTimes, type KioskView, type ZoneView } from "@/core/world";
 import { CommonsMap, recommendedKiosk, type MapLayer } from "@/components/map/CommonsMap";
+import { VRButton } from "@/components/map/VRButton";
 import { Wordmark } from "@/components/brand/Logo";
 import { PopularLegend, PopularTimes } from "@/components/PopularTimes";
 import { ClockChip } from "@/components/student/DataNote";
@@ -105,6 +106,7 @@ function MobileMap() {
           highlightLabels={labels}
           focusBrand={brandFocus}
           zones={world.zones}
+          extra={<VRButton kiosks={world.kiosks} zones={world.zones} highlightBrands={active.map((r) => r.order!.brandId)} highlightLabels={labels} />}
         />
       )}
     </div>

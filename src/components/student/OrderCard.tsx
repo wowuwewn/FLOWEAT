@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
+import { useEffect, useState } from "react";
 import { getBrand } from "@/core/catalog";
 import { pickupShort } from "@/core/layout";
 import type { TrackResult } from "@/core/orders/service";
@@ -17,6 +18,7 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
   const finished = o.status === "closed" || o.status === "expired" || r.state !== "ok";
   const loc = pickupShort(o.brandId);
   const late = o.status === "accepted" && o.prepEstimate && now - o.acceptedAt > o.prepEstimate.p80 * 1000;
+  const pickupHref = usePickupHref(o.brandId);
 
   return (
     <motion.article
@@ -55,7 +57,7 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
               </svg>
               영수증 지참
             </span>
-            <Link href="/app?layer=pickup" className="flex items-center gap-1 underline-offset-2 hover:underline">
+            <Link href={pickupHref} className="flex items-center gap-1 underline-offset-2 hover:underline">
               <svg viewBox="0 0 20 20" className="size-4" aria-hidden>
                 <path d="M10 17s5-4.6 5-8.5A5 5 0 0 0 5 8.5C5 12.4 10 17 10 17z" fill="none" stroke="currentColor" strokeWidth="1.5" />
                 <circle cx="10" cy="8.5" r="1.8" fill="currentColor" />
@@ -83,4 +85,20 @@ export function OrderCard({ r, onClose, onForget, large }: { r: TrackResult; onC
       )}
     </motion.article>
   );
+}
+
+/**
+ * "/app?layer=pickup&brand=<id>" plus whatever the current URL already carries (session, scenario,
+ * demo clock…), so the jump keeps the same demo context. The home reads these on every navigation.
+ */
+function usePickupHref(brandId: string): string {
+  const base = `/app?layer=pickup&brand=${encodeURIComponent(brandId)}`;
+  const [href, setHref] = useState(base);
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    q.set("layer", "pickup");
+    q.set("brand", brandId);
+    setHref(`/app?${q.toString()}`);
+  }, [brandId]);
+  return href;
 }

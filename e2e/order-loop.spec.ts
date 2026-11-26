@@ -140,6 +140,93 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   await Promise.all([kioskCtx.close(), phoneCtx.close(), staffCtx.close(), monitorCtx.close()]);
 });
 
+test("order card location opens the pickup tab on that store — in-app, back/forward, direct entry", async ({ browser }) => {
+  test.setTimeout(90_000);
+  const session = `P${Date.now().toString(36).slice(-5).toUpperCase()}`;
+  const kioskCtx = await browser.newContext({ viewport: { width: 900, height: 1300 } });
+  const phoneCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const staffCtx = await browser.newContext({ viewport: { width: 1180, height: 820 } });
+  await staffCtx.addInitScript(() => localStorage.setItem("floweat.operatorKey", "e2e-operator"));
+
+  const kiosk = await kioskCtx.newPage();
+  await kiosk.goto(`/kiosk?s=${session}&k=R2&mode=auto`);
+  await orderTwoBrands(kiosk); // 비비고고 (location unconfirmed) + 값찌개
+  const links = await kiosk.getByTestId("ticket-link").evaluateAll((as) => as.map((a) => new URL((a as HTMLAnchorElement).href).pathname));
+  const numbers = await kiosk.getByTestId("ticket-number").allTextContents();
+
+  const phone = await phoneCtx.newPage();
+  await phone.goto(`/app?s=${session}`);
+  for (const u of links) {
+    await phone.goto(u);
+    await expect(phone.getByText(/이 휴대폰에 주문을 연결했어요/)).toBeVisible();
+  }
+
+  // only 비비고고 is called
+  const staff = await staffCtx.newPage();
+  await staff.goto(`/staff?s=${session}&b=bibigogo`);
+  await callNumber(staff, numbers[0]);
+  await expect(staff.getByRole("status")).toContainText("호출했어요");
+
+  await phone.goto(`/app/orders?s=${session}`);
+  const card = (name: string) => phone.getByTestId("order-card").filter({ hasText: name });
+  await expect(card("비비고고")).toHaveAttribute("data-status", "ready", { timeout: 5000 });
+  await expect(card("값찌개")).toHaveAttribute("data-status", "accepted");
+  const pickupTab = phone.getByRole("tab", { name: "수령" });
+  const row = (name: string) => phone.getByRole("button", { name: `${name} 위치를 지도에 표시` });
+
+  // in-app link (no reload) → 수령 tab with that store picked; unknown location keeps its wording
+  await expect(card("비비고고").getByRole("link", { name: /위치 미확인/ })).toBeVisible();
+  await card("비비고고").getByRole("link").tap();
+  await expect(phone).toHaveURL(new RegExp(`/app\\?.*s=${session}.*layer=pickup.*brand=bibigogo|/app\\?.*layer=pickup.*brand=bibigogo.*s=${session}`));
+  await expect(pickupTab).toHaveAttribute("aria-selected", "true");
+  await expect(row("비비고고")).toHaveAttribute("aria-pressed", "true");
+
+  // back to 내 주문: states unchanged; the other card's link switches the store
+  await phone.goBack();
+  await expect(card("비비고고")).toHaveAttribute("data-status", "ready");
+  await expect(card("값찌개")).toHaveAttribute("data-status", "accepted");
+  await card("값찌개").getByRole("link").tap();
+  await expect(pickupTab).toHaveAttribute("aria-selected", "true");
+  await expect(row("값찌개")).toHaveAttribute("aria-pressed", "true");
+  await expect(row("비비고고")).toHaveAttribute("aria-pressed", "false");
+
+  // back / forward follow the URL
+  await phone.goBack();
+  await expect(phone).toHaveURL(/\/app\/orders/);
+  await phone.goForward();
+  await expect(pickupTab).toHaveAttribute("aria-selected", "true");
+  await expect(row("값찌개")).toHaveAttribute("aria-pressed", "true");
+
+  // manual tabs still work and are not overridden
+  await phone.getByRole("tab", { name: "대기열" }).tap();
+  await expect(phone.getByRole("tab", { name: "대기열" })).toHaveAttribute("aria-selected", "true");
+  await phone.getByRole("tab", { name: "좌석" }).tap();
+  await expect(phone.getByRole("tab", { name: "좌석" })).toHaveAttribute("aria-selected", "true");
+
+  // direct entry and refresh
+  await phone.goto(`/app?s=${session}&layer=pickup&brand=bibigogo`);
+  await expect(pickupTab).toHaveAttribute("aria-selected", "true");
+  await expect(row("비비고고")).toHaveAttribute("aria-pressed", "true");
+  await phone.reload();
+  await expect(pickupTab).toHaveAttribute("aria-selected", "true");
+  await expect(row("비비고고")).toHaveAttribute("aria-pressed", "true");
+
+  // undo withdraws the alert; calling again then 받았어요 ends only that order
+  await staff.goto(`/staff?s=${session}&b=gapjjigae`);
+  await callNumber(staff, numbers[1]);
+  await expect(phone.getByRole("alert").filter({ hasText: "준비 완료" })).toContainText("값찌개", { timeout: 5000 });
+  await staff.getByRole("button", { name: /호출 취소/ }).click();
+  await expect(phone.getByText(/호출이 취소됐어요/)).toBeVisible({ timeout: 5000 });
+  await callNumber(staff, numbers[1]);
+  await phone.goto(`/app/orders?s=${session}`);
+  await expect(card("값찌개")).toHaveAttribute("data-status", "ready", { timeout: 5000 });
+  await card("값찌개").getByRole("button", { name: "받았어요" }).tap();
+  await expect(phone.locator('[data-testid="order-card"][data-status="ready"]')).toHaveCount(1, { timeout: 5000 });
+  await expect(card("비비고고")).toHaveAttribute("data-status", "ready");
+
+  await Promise.all([kioskCtx.close(), phoneCtx.close(), staffCtx.close()]);
+});
+
 const OP = { "x-floweat-operator": "e2e-operator" };
 
 test("roles: a session code alone cannot complete, undo or reset; staff keys are per session", async ({ request }) => {

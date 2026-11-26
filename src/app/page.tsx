@@ -125,7 +125,7 @@ export default function EntryHub() {
           <dl className="t-sub mt-3 divide-y divide-line border-y border-line">
             {[
               ["실제 동작", "주문, 영수증 QR, 호출기, 모니터·학생 앱 반영"],
-              ["실제 추론", "영상 AI (테스트 영상 2종, 학교 영상 아님)"],
+              ["실제 추론", "영상 AI (줄·테이블 등 테스트 영상, 학교 영상 아님)"],
               ["시뮬레이션", "키오스크 대기, 좌석, 시간대별 추이"],
               ["모의", "결제, 학교 키오스크·POS·호출 장비 연동"],
             ].map(([k, v]) => (
@@ -143,7 +143,7 @@ export default function EntryHub() {
               }}
               className="h-10 rounded-[10px] bg-floor px-4 text-[14px] font-semibold text-ink"
             >
-              {linked ? "영상 AI 연결됨 · 학생 앱 보기" : "영상 AI 결과를 학생 앱에 연결"}
+              {linked ? "사전 분석값 적용 중 · 학생 앱 보기" : "사전 분석값을 학생 앱에 적용"}
             </button>
             <Link href="/data" className="t-sub font-medium text-ink-2 underline underline-offset-2">
               데이터 근거와 미확인 사항

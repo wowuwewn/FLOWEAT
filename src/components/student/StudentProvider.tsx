@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, Suspense, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { getBrand } from "@/core/catalog";
 import type { TrackResult } from "@/core/orders/service";
 import type { ScenarioId } from "@/core/sim/simulator";
@@ -164,10 +165,6 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [layer, setLayer] = useState<MapLayer>("queue");
   const [brandFocus, setBrandFocus] = useState<string | null>(null);
-  useEffect(() => {
-    const l = new URLSearchParams(location.search).get("layer");
-    if (l === "seats" || l === "pickup" || l === "queue") setLayer(l);
-  }, []);
   const active = useMemo(
     () => (tracked ?? []).filter((r) => r.state === "ok" && r.order && (r.order.status === "accepted" || r.order.status === "ready")),
     [tracked],
@@ -177,5 +174,31 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
     backend, info, session: demo?.session ?? null, scenario: demo?.scenario ?? null, world, engine, refs, tracked, active, alert, alertCount: alerts.length, dismissAlert, retracted,
     selected, setSelected, layer, setLayer, brandFocus, setBrandFocus,
   };
-  return <StudentCtx.Provider value={value}>{children}</StudentCtx.Provider>;
+  return (
+    <StudentCtx.Provider value={value}>
+      {/* useSearchParams needs its own Suspense boundary so the rest of the page still prerenders */}
+      <Suspense fallback={null}>
+        <UrlLayerSync setLayer={setLayer} setBrandFocus={setBrandFocus} />
+      </Suspense>
+      {children}
+    </StudentCtx.Provider>
+  );
+}
+
+/**
+ * `?layer=queue|seats|pickup` (and `&brand=<id>` on the pickup layer) decide the tab whenever the URL
+ * changes — direct entry, refresh, an in-app link from an order card, back/forward. The layout (and
+ * this provider) stays mounted between student pages, so reading the URL once on mount is not enough.
+ * URLs without `layer` leave the current tab alone; tab taps change state only, as before.
+ */
+function UrlLayerSync({ setLayer, setBrandFocus }: { setLayer: (l: MapLayer) => void; setBrandFocus: (id: string | null) => void }) {
+  const params = useSearchParams();
+  const layer = params.get("layer");
+  const brand = params.get("brand");
+  useEffect(() => {
+    if (layer !== "seats" && layer !== "pickup" && layer !== "queue") return;
+    setLayer(layer);
+    if (layer === "pickup") setBrandFocus(brand && getBrand(brand) ? brand : null);
+  }, [layer, brand, setLayer, setBrandFocus]);
+  return null;
 }

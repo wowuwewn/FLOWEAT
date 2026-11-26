@@ -56,7 +56,7 @@ export default function OpsPage() {
     { label: "사람 검출", value: detected == null ? "–" : `${detected}명` },
     { label: isLanes ? "대기열 계산" : "좌석 판정", value: isLanes ? (waiting == null ? "–" : `대기 ${waiting}명`) : free == null ? "–" : `빈 자리 ${free}/${scene.tables.length}` },
     { label: "예상시간", value: isLanes ? (sessions ? `이용 시간 ${sessions}건 측정` : "측정 대기") : "좌석 혼잡도" },
-    { label: "학생 앱 반영", value: linked ? "연결됨" : "꺼짐" },
+    { label: "학생 앱 적용", value: linked ? "사전 분석값 적용 중" : "꺼짐" },
   ];
 
   return (
@@ -165,17 +165,17 @@ export default function OpsPage() {
           <section className="rounded-[var(--radius-sheet)] bg-white p-4" aria-labelledby="link-h">
             <div className="flex items-center justify-between gap-3">
               <h2 id="link-h" className="t-head">
-                학생 앱에 반영
+                사전 분석값을 학생 앱에 적용
               </h2>
               <button role="switch" aria-checked={linked} aria-labelledby="link-h" onClick={() => setVisionLinked(!linked)} className={`h-7 w-12 shrink-0 rounded-full p-0.5 transition-colors ${linked ? "bg-blue" : "bg-line-2"}`}>
                 <span className={`block size-6 rounded-full bg-white shadow transition-transform ${linked ? "translate-x-5" : ""}`} />
               </button>
             </div>
             <p className="t-sub mt-1 text-ink-2">
-              {linked ? "켜짐 (이 브라우저) — " : "꺼짐 — "}비스듬한 카메라 영상은 왼쪽 키오스크 3대에, 테이블 영상은 중앙 칸막이석 4개에 들어가요. 나머지는 시뮬레이션이에요.
+              {linked ? "켜짐 (이 브라우저) — " : "꺼짐 — "}미리 분석해 둔 기록(비스듬한 카메라 줄 영상·테이블 영상)을 2초마다 학생 앱에 넣어요. 왼쪽 키오스크 3대와 중앙 칸막이석 24개 중 4개만 영상 기반이고, 나머지 좌석·키오스크와 시간대별 추이는 시뮬레이션이에요. 위 화면에서 고른 실시간 추론 결과는 학생 앱에 들어가지 않아요.
             </p>
           </section>
-          <Signals scene={scene} frame={frame} replay={replay} />
+          <Signals scene={scene} frame={frame} replay={replay} mode={mode} />
           <CameraView scene={scene} />
         </aside>
 
@@ -394,13 +394,18 @@ function Stage({ scene, replay, mode, modelId, onFrame, onStatus }: { scene: Sce
   );
 }
 
-function Signals({ scene, frame, replay }: { scene: Scene; frame: FrameOut | null; replay: Replay | null }) {
+function Signals({ scene, frame, replay, mode }: { scene: Scene; frame: FrameOut | null; replay: Replay | null; mode: Mode }) {
   return (
     <section className="rounded-2xl bg-white p-4" aria-labelledby="sig-h" aria-live="polite">
       <h2 id="sig-h" className="text-[15px] font-bold">
-        학생 앱으로 보내는 값
+        현재 영상 분석값
       </h2>
-      <p className="text-[12.5px] text-ink-3">영상과 사람 정보는 보내지 않고 아래 집계만 써요.</p>
+      <p className="text-[12.5px] text-ink-3">
+        {mode === "live"
+          ? "이 브라우저의 실시간 추론으로 공개·합성 테스트 영상의 현재 프레임에서 계산한 집계예요. 학생 앱에는 들어가지 않아요."
+          : "공개·합성 테스트 영상의 현재 프레임에서 계산한 집계예요(미리 분석한 기록 재생)."}{" "}
+        재생 기록에는 사람 박스·추적 좌표가 들어 있어요. 실제 도입 때 현장 기기에서 집계만 내보내는 방식은 설계 단계예요.
+      </p>
       {!frame ? (
         <p className="mt-3 text-ink-3">영상 재생을 기다리는 중…</p>
       ) : scene.lanes.length ? (

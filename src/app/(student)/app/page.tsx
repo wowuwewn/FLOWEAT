@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getBrand } from "@/core/catalog";
 import { kioskById, pickupShort, ZONES } from "@/core/layout";
+import { SCENES } from "@/core/vision/scenes";
 import { popularTimes, type KioskView, type ZoneView } from "@/core/world";
 import { CommonsMap, recommendedKiosk, type MapLayer } from "@/components/map/CommonsMap";
 import { VRButton } from "@/components/map/VRButton";
@@ -171,7 +172,7 @@ function QueueLayer() {
         {sel ? (
           <>
             <span className="font-semibold text-ink-2">{kioskById(sel.id)?.label}</span> · 한 건에 평균 <span className="num">{Math.round(sel.meanServiceSec)}</span>초
-            {sel.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">· 영상 AI</span>}
+            {sel.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">· 사전 분석 영상</span>}
           </>
         ) : null}
       </p>
@@ -245,9 +246,9 @@ function SeatLayer() {
 
   return (
     <section className="px-5 pt-5" aria-label="좌석">
-      <div className="flex items-baseline justify-between">
-        <p className="t-sub text-ink-3">{live ? "영상 AI 추정" : "추정치"} · 지도 배치는 개념도예요</p>
-        <p className={`t-sub font-semibold ${lvl.text}`}>전체 {lvl.label}</p>
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="t-sub min-w-0 break-keep text-ink-3">{live ? "일부 사전 분석 영상·나머지 추정치" : "추정치"} · 지도 배치는 개념도예요</p>
+        <p className={`t-sub shrink-0 font-semibold ${lvl.text}`}>전체 {lvl.label}</p>
       </div>
 
       {/* the two questions people actually have: alone, or with friends */}
@@ -339,7 +340,7 @@ function ZoneGrid({ z, single }: { z: ZoneView; single: boolean }) {
         <span className="t-sub num text-ink-3">
           <b className={`font-semibold ${z.apparentlyEmpty ? "text-free" : "text-ink-3"}`}>{z.apparentlyEmpty}</b> / {z.tables}
           {single ? "석" : "개"}
-          {z.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">· 영상 AI</span>}
+          {z.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">· {videoTablesOf(z.id)}개 영상 기반</span>}
         </span>
       </div>
       <div
@@ -469,4 +470,9 @@ function ActivePasses() {
       })}
     </div>
   );
+}
+
+/** How many tables of a zone the recorded test video actually covers (the rest stay simulated). */
+function videoTablesOf(zoneId: string): number {
+  return SCENES.find((sc) => sc.mapsTo.zoneId === zoneId)?.tables.length ?? 0;
 }

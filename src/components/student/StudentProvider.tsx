@@ -38,6 +38,9 @@ interface Ctx {
   setSelected: (id: string | null) => void;
   layer: MapLayer;
   setLayer: (l: MapLayer) => void;
+  /** pickup layer: the store whose counter the map points at */
+  brandFocus: string | null;
+  setBrandFocus: (id: string | null) => void;
 }
 
 const StudentCtx = createContext<Ctx | null>(null);
@@ -160,6 +163,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
   const dismissAlert = useCallback(() => setAlerts([]), []);
   const [selected, setSelected] = useState<string | null>(null);
   const [layer, setLayer] = useState<MapLayer>("queue");
+  const [brandFocus, setBrandFocus] = useState<string | null>(null);
   useEffect(() => {
     const l = new URLSearchParams(location.search).get("layer");
     if (l === "seats" || l === "pickup" || l === "queue") setLayer(l);
@@ -171,7 +175,7 @@ export function StudentProvider({ children }: { children: React.ReactNode }) {
 
   const value: Ctx = {
     backend, info, session: demo?.session ?? null, scenario: demo?.scenario ?? null, world, engine, refs, tracked, active, alert, alertCount: alerts.length, dismissAlert, retracted,
-    selected, setSelected, layer, setLayer,
+    selected, setSelected, layer, setLayer, brandFocus, setBrandFocus,
   };
   return <StudentCtx.Provider value={value}>{children}</StudentCtx.Provider>;
 }

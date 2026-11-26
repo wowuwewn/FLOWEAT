@@ -12,8 +12,8 @@ test("map-first home does not get in the way of menu, seats and order tracking",
 
   // seats: one tap, both 4-seat and single-seat units are reported
   await page.getByRole("tab", { name: "좌석" }).click();
-  await expect(page.getByText("빈 4인 테이블")).toBeVisible();
-  await expect(page.getByText(/1인석 \d+석 빔/)).toBeVisible();
+  await expect(page.getByText("4인 테이블이 비어 보여요")).toBeVisible();
+  await expect(page.getByText("1인석이 비어 보여요")).toBeVisible();
 
   // menu: one tap to a searchable list with prep times
   await page.getByRole("link", { name: "메뉴" }).click();

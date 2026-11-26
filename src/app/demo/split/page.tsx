@@ -162,7 +162,7 @@ export default function SplitDemo() {
     () =>
       q
         ? {
-            student: `/app/orders?${q}`,
+            student: `/app?${q}`,
             kiosk: `/kiosk?${q}&k=L2&embed=1`,
             staff: `/staff?${q}&b=all&embed=1`,
             monitor: `/monitor?${q}&embed=1`,

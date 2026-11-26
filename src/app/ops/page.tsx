@@ -13,7 +13,7 @@ import { demoClock, getEngine, worldAt } from "@/core/world";
 import { currentScenario } from "@/client/session";
 import { createLiveDetector, frameAt, setVisionLinked, TABLE_REASONS, TABLE_STATES, useReplay, useVisionLinked, type LiveDetector, type Replay } from "@/client/vision";
 import { CommonsMap } from "@/components/map/CommonsMap";
-import { Logo } from "@/components/brand/Logo";
+import { Wordmark } from "@/components/brand/Logo";
 
 const LANE_COLOR = ["#2448db", "#8b3fd9", "#0e8f86"];
 const ROLE_COLOR: Record<Role, string> = { other: "#9aa6bd", ordering: "#2448db", waiting: "#e0a21b", passer: "#c2410c", seated: "#12805a", companion: "#8b3fd9" };
@@ -46,30 +46,58 @@ export default function OpsPage() {
   const [liveStatus, setLiveStatus] = useState("");
   const linked = useVisionLinked();
 
+  const detected = frame?.persons.length ?? null;
+  const waiting = frame ? frame.lanes.reduce((n, l) => n + l.waiting, 0) : null;
+  const free = frame ? frame.tables.filter((t) => t.state === "apparently_empty").length : null;
+  const sessions = frame ? (replay?.sessions ?? []).filter((x) => x.end <= frame.t).length : 0;
+  const isLanes = scene.lanes.length > 0;
+  const steps: { label: string; value: string }[] = [
+    { label: "영상 입력", value: scene.kind === "semi_synthetic" ? "합성 테스트 영상" : "공개 테스트 영상" },
+    { label: "사람 검출", value: detected == null ? "–" : `${detected}명` },
+    { label: isLanes ? "대기열 계산" : "좌석 판정", value: isLanes ? (waiting == null ? "–" : `대기 ${waiting}명`) : free == null ? "–" : `빈 자리 ${free}/${scene.tables.length}` },
+    { label: "예상시간", value: isLanes ? (sessions ? `이용 시간 ${sessions}건 측정` : "측정 대기") : "좌석 혼잡도" },
+    { label: "학생 앱 반영", value: linked ? "연결됨" : "꺼짐" },
+  ];
+
   return (
-    <div className="min-h-dvh bg-[#f3f4f7] text-ink">
-      <header className="border-b border-line bg-white">
-        <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-3 px-5 py-3">
-          <div className="flex items-center gap-3">
-            <Logo size={26} />
-            <div>
-              <p className="text-[12px] font-semibold text-ink-3">운영 · AI 분석 (시연)</p>
-              <h1 className="text-[18px] leading-tight font-bold">영상에서 줄과 자리를 읽는 과정</h1>
-            </div>
+    <div className="min-h-dvh bg-floor text-ink">
+      <header className="bg-white">
+        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-3 px-5 pt-5 pb-4">
+          <div className="min-w-0">
+            <Link href="/" aria-label="FLOWEAT 체험 홈" className="inline-block">
+              <Wordmark size={17} />
+            </Link>
+            <h1 className="t-title mt-2">영상 AI</h1>
+            <p className="t-body text-ink-2">테스트 영상에서 사람을 찾아 줄과 빈자리를 세고, 학생 앱 예상시간에 넣어요.</p>
           </div>
-          <nav className="flex gap-2 text-[13.5px] font-semibold">
-            <Link href="/" className="rounded-full border border-line px-3.5 py-1.5">체험 홈</Link>
-            <Link href="/app" className="rounded-full border border-line px-3.5 py-1.5">학생 앱</Link>
-          </nav>
+          <Link href="/app" className="flex h-12 items-center gap-2 rounded-[var(--radius-tile)] bg-blue px-5 text-[16px] font-semibold text-white">
+            학생 앱에서 보기
+            <svg viewBox="0 0 12 12" className="size-3.5" aria-hidden>
+              <path d="M4.5 2.5 8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
         </div>
+
+        {/* the pipeline, with what each step is producing right now */}
+        <ol className="mx-auto grid max-w-[1240px] grid-cols-2 gap-px px-5 pb-5 sm:grid-cols-5" aria-label="처리 단계">
+          {steps.map((st, i) => (
+            <li key={st.label} className={`relative bg-white py-2 pr-3 ${i === 4 ? "col-span-2 sm:col-span-1" : ""}`}>
+              <span className={`absolute top-0 right-3 left-0 h-[3px] rounded-full ${i === 4 && !linked ? "bg-line-2" : "bg-blue"}`} aria-hidden />
+              <p className="t-micro mt-2 font-semibold text-ink-3">
+                <span className="num">{i + 1}</span> · {st.label}
+              </p>
+              <p className="t-row num mt-0.5 font-semibold">{st.value}</p>
+            </li>
+          ))}
+        </ol>
       </header>
 
-      <main className="mx-auto grid max-w-[1320px] grid-cols-[minmax(0,1fr)] items-start gap-4 px-3 py-4 sm:px-4 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <section className="min-w-0 rounded-2xl bg-white p-3 sm:p-4" aria-labelledby="stage-h">
+      <main className="mx-auto grid max-w-[1240px] grid-cols-[minmax(0,1fr)] items-start gap-4 px-3 py-4 sm:px-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="min-w-0 rounded-[var(--radius-sheet)] bg-white p-3 sm:p-5" aria-labelledby="stage-h">
           <h2 id="stage-h" className="sr-only">
             테스트 영상 분석
           </h2>
-          <div className="flex flex-wrap gap-1 rounded-xl bg-[#f0f2f6] p-1" role="tablist" aria-label="영상 선택">
+          <div role="tablist" aria-label="영상 선택" className="no-scrollbar flex gap-5 overflow-x-auto border-b border-line">
             {SCENES.map((s) => (
               <button
                 key={s.id}
@@ -79,30 +107,27 @@ export default function OpsPage() {
                   setSceneId(s.id);
                   setFrame(null);
                 }}
-                className={`rounded-lg px-3.5 py-1.5 text-[13.5px] font-semibold ${sceneId === s.id ? "bg-white text-navy shadow-sm" : "text-ink-2"}`}
+                className={`relative -mb-px h-11 shrink-0 text-[15px] font-semibold whitespace-nowrap ${sceneId === s.id ? "text-ink" : "text-ink-3"}`}
               >
                 {SCENE_TAB[s.id]}
+                {sceneId === s.id && <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-ink" />}
               </button>
             ))}
           </div>
-          <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
-            <b className="text-ink">{scene.kind === "semi_synthetic" ? "합성 테스트 영상" : "공개 테스트 영상"}</b> — {scene.standsFor}를 대신해요. 카메라: {scene.camera}. 실제 학교 CCTV가 아니에요.
-          </p>
 
-          <Stage key={`${sceneId}-${mode}-${modelId}`} scene={scene} replay={replay} mode={mode} modelId={modelId} onFrame={setFrame} onStatus={setLiveStatus} />
-
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px]">
-            <div className="flex gap-1 rounded-full bg-[#f0f2f6] p-1" role="radiogroup" aria-label="분석 방식">
+          {/* replay vs live: always visible, never ambiguous */}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex rounded-[12px] bg-floor p-1" role="radiogroup" aria-label="분석 방식">
               {(["replay", "live"] as const).map((m) => (
-                <button key={m} role="radio" aria-checked={mode === m} onClick={() => setMode(m)} className={`rounded-full px-3.5 py-1.5 font-semibold ${mode === m ? "bg-navy text-white" : "text-ink-2"}`}>
-                  {m === "replay" ? "기록된 분석 재생" : "이 브라우저에서 직접 분석"}
+                <button key={m} role="radio" aria-checked={mode === m} onClick={() => setMode(m)} className={`h-9 rounded-[9px] px-3.5 text-[14px] font-semibold ${mode === m ? "bg-white text-ink shadow-[0_1px_3px_rgba(16,24,40,.12)]" : "text-ink-3"}`}>
+                  {m === "replay" ? "미리 계산한 결과 재생" : "이 브라우저에서 실시간 추론"}
                 </button>
               ))}
             </div>
             {mode === "live" && (
-              <label className="flex items-center gap-2">
+              <label className="t-sub flex items-center gap-2 text-ink-2">
                 모델
-                <select value={modelId} onChange={(e) => setModelId(e.target.value)} className="rounded-lg border border-line bg-white px-2 py-1">
+                <select value={modelId} onChange={(e) => setModelId(e.target.value)} className="h-9 rounded-[9px] border border-line bg-white px-2">
                   {MODELS.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.name} ({(m.bytes / 1e6).toFixed(1)}MB)
@@ -112,11 +137,20 @@ export default function OpsPage() {
               </label>
             )}
           </div>
-          <p className="mt-2 flex items-start gap-2 text-[12.5px] leading-relaxed text-ink-2" aria-live="polite">
+
+          <Stage key={`${sceneId}-${mode}-${modelId}`} scene={scene} replay={replay} mode={mode} modelId={modelId} onFrame={setFrame} onStatus={setLiveStatus} />
+
+          <p className="t-sub mt-2 flex items-start gap-2 text-ink-2" aria-live="polite">
             <span className={`mt-1.5 size-2 shrink-0 rounded-full ${mode === "live" ? "bg-free" : "bg-blue"}`} aria-hidden />
-            <span>{mode === "replay" ? (replay ? `${replay.model}, 서버 CPU에서 미리 분석한 결과를 영상과 맞춰 재생 (${replay.stats.inferenceMsMean}ms/프레임)` : "불러오는 중…") : liveStatus || "준비하는 중…"}</span>
+            <span>
+              <b className="font-semibold text-ink">{mode === "replay" ? "재생" : "실시간"}</b> ·{" "}
+              {mode === "replay" ? (replay ? `${replay.model}로 서버 CPU에서 미리 분석한 결과 (${replay.stats.inferenceMsMean}ms/프레임)` : "불러오는 중…") : liveStatus || "준비하는 중…"}
+            </span>
           </p>
-          <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-ink-2" aria-label="범례">
+          <p className="t-sub mt-1 text-ink-3">
+            {scene.standsFor}를 대신하는 영상이에요. 카메라: {scene.camera}. 학교 CCTV가 아니에요.
+          </p>
+          <ul className="t-micro mt-3 flex flex-wrap gap-x-4 gap-y-1 text-ink-2" aria-label="범례">
             {(Object.keys(ROLE_LABEL) as Role[]).map((r) => (
               <li key={r} className="flex items-center gap-1.5">
                 <span className="size-3 rounded-sm border-2" style={{ borderColor: ROLE_COLOR[r] }} />
@@ -125,31 +159,41 @@ export default function OpsPage() {
             ))}
             <li>● 판정 기준점 ({scene.anchor === "top" ? "머리" : scene.anchor === "bottom" ? "발" : "몸 중심"})</li>
           </ul>
-          <div className="mt-3 flex flex-col gap-3 rounded-xl bg-[#f5f6f9] p-3 sm:flex-row sm:items-center" aria-labelledby="link-h">
-            <div className="min-w-0 flex-1">
-              <h2 id="link-h" className="text-[14px] font-bold">
-                학생 앱에 연결
-              </h2>
-              <p className="text-[12.5px] leading-relaxed text-ink-2">
-                켜면 비스듬한 카메라 합성 영상의 줄 인원·이용 중 여부·이용 시간이 왼쪽 키오스크 3대에, 테이블 영상이 중앙 칸막이석 4개에 들어가요. 나머지는 시뮬레이션이에요.
-              </p>
-            </div>
-            <button role="switch" aria-checked={linked} onClick={() => setVisionLinked(!linked)} className={`flex h-11 shrink-0 items-center justify-between gap-3 rounded-xl px-4 text-[14px] font-semibold sm:w-[200px] ${linked ? "bg-blue text-white" : "bg-white ring-1 ring-line"}`}>
-              {linked ? "연결됨 (이 브라우저)" : "연결 안 됨"}
-              <span className={`h-6 w-11 rounded-full p-0.5 ${linked ? "bg-white/30" : "bg-line-2"}`}>
-                <span className={`block size-5 rounded-full bg-white transition-transform ${linked ? "translate-x-5" : ""}`} />
-              </span>
-            </button>
-          </div>
         </section>
 
         <aside className="space-y-4">
+          <section className="rounded-[var(--radius-sheet)] bg-white p-4" aria-labelledby="link-h">
+            <div className="flex items-center justify-between gap-3">
+              <h2 id="link-h" className="t-head">
+                학생 앱에 반영
+              </h2>
+              <button role="switch" aria-checked={linked} aria-labelledby="link-h" onClick={() => setVisionLinked(!linked)} className={`h-7 w-12 shrink-0 rounded-full p-0.5 transition-colors ${linked ? "bg-blue" : "bg-line-2"}`}>
+                <span className={`block size-6 rounded-full bg-white shadow transition-transform ${linked ? "translate-x-5" : ""}`} />
+              </button>
+            </div>
+            <p className="t-sub mt-1 text-ink-2">
+              {linked ? "켜짐 (이 브라우저) — " : "꺼짐 — "}비스듬한 카메라 영상은 왼쪽 키오스크 3대에, 테이블 영상은 중앙 칸막이석 4개에 들어가요. 나머지는 시뮬레이션이에요.
+            </p>
+          </section>
           <Signals scene={scene} frame={frame} replay={replay} />
           <CameraView scene={scene} />
         </aside>
 
-        <Evaluation />
-        <PredictionEval />
+        <details className="group rounded-[var(--radius-sheet)] bg-white xl:col-span-2">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
+            <span>
+              <span className="t-head block">모델·성능 지표</span>
+              <span className="t-sub text-ink-3">검출 모델 비교, 줄·좌석 판정 정확도, 예상시간 오차</span>
+            </span>
+            <svg viewBox="0 0 12 12" className="size-4 text-ink-3 transition-transform group-open:rotate-180" aria-hidden>
+              <path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </summary>
+          <div className="grid gap-4 px-0 pb-2 sm:px-0 xl:grid-cols-2 [&>section]:rounded-none [&>section]:border-t [&>section]:border-line">
+            <Evaluation />
+            <PredictionEval />
+          </div>
+        </details>
       </main>
     </div>
   );

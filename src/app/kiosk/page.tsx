@@ -48,6 +48,7 @@ export default function KioskPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [large, setLarge] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [idle, setIdle] = useState(0);
   const [inFrame, setInFrame] = useState(false);
   useEffect(() => setInFrame(window.top !== window.self), []);
@@ -139,11 +140,20 @@ export default function KioskPage() {
               <div className="flex flex-1 flex-col justify-center px-8 py-6">
                 <p className="text-[15px] font-semibold text-ink-3">1947 COMMONS</p>
                 <h1 className="mt-1 text-[44px] leading-[1.05] font-bold tracking-[-0.035em] text-[#191b1f] sm:text-[56px]">푸드마켓</h1>
-                <ul className="mt-10 grid grid-cols-2 gap-x-8 gap-y-0 text-[17px] text-ink-2" aria-label="매장">
+                <ul className="mt-8 grid grid-cols-2 gap-2 sm:mt-10 sm:gap-3" aria-label="매장">
                   {brands.map((b) => (
-                    <li key={b.id} className="flex items-baseline justify-between border-b border-line py-3">
-                      <span>{b.name}</span>
-                      {brandPrep(b.id) && <span className="num text-[14px] text-blue-ink">{brandPrep(b.id)}</span>}
+                    <li key={b.id}>
+                      <button
+                        onClick={() => {
+                          setBrandId(b.id);
+                          setStep("menu");
+                          touch();
+                        }}
+                        className="flex min-h-[60px] w-full items-center justify-between gap-2 rounded-[14px] bg-[#f4f4f1] px-4 text-left active:brightness-95 sm:min-h-[84px] sm:px-5"
+                      >
+                        <span className="text-[17px] font-semibold tracking-[-0.015em] text-[#191b1f] sm:text-[20px]">{b.name}</span>
+                        {brandPrep(b.id) && <span className="num shrink-0 text-[13px] text-blue-ink sm:text-[15px]">조리 {brandPrep(b.id)}</span>}
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -197,7 +207,7 @@ export default function KioskPage() {
                     조리 예상 <span className="num font-semibold">{brandPrep(brandId) ?? "–"}</span>
                   </p>
                 </div>
-                <ul className="grid grid-cols-2 gap-2 min-[480px]:grid-cols-3 min-[700px]:grid-cols-4">
+                <ul className="grid grid-cols-1 gap-2 min-[480px]:grid-cols-3 min-[700px]:grid-cols-4">
                   {menusOf(brandId).map((m) => (
                     <MenuTile key={m.id} m={m} qty={cart.find((l) => l.menuId === m.id)?.qty ?? 0} preparing={preparing.has(m.id)} prep={m.isSide ? null : prepLine(m.id)} onAdd={() => add(m.id)} />
                   ))}
@@ -212,13 +222,26 @@ export default function KioskPage() {
                     주문카트 <span className="num font-semibold text-ink-3">{count}</span>
                   </h2>
                   {cart.length > 0 && (
-                    <button onClick={() => setCart([])} className="h-9 rounded-full px-3 text-[13.5px] font-semibold text-ink-3">
-                      전체 삭제
-                    </button>
+                    <span className="flex items-center">
+                      <button onClick={() => setCart([])} className={`h-9 rounded-full px-3 text-[13.5px] font-semibold text-ink-3 ${cartOpen ? "" : "max-sm:hidden"}`}>
+                        전체 삭제
+                      </button>
+                      {/* phones: the cart folds into one bar so the menu keeps the screen */}
+                      <button
+                        onClick={() => setCartOpen((v) => !v)}
+                        aria-expanded={cartOpen}
+                        className="flex h-9 items-center gap-1 rounded-full bg-[#f1f0ea] px-3 text-[13.5px] font-semibold text-ink-2 sm:hidden"
+                      >
+                        {cartOpen ? "접기" : "담은 메뉴"}
+                        <svg viewBox="0 0 12 12" className={`size-3 transition-transform ${cartOpen ? "" : "rotate-180"}`} aria-hidden>
+                          <path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </button>
+                    </span>
                   )}
                 </div>
                 {cart.length > 0 ? (
-                  <ul className="max-h-[22vh] space-y-1 overflow-y-auto px-4 pt-1 sm:px-5" aria-label="장바구니">
+                  <ul className={`max-h-[34vh] space-y-1 overflow-y-auto px-4 pt-1 sm:block sm:max-h-[22vh] sm:px-5 ${cartOpen ? "block" : "hidden"}`} aria-label="장바구니">
                     {cart.map((l) => {
                       const m = getMenu(l.menuId)!;
                       return (
@@ -239,7 +262,7 @@ export default function KioskPage() {
                     })}
                   </ul>
                 ) : (
-                  <p className="t-body px-4 pt-1 text-ink-3 sm:px-5">메뉴를 고르세요</p>
+                  <p className="t-body px-4 pt-1 text-ink-3 max-sm:hidden sm:px-5">메뉴를 고르세요</p>
                 )}
                 {cartBrands.length > 1 && (
                   <p className="t-sub mx-4 mt-2 text-blue-ink sm:mx-5">매장 {cartBrands.length}곳 · 번호표가 {cartBrands.length}장 나와요</p>
@@ -328,6 +351,7 @@ export default function KioskPage() {
             <motion.div key="tickets" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex min-h-0 flex-1 flex-col">
               <TopBar onHome={reset} large={large} setLarge={setLarge} title="주문 완료" />
               <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-4 pb-5 sm:px-5">
+                <div className={`my-auto w-full self-center ${result.tickets.length === 1 ? "max-w-[420px]" : ""}`}>
                 <h1 className="t-title">영수증 {result.tickets.length}장</h1>
                 <p className="t-body mt-1 text-ink-2">모니터에 번호가 뜨면 영수증을 들고 카운터로 가세요</p>
                 {info?.kind === "device" && (
@@ -340,7 +364,7 @@ export default function KioskPage() {
                     이 화면을 localhost로 열어서 다른 기기에서는 QR 주소에 접속할 수 없어요. 같은 Wi-Fi의 IP 주소로 키오스크를 열어 주세요.
                   </p>
                 )}
-                <ul className="mt-4 grid grid-cols-1 content-start gap-3 min-[560px]:grid-cols-2">
+                <ul className={`mt-4 grid grid-cols-1 content-start gap-3 ${result.tickets.length > 1 ? "min-[560px]:grid-cols-2" : ""}`}>
                   {result.tickets.map(({ order, token }) => {
                     const b = getBrand(order.brandId)!;
                     const url = `${origin}/o/${token}`;
@@ -391,13 +415,14 @@ export default function KioskPage() {
                     );
                   })}
                 </ul>
-                <div className="mt-auto flex gap-2.5 pt-5">
+                <div className="flex gap-2.5 pt-6">
                   <button onClick={() => window.print()} className="h-14 flex-1 rounded-2xl bg-white text-[17px] font-semibold">
                     영수증 인쇄
                   </button>
                   <button onClick={reset} className="h-14 flex-[2] rounded-2xl bg-[#1b2233] text-[18px] font-bold text-white">
                     처음 화면으로
                   </button>
+                </div>
                 </div>
               </div>
             </motion.div>
@@ -456,30 +481,38 @@ function MenuTile({ m, qty, preparing, prep, onAdd }: { m: Menu; qty: number; pr
   const unknown = m.listedPriceKrw == null;
   const kind = dishKind(m);
   const [bg, fg] = TINT[kind];
+  // text first: name and price lead, a small line icon only hints at the kind of dish (no photos we can't license)
   return (
     <li>
       <button
         onClick={preparing ? undefined : onAdd}
         aria-disabled={preparing || undefined}
-        aria-label={`${m.name}, ${unknown ? "가격 미표기" : won(m.listedPriceKrw)}${preparing ? ", 준비중" : ""}${prep ? `, 준비 예상 ${prep}` : ""}${badge ? `, ${badge}` : ""}${qty ? `, ${qty}개 담음` : ""}`}
-        className={`relative flex h-full w-full flex-col rounded-[14px] bg-white p-2 text-left ring-inset transition-shadow ${qty ? "ring-2 ring-[#191b1f]" : "ring-1 ring-[#ebe9e2]"} ${preparing ? "cursor-not-allowed" : "active:scale-[.985]"}`}
+        aria-label={`${m.name}, ${unknown ? "가격 미표기" : won(m.listedPriceKrw)}${preparing ? ", 준비중" : ""}${prep ? `, 조리 예상 ${prep}` : ""}${badge ? `, ${badge}` : ""}${qty ? `, ${qty}개 담음` : ""}`}
+        className={`relative flex h-full w-full items-center gap-3 rounded-[14px] bg-white p-2.5 text-left ring-inset transition-shadow min-[480px]:flex-col min-[480px]:items-stretch min-[480px]:gap-0 ${qty ? "ring-2 ring-[#191b1f]" : "ring-1 ring-[#ebe9e2]"} ${preparing ? "cursor-not-allowed" : "active:scale-[.985]"}`}
       >
-        <span className="relative grid aspect-[16/10] w-full place-items-center rounded-[10px]" style={{ background: preparing ? "#f1f1ef" : bg, color: preparing ? "#b4b8be" : fg }}>
-          <DishIcon kind={kind} className="size-10" />
-          {preparing && <span className="absolute inset-0 grid place-items-center rounded-[10px] bg-white/55 text-[15px] font-bold tracking-[0.12em] text-[#c8312c]">준비중</span>}
+        <span
+          className="relative grid size-14 shrink-0 place-items-center rounded-[10px] min-[480px]:aspect-[2/1] min-[480px]:size-auto min-[480px]:w-full"
+          style={{ background: preparing ? "#f1f1ef" : bg, color: preparing ? "#b4b8be" : fg }}
+        >
+          <DishIcon kind={kind} className="size-8 min-[480px]:size-9" />
+          {preparing && <span className="absolute inset-0 grid place-items-center rounded-[10px] bg-white/60 text-[13px] font-bold tracking-[0.08em] text-[#c8312c] min-[480px]:text-[15px]">준비중</span>}
           {badge && (
-            <span className={`absolute top-1.5 left-1.5 rounded-[5px] px-1.5 py-px text-[10.5px] font-bold tracking-wide text-white ${badge === "BEST" ? "bg-[#c8312c]" : "bg-[#8f6700]"}`} title="2026-11-25 현장 화면 표시">
+            <span className={`absolute -top-1 -left-1 rounded-[5px] px-1.5 py-px text-[10.5px] font-bold tracking-wide text-white min-[480px]:top-1.5 min-[480px]:left-1.5 ${badge === "BEST" ? "bg-[#c8312c]" : "bg-[#8f6700]"}`} title="2026-11-25 현장 화면 표시">
               {badge}
             </span>
           )}
-          {m.field?.spicyIcon && <span className="absolute top-1.5 right-2 text-[11px] font-bold text-[#c8312c]">매운맛</span>}
-          {qty > 0 && <span className="num absolute top-1.5 right-1.5 grid size-6 place-items-center rounded-full bg-[#191b1f] text-[12.5px] font-bold text-white">{qty}</span>}
         </span>
-        <span className="mt-2 line-clamp-2 min-h-[2.6em] px-0.5 text-[15px] leading-[1.3] font-semibold tracking-[-0.015em] text-[#191b1f]">{m.name}</span>
-        <span className="mt-1 flex items-baseline justify-between gap-1 px-0.5">
-          <span className="num text-[15px] text-ink">{unknown ? "가격 미표기" : `${(m.listedPriceKrw ?? 0).toLocaleString("ko-KR")}원`}</span>
-          {prep && !preparing && <span className="num shrink-0 text-[12px] font-semibold text-blue-ink">{prep}</span>}
+        <span className="flex min-w-0 flex-1 flex-col min-[480px]:mt-2">
+          <span className="line-clamp-2 text-[16px] leading-[1.3] font-bold tracking-[-0.02em] text-[#191b1f] min-[480px]:min-h-[2.6em]">
+            {m.name}
+            {m.field?.spicyIcon && <span className="ml-1 text-[12px] font-bold text-[#c8312c]">매운맛</span>}
+          </span>
+          <span className="mt-0.5 flex flex-wrap items-baseline justify-between gap-x-2 min-[480px]:mt-1">
+            <span className={`num text-[16px] ${unknown ? "text-[14px] text-ink-3" : "font-semibold text-ink"}`}>{unknown ? "가격 미표기" : `${(m.listedPriceKrw ?? 0).toLocaleString("ko-KR")}원`}</span>
+            {prep && !preparing && <span className="num shrink-0 text-[13px] font-semibold text-blue-ink">조리 {prep}</span>}
+          </span>
         </span>
+        {qty > 0 && <span className="num absolute top-2 right-2 grid size-6 place-items-center rounded-full bg-[#191b1f] text-[12.5px] font-bold text-white">{qty}</span>}
       </button>
     </li>
   );

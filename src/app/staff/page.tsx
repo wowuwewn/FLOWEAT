@@ -168,13 +168,14 @@ export default function StaffCallerPage() {
     );
   }
 
-  const shown = last && now - last.at < 8000 ? last : null;
+  // a call stays on screen for the whole undo window, so 호출 취소 is always next to what it undoes
+  const shown = last && now - last.at < (last.outcome === "called" ? UNDO_MS : 6000) ? last : null;
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-[#15171b] text-white">
-      <header className="flex shrink-0 items-center gap-3 border-b border-white/10 px-4 py-2.5">
+      <header className="flex shrink-0 items-center gap-3 border-b border-white/10 px-4 py-2.5 short:py-1.5">
         <div className="min-w-0 flex-1">
           <p className="truncate text-[18px] leading-6 font-bold tracking-[-0.015em]">{brand?.name ?? "매장"}</p>
-          <p className="text-[12px] text-white/50">호출기 · 모의</p>
+          <p className="text-[12px] text-white/50 short:hidden">호출기 · 모의</p>
         </div>
         {!isAll && (
           <button
@@ -204,7 +205,7 @@ export default function StaffCallerPage() {
                   setPicked(b.id);
                   setDigits("");
                 }}
-                className={`relative h-10 truncate rounded-lg px-1 text-[12.5px] font-semibold ${on ? "bg-white text-[#161a22]" : "bg-white/8 text-white/85"}`}
+                className={`relative h-10 truncate rounded-lg px-1 text-[12.5px] font-semibold short:h-8 short:text-[12px] ${on ? "bg-white text-[#161a22]" : "bg-white/8 text-white/85"}`}
               >
                 {b.name}
                 {n > 0 && <span className="num absolute -top-1 -right-0.5 grid size-4.5 place-items-center rounded-full bg-[#f2b630] text-[10px] font-bold text-[#2a1d00]">{n}</span>}
@@ -214,85 +215,78 @@ export default function StaffCallerPage() {
         </div>
       )}
 
-      <main className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 pt-3 pb-3">
-        <div className="flex w-full max-w-[420px] flex-1 flex-col">
-          {/* display */}
-          <div className="rounded-2xl bg-[#0b0e14] px-4 py-3 ring-1 ring-white/10 [@media(max-height:640px)]:py-1.5">
-            <p className="text-[12px] text-white/50">영수증 번호</p>
-            <p className="num h-[60px] text-right text-[52px] leading-[60px] font-bold tracking-[-0.02em] [@media(max-height:640px)]:h-9 [@media(max-height:640px)]:text-[30px] [@media(max-height:640px)]:leading-9" data-testid="pad-display" aria-live="polite">
-              {digits || <span className="text-[20px] font-medium text-white/30">번호 입력</span>}
-            </p>
-          </div>
-
-          <div className="mt-2 min-h-[52px] [@media(max-height:640px)]:min-h-0" aria-live="polite">
-            {shown && (
-              <p role="status" className={`rounded-xl px-3.5 py-3 text-[15px] leading-snug font-semibold ${TONE[shown.outcome]}`}>
-                {MESSAGE[shown.outcome](getBrand(shown.brandId)?.name ?? "", shown.number)}
+      <main className="flex min-h-0 flex-1 justify-center overflow-y-auto px-4 pt-3 pb-3 short:pt-2 short:pb-2">
+        <div className="grid min-h-0 w-full max-w-[420px] content-start gap-2 short:grid-rows-[auto_auto_1fr] short:content-stretch short-wide:max-w-[760px] short-wide:grid-cols-[1fr_1.15fr] short-wide:grid-rows-1 short-wide:gap-4">
+          {/* left (or top): what was typed, what happened, numbers waiting */}
+          <div className="flex min-h-0 flex-col gap-2">
+            <div className="rounded-2xl bg-[#0b0e14] px-4 py-2.5 ring-1 ring-white/10 short:py-1.5">
+              <p className="text-[12px] text-white/50">영수증 번호</p>
+              <p className="num h-[56px] text-right text-[48px] leading-[56px] font-bold tracking-[-0.02em] short:h-9 short:text-[30px] short:leading-9" data-testid="pad-display" aria-live="polite">
+                {digits || <span className="text-[19px] font-medium text-white/60">번호 입력</span>}
               </p>
-            )}
-          </div>
-
-          {/* keypad */}
-          <div className="mt-1 grid grid-cols-3 gap-2" aria-label="숫자 키패드">
-            {["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", "back"].map((k) => (
-              <button
-                key={k}
-                onClick={() => press(k)}
-                aria-label={k === "back" ? "한 글자 지우기" : k === "clear" ? "모두 지우기" : `숫자 ${k}`}
-                className="num h-[60px] rounded-2xl bg-white/[.08] text-[26px] font-semibold active:bg-white/25 sm:h-[66px] [@media(max-height:640px)]:h-10 [@media(max-height:640px)]:rounded-xl [@media(max-height:640px)]:text-[19px]"
-              >
-                {k === "back" ? "⌫" : k === "clear" ? <span className="text-[16px]">지움</span> : k}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={submit}
-            disabled={!digits || busy}
-            className="mt-2 h-[64px] w-full shrink-0 rounded-2xl bg-[#1e62e6] text-[21px] font-bold disabled:opacity-35 [@media(max-height:640px)]:h-11 [@media(max-height:640px)]:text-[17px]"
-          >
-            {busy ? "호출하는 중…" : "호출"}
-          </button>
-
-          {/* demo helper */}
-          <div className="mt-4">
-            <p className="text-[12px] text-white/50">접수된 번호 (시연)</p>
-            {pendingHere.length ? (
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {pendingHere.slice(0, 12).map((o) => (
-                  <button key={o.id} onClick={() => setDigits(String(o.displayNumber))} className="num h-9 rounded-full bg-white/12 px-3 text-[15px] font-bold" aria-label={`${o.displayNumber}번 입력`}>
-                    {o.displayNumber}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-1 text-[13px] text-white/40">없음</p>
-            )}
-          </div>
-
-          {history.length > 0 && (
-            <div className="mt-3">
-              <p className="text-[12px] text-white/50">최근 호출</p>
-              <ul className="mt-1 divide-y divide-white/10">
-                {history.slice(0, 4).map((r) => {
-                  const left = UNDO_MS - (now - r.at);
+            </div>
+            <div className="min-h-[48px] short:min-h-[40px]" aria-live="polite">
+              {shown ? (
+                <div role="status" className={`flex items-center gap-2 rounded-xl py-2 pr-2 pl-3.5 text-[15px] leading-snug font-semibold short:text-[14px] ${TONE[shown.outcome]}`}>
+                  <span className="min-w-0 flex-1">{MESSAGE[shown.outcome](getBrand(shown.brandId)?.name ?? "", shown.number)}</span>
+                  {shown.outcome === "called" && shown.order && !undone.has(shown.order.id) && UNDO_MS - (now - shown.at) > 0 && (
+                    <button onClick={() => undo(shown)} className="num h-9 shrink-0 rounded-lg bg-white/20 px-3 text-[13px] font-semibold">
+                      호출 취소 {Math.ceil((UNDO_MS - (now - shown.at)) / 1000)}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                pendingHere.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="mr-0.5 text-[12px] text-white/50">접수된 번호</span>
+                    {pendingHere.slice(0, 8).map((o) => (
+                      <button key={o.id} onClick={() => setDigits(String(o.displayNumber))} className="num h-8 rounded-full bg-white/12 px-3 text-[14px] font-bold" aria-label={`${o.displayNumber}번 입력`}>
+                        {o.displayNumber}
+                      </button>
+                    ))}
+                  </div>
+                )
+              )}
+            </div>
+            {history.length > 0 && (
+              <ul className="hidden min-h-0 divide-y divide-white/10 overflow-y-auto short-wide:block">
+                {history.slice(0, 3).map((r) => {
                   const wasUndone = r.order && undone.has(r.order.id);
                   return (
-                    <li key={`${r.order?.id}${r.at}`} className="flex items-center gap-3 py-2">
-                      <span className="num w-14 text-[20px] font-bold">{r.number}</span>
-                      <span className="min-w-0 flex-1 truncate text-[13.5px] opacity-75">
-                        {getBrand(r.brandId)?.name} · {wasUndone ? "호출 취소됨" : "호출함"}
+                    <li key={`${r.order?.id}${r.at}`} className="flex items-center gap-3 py-1.5 text-[13px]">
+                      <span className="num w-12 text-[16px] font-bold">{r.number}</span>
+                      <span className="min-w-0 flex-1 truncate text-white/60">
+                        {getBrand(r.brandId)?.name} · {wasUndone ? "취소됨" : "호출함"}
                       </span>
-                      {!wasUndone && left > 0 && (
-                        <button onClick={() => undo(r)} className="num h-9 shrink-0 rounded-full bg-white/12 px-3 text-[13px] font-semibold">
-                          호출 취소 {Math.ceil(left / 1000)}
-                        </button>
-                      )}
                     </li>
                   );
                 })}
               </ul>
+            )}
+          </div>
+
+          {/* right (or bottom): keypad fills the space left, so 호출 never leaves the screen */}
+          <div className="flex min-h-0 flex-col gap-2 short-wide:row-span-1">
+            <div className="grid flex-1 grid-cols-3 grid-rows-4 gap-2 short:min-h-[150px] short:gap-1.5" aria-label="숫자 키패드">
+              {["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", "back"].map((k) => (
+                <button
+                  key={k}
+                  onClick={() => press(k)}
+                  aria-label={k === "back" ? "한 글자 지우기" : k === "clear" ? "모두 지우기" : `숫자 ${k}`}
+                  className="num h-[62px] rounded-xl bg-white/[.08] text-[24px] font-semibold active:bg-white/25 short:h-auto short:max-h-[64px] short:min-h-9 short:text-[19px]"
+                >
+                  {k === "back" ? "⌫" : k === "clear" ? <span className="text-[15px]">지움</span> : k}
+                </button>
+              ))}
             </div>
-          )}
+            <button
+              onClick={submit}
+              disabled={!digits || busy}
+              className="h-[58px] w-full shrink-0 rounded-xl bg-[#1e62e6] text-[20px] font-bold disabled:opacity-35 short:h-11 short:text-[17px]"
+            >
+              {busy ? "호출하는 중…" : "호출"}
+            </button>
+          </div>
         </div>
       </main>
 

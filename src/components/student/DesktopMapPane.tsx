@@ -7,7 +7,7 @@ import { useStudent } from "./StudentProvider";
 
 /** Desktop-only persistent map (left side), synced with the panel selection. */
 export function DesktopMapPane() {
-  const { world, selected, setSelected, layer, active } = useStudent();
+  const { world, selected, setSelected, layer, active, brandFocus } = useStudent();
   const router = useRouter();
   const path = usePathname();
   const box = useRef<HTMLDivElement>(null);
@@ -36,6 +36,7 @@ export function DesktopMapPane() {
             padBottom={56}
             noticeTop={80}
             highlightBrands={active.map((r) => r.order!.brandId)}
+            focusBrand={brandFocus}
             highlightLabels={Object.fromEntries(active.map((r) => [r.order!.brandId, String(r.order!.displayNumber)]))}
             onSelect={(id) => {
               setSelected(id);

@@ -54,6 +54,10 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* wide but short frames (e.g. a pane of the split demo): switch to two columns */
+@custom-variant short-wide (@media (min-aspect-ratio: 5/4) and (max-height: 720px));
+@custom-variant short (@media (max-height: 640px));
+
 /* type scale — Korean UI: tight but not cramped tracking, 1.35–1.5 leading */
 @utility t-display {
   font-size: 28px;

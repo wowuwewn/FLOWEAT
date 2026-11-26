@@ -114,7 +114,10 @@ export function CommonsMap({
       return { ...f, y: -2 + (H / 2 - padBottom) / f.k };
     }
     if (layer === "queue") {
-      const f = frame(-fitHalf, fitHalf, -1.8, WORLD.kioskDepth[3] + 2.6, W, H, noticeTop, padBottom);
+      // widen just enough that the longest line stays on screen
+      const longest = Math.max(0, ...kiosks.map((k) => Math.min(k.people + (k.inService ? 1 : 0), MAX_PEOPLE)));
+      const half = Math.max(fitHalf, WORLD.kioskX + WORLD.userOffset + longest * WORLD.slot + 0.4);
+      const f = frame(-half, half, -1.8, WORLD.kioskDepth[3] + 2.6, W, H, noticeTop, padBottom);
       // entrance sits on the bottom edge; any spare height shows more of the hall above
       return { ...f, y: -1.8 + (H / 2 - padBottom) / f.k };
     }
@@ -127,7 +130,8 @@ export function CommonsMap({
       return { x: cx, y: 27 + (padBottom - noticeTop) / 2 / k, k };
     }
     return frame(H_.x0 - 0.5, narrow ? 28 : 34, -2, H_.y1Left + 0.8, W, H, noticeTop, padBottom);
-  }, [layer, W, H, fitHalf, padBottom, noticeTop, narrow, mine]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layer, W, H, fitHalf, padBottom, noticeTop, narrow, mine, Math.max(0, ...kiosks.map((k) => k.people))]);
 
   const [cam, setCam] = useGlide(target);
   const P = (p: V3 | [number, number]) => ({ x: W / 2 + (p[0] - cam.x) * cam.k, y: H / 2 - (p[1] - cam.y) * cam.k });

@@ -44,3 +44,8 @@ Playwright 스크린샷: 360·390·430px 휴대폰, 720×1280 키오스크, 1180
 - 해상도 점검: 7개 크기 × 16개 화면 = 112개에서 가로 넘침·페이지 오류 0 (휴대폰 `/ops`의 기존 넘침 332px 수정).
 - E2E 서버는 모든 브라우저가 127.0.0.1이라 `FLOWEAT_RATE_PER_CLIENT=200`으로 한도만 올려 실행(운영 기본값 40 유지).
 - 재현: `python3 scripts/data/merge_field_menu.py --check`, `npx tsx scripts/forecast-coverage.ts peak`, `npx tsx scripts/check-models.ts`.
+
+## 2026-11-26 결과 (디자인 v3)
+- 단위 27/27, E2E 38/38 (문구·탭 이름 변경 반영, `/data` 접근성 추가).
+- 7해상도 × 17화면: 로컬·Vercel 모두 가로 넘침·페이지 오류 0 (Vercel의 vercel.live 툴바는 이 환경 프록시가 막아 제외).
+- Vercel 실흐름: 호출 후 학생 화면 0.45초·모니터 0.48초 반영, 잘못된 번호·다른 매장 번호 거절, 중복 안내, 취소 철회.

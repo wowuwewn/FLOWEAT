@@ -12,7 +12,7 @@ import { getBrand } from "@/core/catalog";
 import { FLOOR_GUIDE } from "@/core/layout";
 import type { KioskView, ZoneView } from "@/core/world";
 import { minuteRange } from "@/lib/format";
-import { SEAT_UNITS, zoneStates, type CellState, type SeatUnit } from "./dining";
+import { FIXTURES, SEAT_UNITS, zoneStates, type CellState, type SeatUnit } from "./dining";
 import { kioskPos, personPos, WORLD } from "./geometry";
 
 const G = FLOOR_GUIDE;
@@ -187,6 +187,28 @@ export function CommonsVR({
     sign("카페1847", (G.cafe.x0 + G.cafe.x1) / 2 + 2, G.cafe.y0 - 0.05, 2.4, 3.6, "#8a6a58", "#ffffff");
     block(G.restroom.x0, G.restroom.x1, G.restroom.y0, G.restroom.y1, 0, 3, 0xe6e9ee);
     sign("화장실", (G.restroom.x0 + G.restroom.x1) / 2, G.restroom.y0 - 0.05, 2.4, 3, "#5f6772", "#ffffff");
+
+    // food-court fixtures (arbitrary positions): call monitors, tray return, water, planters
+    for (const f of FIXTURES) {
+      if (f.kind === "monitor") {
+        const z0 = f.z0 ?? 2.4;
+        block(f.x0 - 0.1, f.x1 + 0.1, f.y0, f.y1 + 0.08, z0 - 0.1, z0 + 1.3, 0x1b2130);
+        sign("주문 번호 리스트", (f.x0 + f.x1) / 2, f.y0 - 0.02, z0 + 0.95, f.x1 - f.x0 - 0.2, "#cfe4ff", "#14348f");
+        sign(f.label, (f.x0 + f.x1) / 2, f.y0 - 0.02, z0 + 0.35, (f.x1 - f.x0) * 0.7, "#cfe4ff", "#3b4f8f");
+        block((f.x0 + f.x1) / 2 - 0.04, (f.x0 + f.x1) / 2 + 0.04, f.y0 + 0.05, f.y0 + 0.13, z0 + 1.2, 3.2, 0x8a929e);
+        continue;
+      }
+      const tone = f.kind === "planter" ? 0x7fb98a : f.kind === "tray" ? 0xb9c0ca : 0x9cc3ec;
+      block(f.x0, f.x1, f.y0, f.y1, 0, f.h, tone);
+      if (f.kind === "planter") {
+        for (let y = f.y0 + 0.5; y < f.y1; y += 1.2) {
+          const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.42, 10, 8), mat(0x4f9a5f));
+          leaf.position.copy(V((f.x0 + f.x1) / 2, y, f.h + 0.3));
+          scene.add(leaf);
+        }
+      }
+      if (f.label) sign(f.label, (f.x0 + f.x1) / 2, f.y0 - 0.05, f.h + 0.45, Math.min(3, f.x1 - f.x0), "#5f6772", "#ffffff");
+    }
 
     // kiosks + people
     const personGeo = { legs: new THREE.CylinderGeometry(0.13, 0.12, 0.84, 10), torso: new THREE.CapsuleGeometry(0.2, 0.34, 4, 10), head: new THREE.SphereGeometry(0.13, 14, 12) };

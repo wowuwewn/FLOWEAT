@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { getBrand } from "@/core/catalog";
 import { FLOOR_GUIDE, type CounterSlot } from "@/core/layout";
 import type { KioskView, ZoneView } from "@/core/world";
-import { SEAT_UNITS, ZONE_LABEL_AT, zoneStates, type CellState, type SeatUnit } from "./dining";
+import { FIXTURES, SEAT_UNITS, ZONE_LABEL_AT, zoneStates, type CellState, type SeatUnit } from "./dining";
 import { kioskPos, personPos, WORLD, type V3 } from "./geometry";
 
 export type MapLayer = "queue" | "seats" | "pickup";
@@ -367,6 +367,20 @@ export function CommonsMap({
           })}
         </g>
 
+        {/* call monitors hang in front of the counters (positions arbitrary) */}
+        <g pointerEvents="none">
+          {FIXTURES.filter((f) => f.kind === "monitor").map((f) => {
+            const z0 = f.z0 ?? 2.4;
+            const z1 = z0 + 1.1;
+            return (
+              <g key={f.id}>
+                <path d={path([[(f.x0 + f.x1) / 2, f.y0, z1], [(f.x0 + f.x1) / 2, f.y0, z1 + 0.8]], false)} stroke="#8a929e" strokeWidth={1} />
+                <path d={path([[f.x0, f.y0, z0], [f.x1, f.y0, z0], [f.x1, f.y0, z1], [f.x0, f.y0, z1]])} fill="#cfe4ff" stroke="#1b2130" strokeWidth={1.5} />
+              </g>
+            );
+          })}
+        </g>
+
         {/* the guide photo is cut off on the right: fade the hall out instead of inventing it */}
         <rect x={fadeA} y={0} width={Math.max(0, W - fadeA)} height={H} fill="url(#cutFade)" />
 
@@ -375,6 +389,9 @@ export function CommonsMap({
 
         {/* dining area: concept layout, far rows first */}
         <g pointerEvents="none">
+          {FIXTURES.filter((f) => f.kind !== "monitor").map((f) =>
+            box(f.x0, f.x1, f.y0, f.y1, f.h, f.kind === "planter" ? "#9cc9a4" : f.kind === "tray" ? "#c9ced6" : "#bcd6f2", f.kind === "planter" ? "#78ad83" : f.kind === "tray" ? "#aab1bb" : "#94b8e0", f.id),
+          )}
           {[...SEAT_UNITS].sort((u, v) => v.y - u.y).map((u, n) => (
             <Table key={n} u={u} state={layer === "seats" ? stateOf(u) : null} box={box} />
           ))}
@@ -463,6 +480,11 @@ export function CommonsMap({
                 키오스크
               </text>
             )}
+            {FIXTURES.filter((f) => f.label && (layer === "pickup" || f.kind !== "monitor")).map((f) => (
+              <text key={f.id} {...xy(P([(f.x0 + f.x1) / 2, f.kind === "monitor" ? f.y0 : f.y0 - 0.8, f.kind === "monitor" ? (f.z0 ?? 2.4) + 1.6 : 0]))} fill={f.kind === "monitor" ? "#1550c4" : "#7b8290"} fontWeight={f.kind === "monitor" ? 650 : 500} fontSize={fs - 2}>
+                {f.kind === "monitor" ? f.label.replace("호출 ", "") : f.label}
+              </text>
+            ))}
             {layer === "seats" &&
               (Object.keys(ZONE_LABEL_AT) as SeatUnit["zone"][]).map((z) => (
                 <text key={z} {...xy(P(ZONE_LABEL_AT[z]))} fill={z === "rest" ? "#8a919c" : "#4d535c"} fontWeight={600} fontSize={fs - 1}>
@@ -508,7 +530,7 @@ export function CommonsMap({
   );
 }
 
-const ZONE_NAME: Record<SeatUnit["zone"], string> = { window: "창가 1인석", center: "중앙 칸막이석", long: "긴 테이블석", booth: "부스석", rest: "관측 밖" };
+const ZONE_NAME: Record<SeatUnit["zone"], string> = { window: "창가 1인석", center: "중앙 칸막이석", long: "긴 테이블석", booth: "부스석", rest: "그 밖의 좌석" };
 
 const TABLE_TONE: Record<CellState | "plain", [string, string]> = {
   free: ["#2bb673", "#15895a"],

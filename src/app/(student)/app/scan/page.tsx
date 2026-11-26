@@ -10,7 +10,7 @@ type BarcodeDetectorLike = { detect(src: CanvasImageSource): Promise<{ rawValue:
 export default function ScanPage() {
   const router = useRouter();
   const video = useRef<HTMLVideoElement>(null);
-  const [state, setState] = useState<"starting" | "scanning" | "denied" | "unsupported" | "wrong">("starting");
+  const [state, setState] = useState<"starting" | "scanning" | "denied" | "nocamera" | "unsupported" | "wrong">("starting");
   const [pasted, setPasted] = useState("");
 
   useEffect(() => {
@@ -75,8 +75,10 @@ export default function ScanPage() {
         }
         setState("scanning");
         raf = requestAnimationFrame(loop);
-      } catch {
-        setState("denied");
+      } catch (e) {
+        // iOS/Safari: NotAllowedError = permission refused; NotFoundError/OverconstrainedError = no usable camera
+        const name = (e as DOMException)?.name;
+        setState(name === "NotAllowedError" || name === "SecurityError" ? "denied" : "nocamera");
       }
     })();
     return () => {
@@ -97,6 +99,7 @@ export default function ScanPage() {
             {state === "starting" && "카메라를 켜는 중…"}
             {state === "denied" && "카메라 권한이 없어요. 기본 카메라 앱으로 찍어도 돼요."}
             {state === "unsupported" && "이 브라우저는 카메라를 쓸 수 없어요. 기본 카메라 앱으로 찍어 주세요."}
+            {state === "nocamera" && "카메라를 찾지 못했어요. 기본 카메라 앱으로 찍거나 아래에 QR 주소를 붙여 넣어 주세요."}
             {state === "wrong" && "영수증의 FLOWEAT QR이 아니에요"}
           </div>
         )}

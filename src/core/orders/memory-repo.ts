@@ -24,6 +24,8 @@ export interface StateBackend {
 
 const MAX_EVENTS = 2000;
 
+const idemKey = (sessionId: string, orderId: string, key: string) => `${sessionId}|${orderId}|${key}`;
+
 /**
  * Key-value implementation of the repository port. Used by the server memory store
  * and the browser one-device store. A Redis adapter would mirror these same keys.
@@ -44,7 +46,7 @@ export class MapRepository implements OrderRepository {
     s.seq[e.sessionId] = seq;
     const ev = { ...e, seq };
     s.events.push(ev);
-    s.idem[e.idempotencyKey] = seq;
+    s.idem[idemKey(e.sessionId, e.orderId, e.idempotencyKey)] = seq;
     return ev;
   }
 
@@ -95,7 +97,8 @@ export class MapRepository implements OrderRepository {
     return this.mutate((s) => {
       const o = s.orders[orderId];
       if (!o) return { order: null, changed: false };
-      if (s.idem[event.idempotencyKey] !== undefined) return { order: o, changed: false };
+      // keys are scoped to (session, order): a key reused elsewhere must not block this order
+      if (s.idem[idemKey(o.sessionId, orderId, event.idempotencyKey)] !== undefined) return { order: o, changed: false };
       if (!from.includes(o.status)) return { order: o, changed: false };
       const next: Order = { ...o, ...patch, version: o.version + 1 };
       s.orders[orderId] = next;

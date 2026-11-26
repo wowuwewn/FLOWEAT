@@ -80,7 +80,7 @@ export function Sheet({
             <h2 id={labelId} className="mb-3 text-[19px] leading-snug font-bold">
               {title}
             </h2>
-            <div className="max-h-[70vh] overflow-y-auto">{children}</div>
+            <div className="max-h-[70svh] overflow-y-auto">{children}</div>
           </motion.div>
         </div>
       )}

@@ -81,9 +81,16 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   await expect(phone.getByTestId("order-card")).toHaveCount(2);
 
   // monitor & staff
+  // two TVs: monitor 1 and monitor 2 must show the same screen (field check 2026-11-26)
   const monitor = await monitorCtx.newPage();
-  await monitor.goto(`/monitor?s=${session}`);
+  await monitor.goto(`/monitor?s=${session}&screen=1`);
   await expect(monitor.getByTestId("monitor-number")).toHaveCount(0);
+  const monitor2 = await monitorCtx.newPage();
+  await monitor2.goto(`/monitor?s=${session}&screen=2`);
+  const sameScreen = async () => {
+    const read = (m: typeof monitor) => m.evaluate(() => Array.from(document.querySelectorAll('[role="group"]')).map((g) => `${g.getAttribute("aria-label")}:${Array.from(g.querySelectorAll('[data-testid="monitor-number"]')).map((n) => n.textContent).join(",")}`).join("|"));
+    await expect.poll(async () => (await read(monitor)) === (await read(monitor2)), { timeout: 5000 }).toBe(true);
+  };
 
   // the store's number device: a wrong number is refused and changes nothing
   const staff = await staffCtx.newPage();
@@ -109,6 +116,7 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   await expect(phone.getByRole("alert").filter({ hasText: "준비 완료" })).toContainText("비비고고");
   await expect(monitor.getByTestId("monitor-number")).toHaveCount(1, { timeout: 5000 });
   expect(numbers).toContain((await monitor.getByTestId("monitor-number").first().textContent())?.trim());
+  await sameScreen();
   console.log(`ready → phone latency ${latency} ms`);
   expect(latency).toBeLessThan(2500);
 
@@ -120,7 +128,10 @@ test("cross-device loop: kiosk → QR → phone → staff → monitor + phone", 
   await staff.goto(`/staff?s=${session}&b=gapjjigae`);
   await callNumber(staff, numbers[1]);
   await expect(phone.locator('[data-testid="order-card"][data-status="ready"]')).toHaveCount(2, { timeout: 5000 });
-  await expect(monitor.getByTestId("monitor-number")).toHaveCount(2, { timeout: 5000 });
+  // the screen shows five brands at a time and jumps to the group of the newest call (값찌개),
+  // while the earlier 비비고고 number stays on the other group; both TVs agree
+  await expect(monitor.getByRole("group", { name: "값찌개 호출 번호" }).getByTestId("monitor-number")).toHaveText(numbers[1], { timeout: 5000 });
+  await sameScreen();
 
   // student marks received → monitor keeps the number (staff flow unchanged), phone ends tracking
   await phone.getByRole("button", { name: "받았어요" }).first().click();

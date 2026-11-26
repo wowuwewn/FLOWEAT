@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { brands as allBrands, getBrand } from "@/core/catalog";
+import { getBrand } from "@/core/catalog";
 import { kioskById, pickupShort, ZONES } from "@/core/layout";
 import { popularTimes, type KioskView, type ZoneView } from "@/core/world";
 import { CommonsMap, recommendedKiosk, type MapLayer } from "@/components/map/CommonsMap";
@@ -24,7 +24,7 @@ export default function HomePage() {
   return (
     <div>
       {/* phones: the map sits behind, the sheet scrolls over it */}
-      <div className={`sticky top-0 z-0 overflow-hidden bg-canvas lg:hidden ${layer === "queue" ? "h-[36vh] max-h-[380px] min-h-[250px]" : "h-[44vh] min-h-[300px]"}`}>
+      <div className={`sticky top-0 z-0 overflow-hidden bg-canvas lg:hidden ${layer === "queue" ? "h-[36svh] max-h-[380px] min-h-[250px]" : "h-[44svh] min-h-[300px]"}`}>
         <div className="absolute top-0 right-0 left-0 z-10 flex items-center justify-between px-4 pt-[max(env(safe-area-inset-top),12px)]">
           <span className="rounded-full bg-white px-3 py-1.5 shadow-[0_1px_4px_rgba(16,24,40,.12)]">
             <Wordmark size={15} />
@@ -34,7 +34,7 @@ export default function HomePage() {
         <MobileMap />
       </div>
 
-      <div className="relative z-10 -mt-5 min-h-[60vh] rounded-t-[var(--radius-sheet)] bg-white shadow-[0_-6px_24px_rgba(16,24,40,.07)] lg:mt-0 lg:min-h-dvh lg:rounded-none lg:shadow-none">
+      <div className="relative z-10 -mt-5 min-h-[60svh] rounded-t-[var(--radius-sheet)] bg-white shadow-[0_-6px_24px_rgba(16,24,40,.07)] lg:mt-0 lg:min-h-dvh lg:rounded-none lg:shadow-none">
         <div className="mx-auto h-1 w-9 translate-y-2 rounded-full bg-line-2 lg:hidden" aria-hidden />
         {!world || !engine ? (
           <div className="space-y-3 p-5 pt-8" aria-busy="true" aria-label="불러오는 중">
@@ -396,7 +396,6 @@ function PickupLayer() {
       <ul className="mt-2">
         {list.map((b) => {
           const loc = pickupShort(b.id);
-          const mon = allBrands.find((x) => x.id === b.id)?.monitor;
           const o = mine.get(b.id);
           const on = brandFocus === b.id;
           return (
@@ -421,7 +420,6 @@ function PickupLayer() {
                     ) : (
                       "위치 미확인"
                     )}
-                    {mon && <> · 모니터 {mon.screen === "A" ? 1 : 2}</>}
                   </span>
                 </span>
                 <span className="text-right">

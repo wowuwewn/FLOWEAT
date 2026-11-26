@@ -27,7 +27,6 @@ export default function BrandPage({ params }: { params: Promise<{ brandId: strin
         <p className="t-display num">{view ? prepText(view.p50, view.p80) : "–"}</p>
         <dl className="mt-4 divide-y divide-line border-y border-line">
           <Row k="수령 위치" v={loc ? `${loc.text}${loc.sure ? "" : " (추정)"}` : "미확인"} muted={!loc} />
-          <Row k="호출 모니터" v={brand.monitor ? `${brand.monitor.screen === "A" ? 1 : 2}번 화면` : "–"} />
           {view && <Row k="밀린 주문" v={`${view.backlog}건`} />}
         </dl>
       </section>

@@ -241,7 +241,7 @@ export default function KioskPage() {
                   )}
                 </div>
                 {cart.length > 0 ? (
-                  <ul className={`max-h-[34vh] space-y-1 overflow-y-auto px-4 pt-1 sm:block sm:max-h-[22vh] sm:px-5 ${cartOpen ? "block" : "hidden"}`} aria-label="장바구니">
+                  <ul className={`max-h-[34svh] space-y-1 overflow-y-auto px-4 pt-1 sm:block sm:max-h-[22svh] sm:px-5 ${cartOpen ? "block" : "hidden"}`} aria-label="장바구니">
                     {cart.map((l) => {
                       const m = getMenu(l.menuId)!;
                       return (

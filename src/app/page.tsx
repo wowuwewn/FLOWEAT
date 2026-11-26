@@ -16,7 +16,7 @@ const SURFACES = [
   { href: "/app", title: "학생 앱", body: "키오스크 대기, 빈 테이블, 조리 시간, 내 주문 알림" },
   { href: "/kiosk", title: "키오스크", body: "현장 주문 흐름 그대로, 영수증에 추적 QR" },
   { href: "/staff", title: "매장 호출기", body: "영수증 번호만 누르면 호출" },
-  { href: "/monitor", title: "호출 모니터", body: "현장의 2화면 번호 리스트" },
+  { href: "/monitor", title: "호출 모니터", body: "두 모니터에 같은 번호 리스트" },
   { href: "/ops", title: "영상 AI", body: "테스트 영상에서 줄·테이블 분석" },
 ];
 

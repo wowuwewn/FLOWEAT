@@ -194,7 +194,7 @@ export function CommonsVR({
         const z0 = f.z0 ?? 2.4;
         block(f.x0 - 0.1, f.x1 + 0.1, f.y0, f.y1 + 0.08, z0 - 0.1, z0 + 1.3, 0x1b2130);
         sign("주문 번호 리스트", (f.x0 + f.x1) / 2, f.y0 - 0.02, z0 + 0.95, f.x1 - f.x0 - 0.2, "#cfe4ff", "#14348f");
-        sign(f.label, (f.x0 + f.x1) / 2, f.y0 - 0.02, z0 + 0.35, (f.x1 - f.x0) * 0.7, "#cfe4ff", "#3b4f8f");
+        sign("모든 매장 · 같은 화면", (f.x0 + f.x1) / 2, f.y0 - 0.02, z0 + 0.35, (f.x1 - f.x0) * 0.7, "#cfe4ff", "#3b4f8f");
         block((f.x0 + f.x1) / 2 - 0.04, (f.x0 + f.x1) / 2 + 0.04, f.y0 + 0.05, f.y0 + 0.13, z0 + 1.2, 3.2, 0x8a929e);
         continue;
       }

@@ -29,7 +29,7 @@
         "col": 1
       },
       "monitor": {
-        "screen": "A",
+        "group": 1,
         "column": 1,
         "confirmed": false
       }
@@ -50,7 +50,7 @@
         "col": 2
       },
       "monitor": {
-        "screen": "B",
+        "group": 2,
         "column": 5,
         "confirmed": true
       }
@@ -71,7 +71,7 @@
         "col": 3
       },
       "monitor": {
-        "screen": "A",
+        "group": 1,
         "column": 2,
         "confirmed": true
       }
@@ -92,7 +92,7 @@
         "col": 4
       },
       "monitor": {
-        "screen": "A",
+        "group": 1,
         "column": 3,
         "confirmed": true
       }
@@ -113,7 +113,7 @@
         "col": 5
       },
       "monitor": {
-        "screen": "A",
+        "group": 1,
         "column": 4,
         "confirmed": true
       }
@@ -134,7 +134,7 @@
         "col": 1
       },
       "monitor": {
-        "screen": "A",
+        "group": 1,
         "column": 5,
         "confirmed": true
       }
@@ -155,7 +155,7 @@
         "col": 2
       },
       "monitor": {
-        "screen": "B",
+        "group": 2,
         "column": 1,
         "confirmed": true
       }
@@ -176,7 +176,7 @@
         "col": 3
       },
       "monitor": {
-        "screen": "B",
+        "group": 2,
         "column": 2,
         "confirmed": true
       }
@@ -197,7 +197,7 @@
         "col": 4
       },
       "monitor": {
-        "screen": "B",
+        "group": 2,
         "column": 3,
         "confirmed": true
       }
@@ -218,7 +218,7 @@
         "col": 5
       },
       "monitor": {
-        "screen": "B",
+        "group": 2,
         "column": 4,
         "confirmed": true
       }

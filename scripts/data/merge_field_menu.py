@@ -165,7 +165,8 @@ def main(check: bool) -> None:
             b["kioskTab"] = {"row": r + 1, "col": c + 1}
             screen = next(s for s, cols in MONITOR.items() if bid in cols)
             col = MONITOR[screen].index(bid)
-            b["monitor"] = {"screen": screen, "column": col + 1, "confirmed": (screen, col) not in MONITOR_UNCONFIRMED}
+            # one shared screen on both monitors (field check 2026-11-26): A/B are its two column groups
+            b["monitor"] = {"group": 1 if screen == "A" else 2, "column": col + 1, "confirmed": (screen, col) not in MONITOR_UNCONFIRMED}
     cat["brands"] = [brands[b] for b in order]
     cat["menus"] = menus
     cat["generatedAt"] = FIELD_DATE

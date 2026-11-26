@@ -480,9 +480,9 @@ export function CommonsMap({
                 키오스크
               </text>
             )}
-            {FIXTURES.filter((f) => f.label && (layer === "pickup" || f.kind !== "monitor")).map((f) => (
+            {FIXTURES.filter((f) => f.label && (f.kind !== "monitor" || (layer === "pickup" && !narrow))).map((f) => (
               <text key={f.id} {...xy(P([(f.x0 + f.x1) / 2, f.kind === "monitor" ? f.y0 : f.y0 - 0.8, f.kind === "monitor" ? (f.z0 ?? 2.4) + 1.6 : 0]))} fill={f.kind === "monitor" ? "#1550c4" : "#7b8290"} fontWeight={f.kind === "monitor" ? 650 : 500} fontSize={fs - 2}>
-                {f.kind === "monitor" ? f.label.replace("호출 ", "") : f.label}
+                {f.label}
               </text>
             ))}
             {layer === "seats" &&
@@ -503,10 +503,18 @@ export function CommonsMap({
       </svg>
 
       {!hideLabels && (
-        <div className="absolute left-3 flex items-center gap-2" style={{ bottom: narrow ? Math.max(4, padBottom - 8) : padBottom + 8 }}>
-          {extra}
-          <span className="t-micro font-semibold text-ink-3 [text-shadow:0_0_3px_#eceef1,0_0_3px_#eceef1]">개념 배치 · 실제와 달라요</span>
-        </div>
+        <>
+          {/* phones: the bottom strip is shared with the 정문 label and zoom — keep only the button there */}
+          <div className="absolute left-3 flex items-center gap-2" style={{ bottom: narrow ? Math.max(4, padBottom - 8) : padBottom + 8 }}>
+            {extra}
+            {!narrow && <ConceptNote />}
+          </div>
+          {narrow && (
+            <div className="pointer-events-none absolute left-4" style={{ top: noticeTop - 2 }}>
+              <ConceptNote />
+            </div>
+          )}
+        </>
       )}
       {interactive && (
         <div
@@ -604,6 +612,10 @@ function FlowLine({ pts, k }: { pts: { x: number; y: number }[]; k: number }) {
       </g>
     </g>
   );
+}
+
+function ConceptNote() {
+  return <span className="t-micro font-semibold whitespace-nowrap text-ink-3 [text-shadow:0_0_3px_#eceef1,0_0_3px_#eceef1,0_0_3px_#eceef1]">개념 배치 · 실제와 달라요</span>;
 }
 
 function cxy(p: { x: number; y: number }) {

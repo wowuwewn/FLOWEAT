@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const PAGES = [
   "/", "/app", "/app?layer=seats", "/app?layer=pickup", "/app/menu", "/app/menu/bibigogo", "/app/orders", "/app/about",
-  "/kiosk", "/staff?b=babi", "/staff/board?b=babi", "/monitor", "/monitor?screen=A", "/ops", "/demo/split", "/o/AAAAAAAAAAAAAAAAAAAAAA", "/data", "/this-page-does-not-exist",
+  "/kiosk", "/staff?b=babi", "/staff/board?b=babi", "/monitor", "/monitor?screen=2", "/ops", "/demo/split", "/o/AAAAAAAAAAAAAAAAAAAAAA", "/data", "/this-page-does-not-exist",
 ];
 
 async function audit(page: Page, label: string) {

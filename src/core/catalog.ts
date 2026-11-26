@@ -20,8 +20,12 @@ export interface Brand {
   fieldVerifiedAt?: string;
   /** position of the brand tab on the real kiosk (2 rows × 5) — tab order, NOT counter order */
   kioskTab?: { row: number; col: number };
-  /** column on the real call monitors (photo 2026-11-25); confirmed=false where the photo is cut off */
-  monitor?: { screen: "A" | "B"; column: number; confirmed: boolean };
+  /**
+   * Column on the shared call screen (both monitors show the same screen — field check 2026-11-26).
+   * The screen shows five brands at a time; `group` is which of the two five-column groups seen in the
+   * 2026-11-25 photo. confirmed=false where the photo is cut off. Not a per-monitor assignment.
+   */
+  monitor?: { group: 1 | 2; column: number; confirmed: boolean };
 }
 
 /** What the real kiosk showed for this item on the field date. A snapshot, never live availability. */

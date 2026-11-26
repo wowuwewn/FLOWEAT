@@ -58,8 +58,8 @@ export interface Fixture {
 }
 
 export const FIXTURES: Fixture[] = [
-  { id: "monA", label: "호출 모니터 1", x0: -14.3, x1: -10.7, y0: 23.9, y1: 24.1, h: 2.2, z0: 2.4, kind: "monitor" },
-  { id: "monB", label: "호출 모니터 2", x0: 10, x1: 14, y0: 16.9, y1: 17.1, h: 2.2, z0: 2.4, kind: "monitor" },
+  { id: "monA", label: "호출 모니터", x0: -14.3, x1: -10.7, y0: 23.9, y1: 24.1, h: 2.2, z0: 2.4, kind: "monitor" },
+  { id: "monB", label: "호출 모니터", x0: 10, x1: 14, y0: 16.9, y1: 17.1, h: 2.2, z0: 2.4, kind: "monitor" },
   { id: "tray", label: "퇴식구", x0: -37.5, x1: -33.5, y0: 16.4, y1: 18, h: 1.1, kind: "tray" },
   { id: "water", label: "정수기·수저", x0: 13.5, x1: 17.5, y0: 0.4, y1: 1.2, h: 1.2, kind: "water" },
   { id: "plantA", label: "", x0: -15.6, x1: -14.8, y0: 11.8, y1: 21.6, h: 0.9, kind: "planter" },

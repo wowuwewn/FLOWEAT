@@ -45,6 +45,16 @@ describe("OrderService", () => {
     expect(published.length).toBe(2);
   });
 
+  it("an idempotency key used for one order or session does not block another", async () => {
+    const { svc } = setup();
+    const r1 = await svc.placeOrder({ sessionId: "TEST1", kioskId: "L1", lines: [{ menuId: bibim.id, qty: 1 }, { menuId: jjigae.id, qty: 1 }] });
+    const r2 = await svc.placeOrder({ sessionId: "TEST2", kioskId: "L1", lines: [{ menuId: bibim.id, qty: 1 }] });
+    expect((await svc.markReady("TEST1", r1.tickets[0].order.id, "same-key")).changed).toBe(true);
+    expect((await svc.markReady("TEST1", r1.tickets[1].order.id, "same-key")).changed).toBe(true);
+    expect((await svc.markReady("TEST2", r2.tickets[0].order.id, "same-key")).changed).toBe(true);
+    expect((await svc.markReady("TEST2", r2.tickets[0].order.id, "same-key")).changed).toBe(false);
+  });
+
   it("brand display numbers increase per brand within a session", async () => {
     const { svc } = setup();
     const a = await svc.placeOrder({ sessionId: "TEST1", kioskId: "L1", lines: [{ menuId: bibim.id, qty: 1 }] });

@@ -17,13 +17,19 @@ import { BackendError } from "@/client/backend";
 import { liveBacklogOf, useBackend, useDemoContext, useSessionOrders, useWorld } from "@/client/hooks";
 import { currentKiosk } from "@/client/session";
 import { Qr } from "@/components/Qr";
-import { DishArt } from "@/components/kiosk/DishArt";
+import { DishIcon, dishKind, type DishKind } from "@/components/kiosk/DishIcon";
 import { won, prepText } from "@/lib/format";
 
 type Step = "attract" | "menu" | "pay" | "tickets";
 type ReceiptKind = "full" | "simple";
 
-const YELLOW = "#f3e33a";
+const YELLOW = "#f6e044";
+/** soft tile tint + icon ink per kind of dish (food-adjacent, low saturation) */
+const TINT: Record<DishKind, [string, string]> = {
+  soup: ["#f8efe2", "#9a5a22"], noodle: ["#f8efe2", "#9a5a22"], stew: ["#fbe9e4", "#ad3d2a"], rice: ["#f2efe7", "#6a5634"],
+  curry: ["#f8eddb", "#8f6118"], cutlet: ["#f8eddb", "#8f6118"], kimbap: ["#eaf2e4", "#46712d"], cold: ["#e8f0f8", "#365f8e"],
+  poke: ["#eaf2e4", "#46712d"], plainrice: ["#f2efe7", "#6a5634"], can: ["#eef0f3", "#4d535c"], side: ["#f2efe7", "#6a5634"],
+};
 
 export default function KioskPage() {
   const { backend, info } = useBackend();
@@ -130,20 +136,17 @@ export default function KioskPage() {
               <div className="flex shrink-0 items-center justify-end gap-2 px-4 pt-4">
                 <LargeToggle large={large} setLarge={setLarge} light />
               </div>
-              <div className="flex flex-1 flex-col items-center justify-center px-6 py-4 text-center">
-                <p className="text-[13px] font-bold tracking-[0.32em] text-ink-3">1947 COMMONS</p>
-                <h1 className="mt-2 text-[40px] leading-none font-[850] tracking-[-0.04em] text-[#1b2233] sm:text-[52px]">FOOD MARKET</h1>
-                <div className="mt-8 flex items-end justify-center gap-1 sm:gap-3" aria-hidden>
-                  {["kaohsiung-089", "babi-025", "gapjjigae-006", "tokyoya-085", "gyeongseong-014"].map((id, i) => {
-                    const m = getMenu(id);
-                    return m ? (
-                      <span key={id} className={i === 2 ? "" : i % 2 ? "translate-y-3" : "translate-y-6"}>
-                        <DishArt menu={m} size={i === 2 ? 116 : 84} />
-                      </span>
-                    ) : null;
-                  })}
-                </div>
-                <p className="mt-8 max-w-sm text-[15px] leading-relaxed text-ink-2">10개 매장 메뉴를 한 번에 주문하고, 매장마다 번호표를 받아요.</p>
+              <div className="flex flex-1 flex-col justify-center px-8 py-6">
+                <p className="text-[15px] font-semibold text-ink-3">1947 COMMONS</p>
+                <h1 className="mt-1 text-[44px] leading-[1.05] font-bold tracking-[-0.035em] text-[#191b1f] sm:text-[56px]">푸드마켓</h1>
+                <ul className="mt-10 grid grid-cols-2 gap-x-8 gap-y-0 text-[17px] text-ink-2" aria-label="매장">
+                  {brands.map((b) => (
+                    <li key={b.id} className="flex items-baseline justify-between border-b border-line py-3">
+                      <span>{b.name}</span>
+                      {brandPrep(b.id) && <span className="num text-[14px] text-blue-ink">{brandPrep(b.id)}</span>}
+                    </li>
+                  ))}
+                </ul>
               </div>
               <div className="shrink-0 px-5 pb-5 sm:px-8">
                 <button
@@ -151,14 +154,12 @@ export default function KioskPage() {
                     setStep("menu");
                     touch();
                   }}
-                  className="h-[84px] w-full rounded-[22px] text-[28px] font-[800] text-[#1b2233] shadow-[0_10px_30px_rgba(160,140,0,.25)] active:brightness-95"
+                  className="h-[84px] w-full rounded-[20px] text-[26px] font-bold tracking-[-0.02em] text-[#191b1f] active:brightness-95"
                   style={{ background: YELLOW }}
                 >
                   주문하기
                 </button>
-                <p className="mt-3 text-center text-[12.5px] leading-relaxed text-ink-3">
-                  실제 학식 키오스크의 주문 흐름을 참고한 <b className="text-ink-2">모의 키오스크</b>예요. 파란색 표시는 FLOWEAT이 더한 기능이에요.
-                </p>
+                <p className="t-sub mt-3 text-center text-ink-3">모의 키오스크 · 파란색은 FLOWEAT 기능</p>
               </div>
             </motion.div>
           )}
@@ -166,7 +167,7 @@ export default function KioskPage() {
           {step === "menu" && (
             <motion.div key="menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex min-h-0 flex-1 flex-col">
               <TopBar onHome={reset} large={large} setLarge={setLarge} />
-              <div role="tablist" aria-label="매장" className="grid shrink-0 grid-cols-5 gap-1 bg-[#eceae2] p-1.5">
+              <div role="tablist" aria-label="매장" className="grid shrink-0 grid-cols-5 gap-1 border-b border-[#e6e4dc] bg-white p-1.5">
                 {brands.map((b) => {
                   const n = cart.filter((l) => getMenu(l.menuId)?.brandId === b.id).reduce((s, l) => s + l.qty, 0);
                   const on = b.id === brandId;
@@ -180,38 +181,35 @@ export default function KioskPage() {
                         setBrandId(b.id);
                         touch();
                       }}
-                      className={`relative flex min-h-[52px] items-center justify-center rounded-[10px] px-1 text-center text-[14px] leading-tight font-semibold sm:min-h-[58px] sm:text-[16px] ${on ? "bg-[#d9dcf3] text-[#1b2233]" : "bg-white text-ink-2"}`}
+                      className={`relative flex min-h-[50px] items-center justify-center rounded-[10px] px-1 text-center text-[14.5px] leading-tight tracking-[-0.01em] sm:min-h-[56px] sm:text-[16px] ${on ? "bg-[#dfe2f5] font-bold text-[#191b1f]" : "font-medium text-ink-2"}`}
                     >
                       {b.name}
-                      {n > 0 && <span className="num absolute -top-1 -right-1 grid size-5 place-items-center rounded-full bg-[#d23a35] text-[11px] font-bold text-white">{n}</span>}
+                      {n > 0 && <span className="num absolute top-1 right-1 grid size-[18px] place-items-center rounded-full bg-[#191b1f] text-[10.5px] font-bold text-white">{n}</span>}
                     </button>
                   );
                 })}
               </div>
 
-              <section className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-2.5 pb-4 sm:px-3" aria-label={`${brand.name} 메뉴`}>
-                <div className="mb-2.5 flex items-center justify-between gap-3 rounded-xl bg-[#e8efff] px-3.5 py-2.5 text-[#14348f]">
-                  <p className="min-w-0 text-[14px] font-semibold">
-                    <span className="mr-1.5 rounded bg-[#2448db] px-1.5 py-0.5 text-[11px] font-bold text-white">FLOWEAT</span>
-                    {brand.name} 주문 후 준비
+              <section className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 pb-4 sm:px-4" aria-label={`${brand.name} 메뉴`}>
+                <div className="mb-2.5 flex items-baseline justify-between px-1">
+                  <h2 className="text-[20px] font-bold tracking-[-0.02em]">{brand.name}</h2>
+                  <p className="t-sub text-blue-ink">
+                    조리 예상 <span className="num font-semibold">{brandPrep(brandId) ?? "–"}</span>
                   </p>
-                  <p className="num shrink-0 text-[17px] font-[800]">{brandPrep(brandId) ?? "–"}</p>
                 </div>
                 <ul className="grid grid-cols-2 gap-2 min-[480px]:grid-cols-3 min-[700px]:grid-cols-4">
                   {menusOf(brandId).map((m) => (
                     <MenuTile key={m.id} m={m} qty={cart.find((l) => l.menuId === m.id)?.qty ?? 0} preparing={preparing.has(m.id)} prep={m.isSide ? null : prepLine(m.id)} onAdd={() => add(m.id)} />
                   ))}
                 </ul>
-                <p className="mt-4 px-1 text-[12px] leading-relaxed text-ink-3">
-                  메뉴명·가격은 2026-11-25 현장 키오스크 화면 기준이고, 그때 보지 못한 메뉴는 참고 가격이에요. ‘준비중’ 표시는 이 시연에서 날짜마다 임의로 정한 예시라 실제 판매 상태와 관계없어요. 그림은 실제 음식 사진이 아니에요.
-                </p>
+                <p className="t-micro mt-4 px-1 text-ink-3">‘준비중’은 시연용 예시예요</p>
               </section>
 
               {/* order cart */}
               <div className="shrink-0 border-t border-[#dcdad2] bg-white shadow-[0_-8px_24px_rgba(17,26,46,.06)]">
                 <div className="flex items-center justify-between px-4 pt-2.5 sm:px-5">
-                  <h2 className="text-[15px] font-bold">
-                    주문카트 <span className="num text-ink-3">{count}</span>
+                  <h2 className="text-[16px] font-bold tracking-[-0.01em]">
+                    주문카트 <span className="num font-semibold text-ink-3">{count}</span>
                   </h2>
                   {cart.length > 0 && (
                     <button onClick={() => setCart([])} className="h-9 rounded-full px-3 text-[13.5px] font-semibold text-ink-3">
@@ -241,22 +239,20 @@ export default function KioskPage() {
                     })}
                   </ul>
                 ) : (
-                  <p className="px-4 pt-1 text-[14.5px] text-ink-3 sm:px-5">메뉴를 누르면 여기에 담겨요.</p>
+                  <p className="t-body px-4 pt-1 text-ink-3 sm:px-5">메뉴를 고르세요</p>
                 )}
                 {cartBrands.length > 1 && (
-                  <p className="mx-4 mt-2 rounded-xl bg-[#e8efff] px-3 py-2 text-[13.5px] font-semibold text-[#14348f] sm:mx-5">
-                    매장이 {cartBrands.length}곳이라 번호표가 {cartBrands.length}장 나와요.
-                  </p>
+                  <p className="t-sub mx-4 mt-2 text-blue-ink sm:mx-5">매장 {cartBrands.length}곳 · 번호표가 {cartBrands.length}장 나와요</p>
                 )}
                 <div className="flex items-center gap-2.5 px-4 pt-2.5 pb-4 sm:px-5">
                   <div className="shrink-0">
-                    <p className="text-[12.5px] text-ink-3">합계</p>
-                    <p className="num text-[22px] leading-tight font-[800]">{won(total)}{unknownPrice ? "+" : ""}</p>
+                    <p className="t-micro text-ink-3">합계</p>
+                    <p className="num text-[22px] leading-tight font-bold tracking-[-0.02em]">{won(total)}{unknownPrice ? "+" : ""}</p>
                   </div>
                   <button
                     disabled={cart.length === 0}
                     onClick={() => setStep("pay")}
-                    className="flex h-16 min-w-0 flex-1 items-center justify-center rounded-2xl text-[20px] font-[800] text-[#1b2233] disabled:bg-[#e4e2da] disabled:text-ink-3"
+                    className="flex h-16 min-w-0 flex-1 items-center justify-center rounded-[16px] text-[19px] font-bold text-[#191b1f] disabled:bg-[#efede6] disabled:text-ink-4"
                     style={cart.length ? { background: YELLOW } : undefined}
                   >
                     <span className="num">{count}</span>개 결제하기
@@ -284,7 +280,7 @@ export default function KioskPage() {
                             <p className="text-[15.5px] font-bold">{b.name}</p>
                             <p className="text-[13.5px] text-ink-2">{lines.map((l) => `${getMenu(l.menuId)?.name} ×${l.qty}`).join(", ")}</p>
                           </div>
-                          <span className="shrink-0 rounded-full bg-[#fff6b8] px-2.5 py-1 text-[12px] font-bold text-[#5c4a00]">번호표 1장</span>
+
                         </li>
                       );
                     })}
@@ -306,12 +302,10 @@ export default function KioskPage() {
                         </label>
                       ))}
                     </div>
-                    <p className="mt-2 text-[12.5px] leading-relaxed text-ink-3">현장 안내문: 간이영수증은 매장명만 나오고 메뉴명은 나오지 않아요. 음식을 받을 때 영수증을 가져가거나 제출해 주세요.</p>
+
                   </fieldset>
 
-                  <p className="mt-4 rounded-xl bg-[#e9ecf3] px-4 py-3 text-[14px] leading-relaxed text-ink-2">
-                    실제 키오스크의 카드·간편결제 단계 대신 <b className="text-ink">모의 결제</b>를 해요. 돈이 나가거나 카드 정보를 받지 않아요.
-                  </p>
+                  <p className="t-sub mt-5 text-center text-ink-3">모의 결제예요. 실제로 결제되지 않아요</p>
                   {error && (
                     <p role="alert" className="mt-3 rounded-xl bg-very-bg px-4 py-3 text-[15px] font-semibold text-very">
                       {error}
@@ -334,14 +328,11 @@ export default function KioskPage() {
             <motion.div key="tickets" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex min-h-0 flex-1 flex-col">
               <TopBar onHome={reset} large={large} setLarge={setLarge} title="주문 완료" />
               <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-4 pb-5 sm:px-5">
-                <h1 className="text-[23px] font-bold sm:text-[25px]">영수증 {result.tickets.length}장이 나왔어요</h1>
-                <p className="mt-1 text-[14.5px] leading-relaxed text-ink-2">
-                  호출 모니터에 번호가 뜨면 매장 카운터에서 영수증을 보여 주고 받아 가세요.{" "}
-                  {info?.kind === "device" ? "영수증 아래 ‘학생 앱에 연결’을 누르면 QR을 찍은 것처럼 이 브라우저의 학생 앱에 연결돼요." : "QR을 휴대폰 카메라로 찍으면 준비됐을 때 알려 드려요."}
-                </p>
+                <h1 className="t-title">영수증 {result.tickets.length}장</h1>
+                <p className="t-body mt-1 text-ink-2">모니터에 번호가 뜨면 영수증을 들고 카운터로 가세요</p>
                 {info?.kind === "device" && (
-                  <p className="mt-2 rounded-xl bg-[#fff4dc] px-3.5 py-2.5 text-[13.5px] leading-relaxed text-[#5c3d00]" role="note">
-                    한 기기 체험 중이라 <b>다른 휴대폰 카메라로 QR을 찍으면 주문을 찾을 수 없어요.</b> 기기 간 연동은 공용 저장소를 연결한 뒤에 가능해요.
+                  <p className="t-sub mt-2 text-ink-3" role="note">
+                    한 기기 체험이라 다른 휴대폰으로 QR을 찍으면 주문을 찾을 수 없어요. 아래 버튼으로 연결하세요.
                   </p>
                 )}
                 {onLocalhost && info?.kind === "server" && (
@@ -379,10 +370,9 @@ export default function KioskPage() {
                           <div className="flex items-center gap-3">
                             <Qr value={url} size={104} label={`${b.name} ${order.displayNumber}번 주문 추적 QR`} />
                             <div className="min-w-0 text-[#14348f]">
-                              <p className="text-[11px] font-bold tracking-wide">FLOWEAT 제안</p>
-                              <p className="text-[14px] leading-snug font-bold">주문 추적 QR</p>
-                              {order.prepEstimate && <p className="num mt-1 text-[13px] font-semibold">준비 예상 {prepText(order.prepEstimate.p50, order.prepEstimate.p80)}</p>}
-                              <p className="mt-1 text-[11.5px] leading-snug text-[#3b4f8f]">준비되면 휴대폰으로 알려 드려요</p>
+                              <p className="text-[14px] leading-snug font-bold">찍으면 준비될 때 알림</p>
+                              {order.prepEstimate && <p className="num mt-1 text-[13px]">조리 예상 {prepText(order.prepEstimate.p50, order.prepEstimate.p80)}</p>}
+                              <p className="mt-1 text-[11.5px] text-[#3b4f8f]">FLOWEAT</p>
                             </div>
                           </div>
                           <a
@@ -396,7 +386,7 @@ export default function KioskPage() {
                             {info?.kind === "device" ? "학생 앱에 연결 (이 기기에서 열기)" : <span className="truncate">{url.replace(/^https?:\/\//, "")}</span>}
                           </a>
                         </div>
-                        <p className="mx-4 mt-2.5 font-sans text-[12px] leading-relaxed text-ink-3">음식을 받을 때 이 영수증을 가져가거나 제출해 주세요. 영수증이 안 나왔다면 매장 벨을 눌러 주세요.</p>
+                        <p className="mx-4 mt-2.5 font-sans text-[12px] text-ink-3">수령 시 영수증 지참</p>
                       </li>
                     );
                   })}
@@ -464,36 +454,32 @@ function TopBar({ onHome, large, setLarge, title = "푸드마켓" }: { onHome: (
 function MenuTile({ m, qty, preparing, prep, onAdd }: { m: Menu; qty: number; preparing: boolean; prep: string | null; onAdd: () => void }) {
   const badge = m.field?.badge;
   const unknown = m.listedPriceKrw == null;
+  const kind = dishKind(m);
+  const [bg, fg] = TINT[kind];
   return (
     <li>
       <button
         onClick={preparing ? undefined : onAdd}
         aria-disabled={preparing || undefined}
         aria-label={`${m.name}, ${unknown ? "가격 미표기" : won(m.listedPriceKrw)}${preparing ? ", 준비중" : ""}${prep ? `, 준비 예상 ${prep}` : ""}${badge ? `, ${badge}` : ""}${qty ? `, ${qty}개 담음` : ""}`}
-        className={`relative flex h-full w-full flex-col items-center rounded-[12px] border-2 bg-white px-2 pt-2.5 pb-2.5 text-center transition-colors ${qty ? "border-[#1b2233]" : "border-transparent"} ${preparing ? "cursor-not-allowed" : "active:scale-[.98]"}`}
+        className={`relative flex h-full w-full flex-col rounded-[14px] bg-white p-2 text-left ring-inset transition-shadow ${qty ? "ring-2 ring-[#191b1f]" : "ring-1 ring-[#ebe9e2]"} ${preparing ? "cursor-not-allowed" : "active:scale-[.985]"}`}
       >
-        <span className="relative">
-          <DishArt menu={m} size={86} dim={preparing} />
-          {preparing && <span className="absolute inset-0 grid place-items-center text-[19px] font-[850] tracking-[0.2em] text-[#d23a35]">준비중</span>}
+        <span className="relative grid aspect-[16/10] w-full place-items-center rounded-[10px]" style={{ background: preparing ? "#f1f1ef" : bg, color: preparing ? "#b4b8be" : fg }}>
+          <DishIcon kind={kind} className="size-10" />
+          {preparing && <span className="absolute inset-0 grid place-items-center rounded-[10px] bg-white/55 text-[15px] font-bold tracking-[0.12em] text-[#c8312c]">준비중</span>}
+          {badge && (
+            <span className={`absolute top-1.5 left-1.5 rounded-[5px] px-1.5 py-px text-[10.5px] font-bold tracking-wide text-white ${badge === "BEST" ? "bg-[#c8312c]" : "bg-[#8f6700]"}`} title="2026-11-25 현장 화면 표시">
+              {badge}
+            </span>
+          )}
+          {m.field?.spicyIcon && <span className="absolute top-1.5 right-2 text-[11px] font-bold text-[#c8312c]">매운맛</span>}
+          {qty > 0 && <span className="num absolute top-1.5 right-1.5 grid size-6 place-items-center rounded-full bg-[#191b1f] text-[12.5px] font-bold text-white">{qty}</span>}
         </span>
-        {badge && (
-          <span
-            className={`absolute top-1.5 left-1.5 rounded-[5px] px-1.5 py-0.5 text-[11px] font-[850] tracking-wide text-white ${badge === "BEST" ? "bg-[#c8312c]" : "bg-[#8f6700]"}`}
-            title="2026-11-25 현장 화면 표시"
-          >
-            {badge}
-          </span>
-        )}
-        {m.field?.spicyIcon && (
-          <svg viewBox="0 0 24 24" className="absolute top-2 right-2 size-5" aria-hidden>
-            <path d="M15 4c1 1 1 2 0 3 3 0 5 3 4 6-2 5-8 8-14 7 5-2 8-6 8-11 0-2 1-4 2-5z" fill="#d23a35" />
-            <path d="M15 7c0-2 1-3 3-4" stroke="#3d7a3a" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-          </svg>
-        )}
-        <span className="mt-1.5 line-clamp-2 min-h-[2.5em] text-[14.5px] leading-tight font-semibold text-[#1b2233]">{m.name}</span>
-        <span className="num mt-0.5 text-[14.5px] text-ink-2">{unknown ? "가격 미표기" : (m.listedPriceKrw ?? 0).toLocaleString("ko-KR")}</span>
-        {prep && !preparing && <span className="num mt-1 rounded-full bg-[#e8efff] px-2 py-0.5 text-[11.5px] font-bold text-[#14348f]">준비 {prep}</span>}
-        {qty > 0 && <span className="num absolute top-1.5 right-1.5 grid size-7 place-items-center rounded-full bg-[#1b2233] text-[14px] font-bold text-white">{qty}</span>}
+        <span className="mt-2 line-clamp-2 min-h-[2.6em] px-0.5 text-[15px] leading-[1.3] font-semibold tracking-[-0.015em] text-[#191b1f]">{m.name}</span>
+        <span className="mt-1 flex items-baseline justify-between gap-1 px-0.5">
+          <span className="num text-[15px] text-ink">{unknown ? "가격 미표기" : `${(m.listedPriceKrw ?? 0).toLocaleString("ko-KR")}원`}</span>
+          {prep && !preparing && <span className="num shrink-0 text-[12px] font-semibold text-blue-ink">{prep}</span>}
+        </span>
       </button>
     </li>
   );

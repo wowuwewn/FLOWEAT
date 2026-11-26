@@ -1,52 +1,101 @@
 @import "tailwindcss";
 
 /*
- * FLOWEAT design tokens — "Commons Floor" (v2)
- * Brand blue follows the real blue "1947 COMMONS" signage; navy for text and dark surfaces.
- * Base: cool tile-gray floor + white surfaces (1947 COMMONS interior), DKU-inspired navy/blue.
- * Oak & brick appear ONLY inside the space map. Congestion colours are a separate scale and
- * always ship with text.
+ * FLOWEAT design tokens — v3 "Plain Hall"
+ * Quiet white surfaces, one blue for action and "fastest", status colours only where they carry
+ * meaning (and always with text). Type does the hierarchy: one display number per screen,
+ * everything else is 13–18px with weight and grey doing the work. See docs/design/system-v3.md.
  */
 @theme {
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 
-  --color-navy: #0b1f4d;
-  --color-navy-2: #16306e;
-  --color-blue: #2448db;
-  --color-blue-ink: #1d3fc4;
-  --color-ice: #eaefff;
-  --color-floor: #eef0f3;
+  --color-navy: #17233d;
+  --color-navy-2: #23324f;
+  --color-blue: #1e62e6;
+  --color-blue-ink: #1550c4;
+  --color-ice: #eaf1fe;
+  --color-floor: #f4f5f7;
+  --color-canvas: #eceef1;
   --color-surface: #ffffff;
-  --color-ink: #111a2e;
-  --color-ink-2: #46516a;
-  --color-ink-3: #5b6578;
-  --color-line: #dfe3ea;
-  --color-line-2: #c9cfda;
+  --color-ink: #191b1f;
+  --color-ink-2: #4d535c;
+  --color-ink-3: #5f6772;
+  --color-ink-4: #a9afb8;
+  --color-line: #ebedf0;
+  --color-line-2: #d9dde3;
   --color-oak: #c49a6a;
   --color-oak-soft: #efe3d3;
-  --color-brick: #a0533b;
-  --color-brick-soft: #ecd8d1;
+  --color-brick: #8a5a44;
+  --color-brick-soft: #ecdcd4;
+  --color-sand: #f3e7c3;
+  --color-sand-2: #e2cf95;
+  --color-pool: #dbe8f6;
+  --color-pool-2: #b7cde8;
 
-  --color-free: #12805a;
-  --color-free-bg: #dcf2e8;
-  --color-normal: #9a6400;
-  --color-normal-dot: #e0a21b;
-  --color-normal-bg: #fbefd4;
-  --color-busy: #c2410c;
-  --color-busy-dot: #ef6a23;
-  --color-busy-bg: #fde6d8;
-  --color-very: #b42328;
-  --color-very-dot: #d8343a;
-  --color-very-bg: #fadcdd;
+  --color-free: #0b8457;
+  --color-free-bg: #e4f5ec;
+  --color-normal: #9a5a00;
+  --color-normal-dot: #e5a00d;
+  --color-normal-bg: #fff2db;
+  --color-busy: #b9470f;
+  --color-busy-dot: #f0782e;
+  --color-busy-bg: #fdebdf;
+  --color-very: #c4263a;
+  --color-very-dot: #e5484d;
+  --color-very-bg: #fce8ea;
   --color-unknown: #8b94a5;
 
-  --radius-sheet: 28px;
-  --radius-card: 20px;
-  --radius-tile: 14px;
+  --radius-sheet: 22px;
+  --radius-card: 16px;
+  --radius-tile: 12px;
   --radius-chip: 999px;
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* type scale — Korean UI: tight but not cramped tracking, 1.35–1.5 leading */
+@utility t-display {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+@utility t-title {
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+@utility t-head {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+@utility t-row {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+@utility t-body {
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 400;
+  letter-spacing: -0.008em;
+}
+@utility t-sub {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+  letter-spacing: -0.003em;
+}
+@utility t-micro {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 @layer base {
@@ -57,12 +106,12 @@
     font-feature-settings: "ss06";
   }
   body {
-    background: var(--color-floor);
+    background: var(--color-surface);
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 15px;
-    line-height: 1.55;
-    letter-spacing: -0.006em;
+    line-height: 1.5;
+    letter-spacing: -0.008em;
     word-break: keep-all;
   }
   :focus-visible {
@@ -79,7 +128,6 @@
   .num {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
-    letter-spacing: -0.02em;
   }
   .safe-bottom {
     padding-bottom: max(env(safe-area-inset-bottom), 12px);

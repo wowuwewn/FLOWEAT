@@ -88,24 +88,22 @@ export default function ScanPage() {
 
   return (
     <div className="pb-6">
-      <PageHeader title="번호표 QR 스캔" back="/app/orders" />
-      <div className="relative mx-3 aspect-square overflow-hidden rounded-[var(--radius-sheet)] bg-[#0b1630]">
+      <PageHeader title="QR 스캔" back="/app/orders" />
+      <div className="relative mx-5 aspect-square overflow-hidden rounded-[var(--radius-card)] bg-ink">
         <video ref={video} className="size-full object-cover" playsInline muted aria-label="카메라 미리보기" />
-        <div className="pointer-events-none absolute inset-[18%] rounded-3xl border-[3px] border-white/85" aria-hidden />
+        <div className="pointer-events-none absolute inset-[20%] rounded-2xl border-2 border-white/90" aria-hidden />
         {state !== "scanning" && (
-          <div className="absolute inset-0 grid place-items-center p-8 text-center text-[15px] text-white/90">
+          <div className="t-body absolute inset-0 grid place-items-center p-8 text-center text-white/90">
             {state === "starting" && "카메라를 켜는 중…"}
-            {state === "denied" && "카메라 권한이 없어요. 휴대폰 기본 카메라로 번호표 QR을 찍어도 돼요."}
-            {state === "unsupported" && "이 브라우저에서는 카메라를 쓸 수 없어요. 휴대폰 기본 카메라로 QR을 찍어 주세요."}
-            {state === "wrong" && "FLOWEAT 번호표 QR이 아니에요. 번호표의 QR을 찍어 주세요."}
+            {state === "denied" && "카메라 권한이 없어요. 기본 카메라 앱으로 찍어도 돼요."}
+            {state === "unsupported" && "이 브라우저는 카메라를 쓸 수 없어요. 기본 카메라 앱으로 찍어 주세요."}
+            {state === "wrong" && "영수증의 FLOWEAT QR이 아니에요"}
           </div>
         )}
       </div>
-      <p className="mx-5 mt-4 text-[14px] leading-relaxed text-ink-2">
-        번호표 QR을 네모 안에 맞춰 주세요. 휴대폰 기본 카메라로 찍어도 같은 화면이 열려요. 회원가입은 필요 없어요.
-      </p>
+      <p className="t-sub mx-5 mt-3 text-center text-ink-3">영수증의 QR을 네모 안에 맞춰 주세요</p>
       <form
-        className="mx-3 mt-4 flex gap-2"
+        className="mx-5 mt-6 flex gap-2"
         onSubmit={(e) => {
           e.preventDefault();
           const t = tokenFromScan(pasted);
@@ -120,10 +118,10 @@ export default function ScanPage() {
           id="paste"
           value={pasted}
           onChange={(e) => setPasted(e.target.value)}
-          placeholder="QR 주소를 붙여 넣어도 돼요"
-          className="min-w-0 flex-1 rounded-2xl border border-line bg-surface px-4 py-3 text-[15px]"
+          placeholder="또는 QR 주소 붙여넣기"
+          className="t-body h-11 min-w-0 flex-1 rounded-[var(--radius-tile)] bg-floor px-3.5 outline-none placeholder:text-ink-4"
         />
-        <button className="rounded-2xl bg-navy px-5 font-semibold text-white">열기</button>
+        <button className="h-11 rounded-[var(--radius-tile)] bg-ink px-4 text-[15px] font-semibold text-white">열기</button>
       </form>
     </div>
   );

@@ -41,7 +41,7 @@ async function runSplitLoop(page: Page, prefix: string) {
   await expect(page.getByRole("status").filter({ hasText: "호출했어요" })).toBeVisible();
 
   await tab(/학생/);
-  await expect(student.getByText("준비 완료")).toBeVisible();
+  await expect(student.getByRole("alert").filter({ hasText: "준비 완료" })).toBeVisible();
   await tab(/모니터/);
   await expect(monitor.getByTestId("monitor-number")).toHaveCount(1);
   return { monitor };

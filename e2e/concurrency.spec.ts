@@ -81,7 +81,7 @@ test("many tabs and contexts: completion reaches every student tab fast; undo wi
     await expect(banner(p)).toHaveCount(0, { timeout: 2500 });
     await expect(p.locator('[data-testid="order-card"][data-status="ready"]')).toHaveCount(0, { timeout: 2500 });
   }
-  await expect(students[0].getByText("매장이 완료를 취소했어요")).toBeVisible();
+  await expect(students[0].getByText(/호출이 취소됐어요/)).toBeVisible();
   await expect(monitor.getByTestId("monitor-number")).toHaveCount(0, { timeout: 2500 });
 
   // --- complete again: exactly one banner per tab (no stacking / duplicate alerts)

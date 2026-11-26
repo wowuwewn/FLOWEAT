@@ -179,3 +179,15 @@ function andParticle(word: string): string {
   const code = ch.charCodeAt(0) - 0xac00;
   return code >= 0 && code < 11172 && code % 28 !== 0 ? "과" : "와";
 }
+
+/** Two-to-four word pickup location for lists ("폭풍분식·경성카츠 사이"), null when unknown. */
+export function pickupShort(brandId: string): { text: string; sure: boolean } | null {
+  const { slots, status } = counterFor(brandId);
+  if (status === "continues" || !slots[0]) return null;
+  const c = slots[0];
+  const row = FLOOR_GUIDE.counters.filter((x) => x.band === c.band);
+  const i = row.indexOf(c);
+  const nb = [row[i - 1], row[i + 1]].filter((x) => x && x.brandId).map((x) => BRAND_NAMES[x!.brandId!]);
+  const where = nb.length === 2 ? `${nb[0]}·${nb[1]} 사이` : nb.length === 1 ? `${nb[0]} 옆` : c.band === "blue" ? "오른쪽 안쪽" : "안쪽";
+  return { text: where, sure: status !== "inferred" };
+}

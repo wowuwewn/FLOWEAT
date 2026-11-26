@@ -50,11 +50,8 @@ export default function MonitorPage() {
         ))}
       </main>
       <footer className="flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 bg-[#1d2025] px-[max(12px,1.6vw)] py-[max(5px,0.6vw)] text-[clamp(11px,0.85vw,15px)] text-white/85">
-        <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <span>
-            <b className="num text-[#ff6b70]">123</b> 방금 호출(30초) · <b className="num">123</b> 체험 주문 · <span className="num text-white/60">512</span> 시뮬레이션 손님
-          </span>
-          <span className="text-white/60">색 구분은 FLOWEAT 시연 규칙이에요. 실제 모니터의 빨간·검은 번호 뜻은 확인 전이에요.</span>
+        <span>
+          <b className="num text-[#ff7b80]">123</b> 방금 호출 · <b className="num">123</b> 체험 주문 · <span className="num text-white/55">512</span> 시뮬레이션
         </span>
         <span className="text-white/60">
           {world ? `시연 ${formatClock(world.clock.tSec)} · ` : ""}세션 {demo?.session ?? "–"} · {!loaded ? "연결하는 중" : info?.kind === "device" ? "한 기기 체험" : "시연 서버와 연결됨"}

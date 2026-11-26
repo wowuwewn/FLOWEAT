@@ -2,80 +2,65 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { brands as allBrands, getBrand } from "@/core/catalog";
-import { queueInsight, seatInsight } from "@/core/insight";
-import { kioskById, pickupHint, ZONES } from "@/core/layout";
-import { DATA_MODE_LABEL, popularTimes, type KioskView } from "@/core/world";
+import { kioskById, pickupShort, ZONES } from "@/core/layout";
+import { popularTimes, type KioskView, type ZoneView } from "@/core/world";
 import { CommonsMap, type MapLayer } from "@/components/map/CommonsMap";
 import { Wordmark } from "@/components/brand/Logo";
 import { PopularLegend, PopularTimes } from "@/components/PopularTimes";
 import { ClockChip } from "@/components/student/DataNote";
 import { useStudent } from "@/components/student/StudentProvider";
-import { minuteRange, minuteRangeParts, percent, prepText, TABLE_LEVEL, WAIT_LEVEL } from "@/lib/format";
+import { minuteRange, prepText, TABLE_LEVEL } from "@/lib/format";
 
 const LAYERS: { id: MapLayer; label: string }[] = [
-  { id: "queue", label: "주문 줄" },
-  { id: "seats", label: "자리" },
+  { id: "queue", label: "대기열" },
+  { id: "seats", label: "좌석" },
   { id: "pickup", label: "수령" },
 ];
 
 export default function HomePage() {
-  const { world, engine, selected, setSelected, layer, setLayer, active } = useStudent();
+  const { world, engine, layer, setLayer, active } = useStudent();
 
   return (
     <div>
-      {/* mobile: map sticks behind, the sheet scrolls over it */}
-      <div className="sticky top-0 z-0 h-[52vh] min-h-[340px] overflow-hidden bg-floor lg:hidden">
+      {/* phones: the map sits behind, the sheet scrolls over it */}
+      <div className="sticky top-0 z-0 h-[50vh] min-h-[330px] overflow-hidden bg-canvas lg:hidden">
         <div className="absolute top-0 right-0 left-0 z-10 flex items-center justify-between px-4 pt-[max(env(safe-area-inset-top),12px)]">
-          <span className="rounded-full bg-white/90 px-2.5 py-1.5 shadow-sm">
-            <Wordmark size={16} />
+          <span className="rounded-full bg-white px-3 py-1.5 shadow-[0_1px_4px_rgba(16,24,40,.12)]">
+            <Wordmark size={15} />
           </span>
           <ClockChip />
         </div>
         <MobileMap />
       </div>
 
-      <div className="relative z-10 -mt-6 min-h-[60vh] rounded-t-[28px] bg-white shadow-[0_-10px_30px_rgba(15,26,51,.08)] lg:mt-0 lg:min-h-dvh lg:rounded-none lg:shadow-none">
-        <div className="mx-auto h-1.5 w-10 translate-y-2 rounded-full bg-line-2 lg:hidden" aria-hidden />
+      <div className="relative z-10 -mt-5 min-h-[60vh] rounded-t-[var(--radius-sheet)] bg-white shadow-[0_-6px_24px_rgba(16,24,40,.07)] lg:mt-0 lg:min-h-dvh lg:rounded-none lg:shadow-none">
+        <div className="mx-auto h-1 w-9 translate-y-2 rounded-full bg-line-2 lg:hidden" aria-hidden />
         {!world || !engine ? (
-          <div className="space-y-3 p-6" aria-busy="true" aria-label="불러오는 중">
-            <div className="h-4 w-32 animate-pulse rounded bg-floor" />
-            <div className="h-10 w-40 animate-pulse rounded bg-floor" />
-            <div className="h-40 animate-pulse rounded-2xl bg-floor" />
+          <div className="space-y-3 p-5 pt-8" aria-busy="true" aria-label="불러오는 중">
+            <div className="h-4 w-24 animate-pulse rounded bg-floor" />
+            <div className="h-8 w-32 animate-pulse rounded bg-floor" />
+            <div className="h-48 animate-pulse rounded-2xl bg-floor" />
           </div>
         ) : (
-          <div className="px-5 pt-6 pb-8">
-            <div className="hidden items-center justify-between lg:flex">
-              <p className="text-[13px] font-semibold text-ink-3">지금 1947 COMMONS</p>
+          <div className="pb-10">
+            <div className="hidden items-center justify-between px-5 pt-5 lg:flex">
+              <p className="t-sub font-medium text-ink-3">1947 COMMONS</p>
               <ClockChip />
             </div>
 
             {active.length > 0 && <ActivePasses />}
 
-            <header className="mt-1">
-              <h1 className="text-[15px] font-semibold text-ink-2">지금 줄을 서면 주문까지</h1>
-              {world.overall.fastestP80 < 75 ? (
-                <p className="text-[34px] leading-tight font-[800] tracking-[-0.03em]">거의 바로 주문해요</p>
-              ) : (
-                <p className="leading-none">
-                  <span className="num text-[48px] font-[800] tracking-[-0.045em]">{minuteRangeParts(world.overall.fastestP20, world.overall.fastestP80).value}</span>
-                  <span className="ml-1 text-[22px] font-bold">{minuteRangeParts(world.overall.fastestP20, world.overall.fastestP80).unit}</span>
-                </p>
-              )}
-              <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">{layer === "seats" ? seatInsight(world) : queueInsight(world)}</p>
-            </header>
-
-            {active.length === 0 && <ArrivalGuide />}
-
-            <div role="tablist" aria-label="지도 정보" className="mt-4 grid grid-cols-3 rounded-[14px] bg-floor p-1">
+            <div role="tablist" aria-label="지도 정보" className="mt-3 flex gap-5 border-b border-line px-5 lg:mt-2">
               {LAYERS.map((l) => (
                 <button
                   key={l.id}
                   role="tab"
                   aria-selected={layer === l.id}
                   onClick={() => setLayer(l.id)}
-                  className={`h-10 rounded-[11px] text-[14.5px] font-semibold transition-colors ${layer === l.id ? "bg-white text-ink shadow-[0_1px_3px_rgba(15,26,51,.12)]" : "text-ink-3"}`}
+                  className={`relative -mb-px h-11 text-[16px] font-semibold tracking-[-0.01em] transition-colors ${layer === l.id ? "text-ink" : "text-ink-3"}`}
                 >
                   {l.label}
+                  {layer === l.id && <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-ink" />}
                 </button>
               ))}
             </div>
@@ -83,13 +68,6 @@ export default function HomePage() {
             {layer === "queue" && <QueueLayer />}
             {layer === "seats" && <SeatLayer />}
             {layer === "pickup" && <PickupLayer />}
-
-            <footer className="mt-8 border-t border-line pt-4 text-[12.5px] leading-relaxed text-ink-3">
-              시뮬레이션과 실제로 계산하는 예측 모델로 만든 시연 화면이에요. 학교·운영사 시스템과 연결되지 않았어요.{" "}
-              <Link href="/app/about" className="font-semibold text-ink-2 underline underline-offset-2">
-                데이터 출처
-              </Link>
-            </footer>
           </div>
         )}
       </div>
@@ -109,61 +87,85 @@ function MobileMap() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  const labels = Object.fromEntries(active.map((r) => [r.order!.brandId, String(r.order!.displayNumber)]));
   return (
-    <div ref={box} className="absolute inset-x-0 top-12 bottom-8">
+    <div ref={box} className="absolute inset-x-0 top-0 bottom-5">
       {world && size && size.h > 120 && (
-        <CommonsMap kiosks={world.kiosks} selected={selected} onSelect={setSelected} layer={layer} width={size.w} height={size.h} fitHalf={10.2} padBottom={34} highlightBrands={active.map((r) => r.order!.brandId)} />
+        <CommonsMap
+          kiosks={world.kiosks}
+          selected={selected}
+          onSelect={setSelected}
+          layer={layer}
+          width={size.w}
+          height={size.h}
+          fitHalf={10.4}
+          noticeTop={56}
+          padBottom={14}
+          highlightBrands={active.map((r) => r.order!.brandId)}
+          highlightLabels={labels}
+        />
       )}
     </div>
   );
 }
 
-function KioskGlyph({ id, active }: { id: string; active: boolean }) {
-  const k = kioskById(id)!;
-  return (
-    <svg viewBox="0 0 36 36" className="size-9 shrink-0" aria-hidden>
-      <rect width="36" height="36" rx="10" fill={active ? "#eaefff" : "#f1f3f6"} />
-      {[1, 2, 3].map((d) =>
-        (["left", "right"] as const).map((side) => (
-          <rect key={side + d} x={side === "left" ? 9 : 23} y={26 - d * 6.5} width="4" height="4.5" rx="1.2" fill={k.depth === d && k.side === side ? "#2448db" : "#c5ccd8"} />
-        )),
-      )}
-      <rect x="14" y="30" width="8" height="2.4" rx="1.2" fill="#0b1f4d" />
-    </svg>
-  );
-}
-
+// ------------------------------------------------------------------ queue
 function QueueLayer() {
   const { world, engine, selected, setSelected } = useStudent();
-  const listRef = useRef<HTMLUListElement>(null);
-  useEffect(() => {
-    if (!selected) return;
-    listRef.current?.querySelector<HTMLElement>(`[data-kiosk="${selected}"]`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [selected]);
   const pt = useMemo(() => (engine && world ? popularTimes(engine, world, "lines") : null), [engine, world]);
   if (!world) return null;
-  const order = ["L1", "L2", "L3", "R1", "R2", "R3"];
-  const ks = order.map((id) => world.kiosks.find((k) => k.id === id)!);
-  const allSimilar = ks.every((k) => k.similar);
+  const byId = Object.fromEntries(world.kiosks.map((k) => [k.id, k]));
+  const fastest = minuteRange(world.overall.fastestP20, world.overall.fastestP80);
+  const allSimilar = world.kiosks.every((k) => k.similar);
+  const fastSides = new Set(world.kiosks.filter((k) => k.similar).map((k) => k.side));
+  const sel = selected ? byId[selected] : null;
+
   return (
-    <section className="mt-3" aria-label="키오스크 6대">
-      <ul ref={listRef} className="-mx-2">
-        {ks.map((k) => (
-          <KioskRow key={k.id} k={k} open={selected === k.id} strong={k.similar && !allSimilar} onToggle={() => setSelected(selected === k.id ? null : k.id)} />
-        ))}
-      </ul>
-      <p className="mt-2 text-[12.5px] leading-relaxed text-ink-3">
-        줄에 선 뒤 화면을 누르기까지의 예측이에요. 차이가 작으면 비슷하다고 보여 드리고 특정 줄로 안내하지 않아요. 기기에는 번호가 없어서 정문 기준 위치로 불러요.
+    <section className="px-5 pt-5" aria-label="키오스크 대기열">
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="t-sub text-ink-3">가장 빠른 줄</p>
+          <p className="t-display num">{fastest}</p>
+        </div>
+        <p className="t-sub pb-1.5 text-ink-3">{allSimilar ? "6대 모두 비슷해요" : fastSides.size === 2 ? "양쪽 모두" : fastSides.has("left") ? "왼쪽이 빨라요" : "오른쪽이 빨라요"}</p>
+      </div>
+
+      {/* the six kiosks as they stand at the door: left bank | aisle | right bank */}
+      <div className="mt-4 grid grid-cols-[1fr_20px_1fr] gap-x-1.5 gap-y-1.5" role="list" aria-label="키오스크 6대, 정문 기준 배치">
+        {([3, 2, 1] as const).map((d) =>
+          (["L", "R"] as const).map((s, i) => {
+            const k = byId[`${s}${d}`];
+            return (
+              <div key={`${s}${d}`} role="listitem" style={{ gridColumn: i === 0 ? 1 : 3 }}>
+                <KioskCell k={k} strong={k.similar && !allSimilar} on={selected === k.id} onClick={() => setSelected(selected === k.id ? null : k.id)} />
+              </div>
+            );
+          }),
+        )}
+        <p className="col-span-3 mt-1 flex items-center gap-2 text-[12px] font-semibold text-ink-3" aria-hidden>
+          <span className="h-px flex-1 bg-line-2" />
+          정문
+          <span className="h-px flex-1 bg-line-2" />
+        </p>
+      </div>
+
+      <p className="t-sub mt-3 min-h-[18px] text-ink-3" aria-live="polite">
+        {sel ? (
+          <>
+            <span className="font-semibold text-ink-2">{kioskById(sel.id)?.label}</span> · 한 건에 평균 <span className="num">{Math.round(sel.meanServiceSec)}</span>초
+            {sel.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">· 영상 AI</span>}
+          </>
+        ) : null}
       </p>
 
       {pt && (
-        <div className="mt-6">
+        <div className="mt-7">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-[17px] font-bold">시간대별 주문 줄</h2>
-            <span className="text-[13.5px] font-semibold text-ink-2">{{ busier: "평소보다 붐벼요", quieter: "평소보다 한산해요", usual: "평소와 비슷해요", unknown: "" }[pt.vsUsual]}</span>
+            <h2 className="t-head">시간대별 대기 인원</h2>
+            <span className="t-sub text-ink-3">{{ busier: "평소보다 붐빔", quieter: "평소보다 한산", usual: "평소와 비슷", unknown: "" }[pt.vsUsual]}</span>
           </div>
-          <div className="mt-2">
-            <PopularTimes slots={pt.slots} max={Math.max(20, ...pt.slots.map((s) => Math.max(s.usual, s.today ?? 0, s.forecast ?? 0)))} label="시간대별 전체 주문 줄 인원" unit={(v) => `${Math.round(v)}명`} />
+          <div className="mt-3">
+            <PopularTimes slots={pt.slots} max={Math.max(20, ...pt.slots.map((s) => Math.max(s.usual, s.today ?? 0, s.forecast ?? 0)))} label="시간대별 전체 대기 인원" unit={(v) => `${Math.round(v)}명`} />
           </div>
           <PopularLegend />
         </div>
@@ -172,202 +174,191 @@ function QueueLayer() {
   );
 }
 
-function KioskRow({ k, open, strong, onToggle }: { k: KioskView; open: boolean; strong: boolean; onToggle: () => void }) {
-  const lvl = WAIT_LEVEL[k.level];
+function KioskCell({ k, strong, on, onClick }: { k: KioskView; strong: boolean; on: boolean; onClick: () => void }) {
+  const spec = kioskById(k.id)!;
+  const text = minuteRange(k.p20, k.p80);
+  const tone = on ? "bg-ink text-white" : strong ? "bg-ice text-blue-ink" : "bg-floor text-ink";
   return (
-    <li data-kiosk={k.id} className={`rounded-2xl transition-colors ${open ? "bg-ice" : ""}`}>
-      <button onClick={onToggle} aria-expanded={open} className="flex w-full items-center gap-3 rounded-2xl px-2 py-2.5 text-left active:bg-floor">
-        <KioskGlyph id={k.id} active={open || strong} />
-        <span className="min-w-0 flex-1">
-          <span className="block text-[16px] font-semibold">{k.label}</span>
-          <span className="num block text-[13px] text-ink-3">
-            줄 {k.people}명{k.inService ? ", 주문 중 1명" : ""}
-            {k.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">영상 AI</span>}
-          </span>
+    <button
+      onClick={onClick}
+      aria-pressed={on}
+      aria-label={`${spec.label}, ${text}, 대기 ${k.people}명${strong ? ", 빠른 편" : ""}`}
+      data-kiosk={k.id}
+      className={`flex w-full items-center justify-between rounded-[var(--radius-tile)] px-3.5 py-3 text-left transition-colors ${tone}`}
+    >
+      <span>
+        <span className="num block text-[18px] leading-6 font-bold tracking-[-0.02em]">{text}</span>
+        <span className={`t-micro num block ${on ? "text-white/70" : strong ? "text-blue-ink" : "text-ink-3"}`}>
+          {spec.shortLabel} · {k.people}명
         </span>
-        <span className="text-right">
-          <span className={`num block text-[18px] font-[760] ${strong ? "text-blue-ink" : ""}`}>{minuteRange(k.p20, k.p80)}</span>
-          <span className={`block text-[12.5px] font-semibold ${strong ? "text-blue-ink" : lvl.text}`}>{strong ? "빠른 편" : lvl.label}</span>
-        </span>
-      </button>
-      {open && (
-        <dl className="num mx-2 mb-2 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-[#d9e1f7] px-2 pt-3 pb-1 text-[13.5px]">
-          <div>
-            <dt className="text-ink-3">한 건 주문 시간</dt>
-            <dd className="font-semibold">평균 {Math.round(k.meanServiceSec)}초</dd>
-          </div>
-          <div>
-            <dt className="text-ink-3">사람 수만 보면</dt>
-            <dd className="font-semibold">{minuteRange(k.baselineSec, k.baselineSec)}</dd>
-          </div>
-          <div className="col-span-2 text-[12.5px] text-ink-3">
-            일행은 보통 한 번에 결제해서 사람 수보다 주문 건수가 적어요. 최근 30분 {k.samples}건 기록 반영. {DATA_MODE_LABEL[k.source]}.
-          </div>
-        </dl>
-      )}
-    </li>
+      </span>
+      <QueueBars n={k.people} on={on} strong={strong} />
+    </button>
   );
 }
 
+/** The line itself: one dot per person waiting (max 8), so a long line looks long. */
+function QueueBars({ n, on, strong }: { n: number; on: boolean; strong: boolean }) {
+  const c = on ? "bg-white" : strong ? "bg-blue" : "bg-ink-3";
+  return (
+    <span className="grid grid-cols-4 gap-[3px]" aria-hidden>
+      {Array.from({ length: 8 }, (_, i) => (
+        <span key={i} className={`size-[5px] rounded-full ${i < n ? c : on ? "bg-white/20" : "bg-ink-4/35"}`} />
+      ))}
+    </span>
+  );
+}
+
+// ------------------------------------------------------------------ seats
 function SeatLayer() {
   const { world, engine } = useStudent();
   const pt = useMemo(() => (engine && world ? popularTimes(engine, world, "tables") : null), [engine, world]);
   if (!world) return null;
-  const o = world.overall;
   const observed = world.zones.filter((z) => z.observed);
-  const unit = (kind: "quad" | "single") => {
-    const zs = observed.filter((z) => (ZONES.find((x) => x.id === z.id)!.seatsPerTable === 1) === (kind === "single"));
-    return { tables: zs.reduce((s, z) => s + z.tables, 0), free: zs.reduce((s, z) => s + z.apparentlyEmpty, 0) };
-  };
-  const quad = unit("quad");
-  const single = unit("single");
+  const quad = observed.filter((z) => ZONES.find((x) => x.id === z.id)!.seatsPerTable > 1);
+  const single = observed.filter((z) => ZONES.find((x) => x.id === z.id)!.seatsPerTable === 1);
+  const freeQuad = quad.reduce((s, z) => s + z.apparentlyEmpty, 0);
+  const freeSingle = single.reduce((s, z) => s + z.apparentlyEmpty, 0);
+  const lvl = TABLE_LEVEL[world.overall.tableLevel];
+
   return (
-    <section className="mt-4" aria-label="자리">
-      <div className="flex items-baseline gap-3">
-        <p className={`text-[26px] font-[800] ${TABLE_LEVEL[o.tableLevel].text}`}>{TABLE_LEVEL[o.tableLevel].label}</p>
-        <p className="num text-[14px] text-ink-2">
-          관측 구역 {percent(o.tableRateLow)}–{percent(o.tableRateHigh)} 사용 중
-        </p>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <div className="rounded-2xl bg-floor px-4 py-3">
-          <p className="text-[13px] text-ink-3">4인 테이블</p>
-          <p className="num text-[20px] font-[760]">
-            {quad.free}
-            <span className="text-[14px] font-medium text-ink-3"> / {quad.tables}개 비어 보임</span>
+    <section className="px-5 pt-5" aria-label="좌석">
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="t-sub text-ink-3">빈 4인 테이블</p>
+          <p className="t-display num">
+            {freeQuad}
+            <span className="ml-0.5 text-[20px] font-semibold">개</span>
           </p>
         </div>
-        <div className="rounded-2xl bg-floor px-4 py-3">
-          <p className="text-[13px] text-ink-3">1인석</p>
-          <p className="num text-[20px] font-[760]">
-            {single.free}
-            <span className="text-[14px] font-medium text-ink-3"> / {single.tables}석 비어 보임</span>
-          </p>
+        <div className="pb-1.5 text-right">
+          <p className={`t-sub font-semibold ${lvl.text}`}>{lvl.label}</p>
+          <p className="t-sub num text-ink-3">1인석 {freeSingle}석 빔</p>
         </div>
       </div>
-      <ul className="mt-4 space-y-3">
+
+      <ul className="mt-5 space-y-5">
         {observed.map((z) => (
-          <li key={z.id}>
-            <div className="flex items-baseline justify-between">
-              <span className="text-[15px] font-semibold">{z.name}</span>
-              <span className={`text-[13.5px] font-bold ${TABLE_LEVEL[z.level].text}`}>{TABLE_LEVEL[z.level].label}</span>
-            </div>
-            <div className="mt-1.5 flex h-2.5 overflow-hidden rounded-full bg-floor" aria-hidden>
-              <span className="bg-brick" style={{ width: percent(z.occupied / z.tables) }} />
-              <span className="hatch" style={{ width: percent(z.uncertain / z.tables) }} />
-            </div>
-            <p className="num mt-1 text-[12.5px] text-ink-3">
-              사용 {z.occupied}, 판단 어려움 {z.uncertain}, 비어 보임 {z.apparentlyEmpty}
-              {z.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">일부 영상 AI</span>}
-            </p>
-          </li>
+          <ZoneWaffle key={z.id} z={z} />
         ))}
       </ul>
+      <SeatLegend />
+
       {pt && (
-        <div className="mt-6">
+        <div className="mt-8">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-[17px] font-bold">시간대별 자리</h2>
-            <span className="text-[13.5px] font-semibold text-ink-2">{{ busier: "평소보다 붐벼요", quieter: "평소보다 한산해요", usual: "평소와 비슷해요", unknown: "" }[pt.vsUsual]}</span>
+            <h2 className="t-head">시간대별 좌석</h2>
+            <span className="t-sub text-ink-3">{{ busier: "평소보다 붐빔", quieter: "평소보다 한산", usual: "평소와 비슷", unknown: "" }[pt.vsUsual]}</span>
           </div>
-          <div className="mt-2">
-            <PopularTimes slots={pt.slots} max={1} label="시간대별 관측 구역 자리 사용률" unit={(v) => percent(v)} color="#a0533b" />
+          <div className="mt-3">
+            <PopularTimes slots={pt.slots} max={1} label="시간대별 좌석 사용률" unit={(v) => `${Math.round(v * 100)}%`} color="#0b8457" />
           </div>
           <PopularLegend />
         </div>
       )}
-      <p className="mt-3 text-[12.5px] leading-relaxed text-ink-3">
-        가방만 놓인 자리는 맡은 자리로, 그릇만 남았거나 가려진 자리는 판단 어려움으로 세요. 좌석 위치와 테이블 수는 시연용 가정이고, 빈자리를 맡아 드리지 않아요.
-      </p>
     </section>
   );
 }
 
+/** One square per table: green = looks free, grey = taken, hatched = can't tell. Free first so they read at a glance. */
+function ZoneWaffle({ z }: { z: ZoneView }) {
+  const cells: ("free" | "busy" | "unsure")[] = [
+    ...Array<"free">(z.apparentlyEmpty).fill("free"),
+    ...Array<"unsure">(z.uncertain).fill("unsure"),
+    ...Array<"busy">(z.occupied).fill("busy"),
+  ];
+  const single = ZONES.find((x) => x.id === z.id)!.seatsPerTable === 1;
+  return (
+    <li>
+      <div className="flex items-baseline justify-between">
+        <span className="t-row">{z.name}</span>
+        <span className="t-sub num text-ink-3">
+          <b className={`font-semibold ${z.apparentlyEmpty ? "text-free" : "text-ink-3"}`}>{z.apparentlyEmpty}</b> / {z.tables}
+          {single ? "석" : "개"} 빔{z.source !== "simulated" && <span className="ml-1 font-semibold text-blue-ink">· 영상 AI</span>}
+        </span>
+      </div>
+      <div className="mt-2 flex flex-wrap gap-[3px]" role="img" aria-label={`${z.name}: 빈 자리 ${z.apparentlyEmpty}, 사용 중 ${z.occupied}, 확인 중 ${z.uncertain}`}>
+        {cells.map((c, i) => (
+          <span
+            key={i}
+            className={`${single ? "size-[9px] rounded-[2px]" : "size-[13px] rounded-[3px]"} ${c === "free" ? "bg-free" : c === "busy" ? "bg-line-2" : "hatch bg-floor"}`}
+          />
+        ))}
+      </div>
+    </li>
+  );
+}
+
+function SeatLegend() {
+  return (
+    <p className="t-micro mt-4 flex flex-wrap gap-x-4 gap-y-1 text-ink-3">
+      <span className="flex items-center gap-1.5">
+        <span className="size-2.5 rounded-[2px] bg-free" />빈 자리
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="size-2.5 rounded-[2px] bg-line-2" />
+        사용 중
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="hatch size-2.5 rounded-[2px] bg-floor" />
+        짐만 있음·가려짐
+      </span>
+    </p>
+  );
+}
+
+// ------------------------------------------------------------------ pickup
 function PickupLayer() {
   const { world, active } = useStudent();
   if (!world) return null;
-  const mine = new Set(active.map((r) => r.order!.brandId));
+  const mine = new Map(active.map((r) => [r.order!.brandId, r.order!]));
   const list = [...world.brands].sort((a, b) => Number(mine.has(b.id)) - Number(mine.has(a.id)));
   return (
-    <section className="mt-3" aria-label="수령">
-      <p className="text-[14px] leading-relaxed text-ink-2">
-        하늘색 <b className="text-ink">호출 모니터</b>에 번호가 뜨면 <b className="text-ink">영수증</b>을 가지고 매장 카운터에서 받아요. 위치는 정문 옆 안내도를 따른 대략 위치예요.
+    <section className="pt-2" aria-label="수령">
+      <p className="t-sub mx-5 mt-3 flex items-center gap-1.5 text-ink-2">
+        <svg viewBox="0 0 20 20" className="size-4 text-ink-3" aria-hidden>
+          <path d="M5 3h10v14l-2-1.3L11 17l-2-1.3L7 17l-2-1.3z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
+        모니터에 번호가 뜨면 영수증을 들고 카운터로
       </p>
-      <ul className="-mx-2 mt-2">
+      <ul className="mt-2">
         {list.map((b) => {
-          const h = pickupHint(b.id);
+          const loc = pickupShort(b.id);
           const mon = allBrands.find((x) => x.id === b.id)?.monitor;
+          const o = mine.get(b.id);
           return (
             <li key={b.id}>
-              <Link href={`/app/menu/${b.id}`} className={`flex items-center gap-3 rounded-2xl px-2 py-2.5 active:bg-floor ${mine.has(b.id) ? "bg-ice" : ""}`}>
-                <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-floor text-[14px] font-bold text-navy">{b.name.slice(0, 1)}</span>
+              <Link href={`/app/menu/${b.id}`} className={`flex items-center gap-3 px-5 py-3 active:bg-floor ${o ? "bg-ice/60" : ""}`}>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[15.5px] font-semibold">
+                  <span className="t-row flex items-center gap-2">
                     {b.name}
-                    {mine.has(b.id) && <span className="ml-1.5 text-[12.5px] font-bold text-blue-ink">내 주문</span>}
+                    {o && (
+                      <span className={`num rounded-md px-1.5 text-[12px] leading-5 font-bold text-white ${o.status === "ready" ? "bg-free" : "bg-blue"}`}>
+                        {o.displayNumber}
+                      </span>
+                    )}
                   </span>
-                  <span className={`block text-[12.5px] leading-snug ${h.sure ? "text-ink-2" : "text-ink-3"}`}>{h.where}</span>
-                  {mon && <span className="block text-[12px] text-ink-3">호출 모니터 {mon.screen === "A" ? "1" : "2"} · {mon.column}번째 열</span>}
+                  <span className="t-sub block text-ink-3">
+                    {loc ? (
+                      <>
+                        {loc.text}
+                        {!loc.sure && " (추정)"}
+                      </>
+                    ) : (
+                      <span className="text-ink-3">위치 미확인</span>
+                    )}
+                    {mon && <> · 모니터 {mon.screen === "A" ? 1 : 2}</>}
+                  </span>
                 </span>
-                <span className="shrink-0 text-right">
-                  <span className="num block text-[16px] font-bold">{prepText(b.p50, b.p80)}</span>
-                  <span className="block text-[12px] text-ink-3">주문 후 준비</span>
+                <span className="text-right">
+                  <span className="num block text-[15px] font-semibold">{prepText(b.p50, b.p80)}</span>
+                  <span className="t-micro block text-ink-3">조리</span>
                 </span>
               </Link>
             </li>
           );
         })}
       </ul>
-      <p className="mt-2 text-[12.5px] leading-relaxed text-ink-3">
-        안내도 사진 오른쪽이 잘려 비비고고·도쿄야·광뚝의 자리는 확인 전이고, 가오슝은 현장 사진(폭풍분식 옆)으로 추정했어요. 모니터 1의 첫 열은 사진에서 잘려 바비든든으로 추정했어요. 앱 화면만으로 음식을 받을 수 있다고 보장하지 않아요.
-      </p>
-    </section>
-  );
-}
-
-/** First visit: the four things to know at the door, in the order you need them. */
-function ArrivalGuide() {
-  const { setLayer } = useStudent();
-  const [open, setOpen] = useState(false);
-  const steps: { t: string; d: string; act?: () => void; href?: string }[] = [
-    { t: "정문 양옆 키오스크", d: "왼쪽·오른쪽에 3대씩, 모두 같은 메뉴예요. 줄이 짧은 쪽을 고르세요.", act: () => setLayer("queue") },
-    { t: "메뉴와 준비시간", d: "10개 매장을 한 키오스크에서 주문해요. 매장마다 영수증(번호표)이 따로 나와요.", href: "/app/menu" },
-    { t: "영수증 QR 찍기", d: "영수증의 FLOWEAT QR을 찍으면 준비됐을 때 알려 드려요. 영수증은 버리지 마세요.", href: "/app/scan" },
-    { t: "모니터에 번호가 뜨면", d: "매장 카운터에서 영수증을 보여 주고 받아요. 위치는 ‘수령’ 지도에서.", act: () => setLayer("pickup") },
-  ];
-  return (
-    <section className="mt-4 rounded-2xl bg-floor px-4 py-3" aria-label="처음 왔다면">
-      <button onClick={() => setOpen((v) => !v)} aria-expanded={open} className="flex w-full items-center justify-between text-left">
-        <span className="text-[15px] font-bold">처음 왔다면, 도착해서 이렇게</span>
-        <span className="text-[13px] font-semibold text-ink-3">{open ? "접기" : "4단계 보기"}</span>
-      </button>
-      {open && (
-        <ol className="mt-2 space-y-2">
-          {steps.map((st, i) => {
-            const body = (
-              <>
-                <span className="num grid size-6 shrink-0 place-items-center rounded-full bg-navy text-[12.5px] font-bold text-white">{i + 1}</span>
-                <span className="min-w-0">
-                  <span className="block text-[14.5px] font-semibold">{st.t}</span>
-                  <span className="block text-[13px] leading-snug text-ink-2">{st.d}</span>
-                </span>
-              </>
-            );
-            return (
-              <li key={st.t}>
-                {st.href ? (
-                  <Link href={st.href} className="flex gap-2.5 rounded-xl p-1.5 active:bg-white">
-                    {body}
-                  </Link>
-                ) : (
-                  <button onClick={st.act} className="flex w-full gap-2.5 rounded-xl p-1.5 text-left active:bg-white">
-                    {body}
-                  </button>
-                )}
-              </li>
-            );
-          })}
-        </ol>
-      )}
     </section>
   );
 }
@@ -375,22 +366,16 @@ function ArrivalGuide() {
 function ActivePasses() {
   const { active } = useStudent();
   return (
-    <div className="no-scrollbar -mx-5 mb-4 flex snap-x scroll-px-5 gap-2 overflow-x-auto px-5" aria-label="진행 중인 주문">
+    <div className="no-scrollbar mt-4 flex snap-x scroll-px-5 gap-2 overflow-x-auto px-5" aria-label="진행 중인 주문">
       {active.map((r) => {
         const o = r.order!;
         const ready = o.status === "ready";
         return (
-          <Link
-            key={r.token}
-            href="/app/orders"
-            className={`flex min-w-[240px] snap-start items-center gap-3 rounded-2xl px-4 py-3 ${ready ? "bg-free text-white" : "bg-navy text-white"}`}
-          >
-            <span className="num text-[30px] leading-none font-[800] tracking-[-0.04em]">{o.displayNumber}</span>
+          <Link key={r.token} href="/app/orders" className={`flex min-w-[220px] snap-start items-center gap-3 rounded-[var(--radius-tile)] px-4 py-2.5 ${ready ? "bg-free text-white" : "bg-floor"}`}>
+            <span className="num text-[22px] leading-none font-bold tracking-[-0.02em]">{o.displayNumber}</span>
             <span className="min-w-0">
-              <span className="block truncate text-[14px] font-bold">{getBrand(o.brandId)?.name}</span>
-              <span className="block text-[13px] opacity-85">
-                {ready ? "준비됐어요, 카운터에서 받아 가세요" : o.prepEstimate ? `준비 중, 보통 ${prepText(o.prepEstimate.p50, o.prepEstimate.p80)}` : "준비 중"}
-              </span>
+              <span className="t-sub block truncate font-semibold">{getBrand(o.brandId)?.name}</span>
+              <span className={`t-micro block ${ready ? "text-white/85" : "text-ink-3"}`}>{ready ? "준비 완료 · 영수증 지참" : o.prepEstimate ? `조리 중 · ${prepText(o.prepEstimate.p50, o.prepEstimate.p80)}` : "조리 중"}</span>
             </span>
           </Link>
         );
@@ -398,5 +383,3 @@ function ActivePasses() {
     </div>
   );
 }
-
-

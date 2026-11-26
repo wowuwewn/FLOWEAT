@@ -27,22 +27,22 @@ interface Result {
 }
 
 const MESSAGE: Record<Result["outcome"], (b: string, n: number) => string> = {
-  called: (b, n) => `${b} ${n}번을 호출했어요. 호출 모니터와 학생 앱에 표시돼요.`,
-  already_ready: (b, n) => `${b} ${n}번은 이미 호출된 번호예요.`,
-  already_closed: (b, n) => `${b} ${n}번은 이미 받아 간 주문이에요.`,
-  not_found: (b, n) => `${b}에 ${n}번 주문이 없어요. 영수증 번호와 매장을 확인해 주세요.`,
-  invalid: () => "번호를 확인해 주세요.",
-  error: () => "처리하지 못했어요. 네트워크를 확인하고 다시 눌러 주세요.",
-  undone: (b, n) => `${b} ${n}번 호출을 취소했어요. 모니터와 학생 앱에서도 내려가요.`,
+  called: (b, n) => `${b} ${n}번을 호출했어요`,
+  already_ready: (b, n) => `${b} ${n}번은 이미 호출된 번호예요`,
+  already_closed: (b, n) => `${b} ${n}번은 이미 받아 간 주문이에요`,
+  not_found: (b, n) => `${b}에 ${n}번 주문이 없어요`,
+  invalid: () => "번호를 확인해 주세요",
+  error: () => "처리하지 못했어요. 다시 눌러 주세요",
+  undone: (b, n) => `${b} ${n}번 호출을 취소했어요`,
 };
 const TONE: Record<Result["outcome"], string> = {
-  called: "bg-[#0f7a52] text-white",
-  already_ready: "bg-[#f2b630] text-[#2a1d00]",
-  already_closed: "bg-[#f2b630] text-[#2a1d00]",
-  not_found: "bg-[#d8343a] text-white",
-  invalid: "bg-[#d8343a] text-white",
-  error: "bg-[#d8343a] text-white",
-  undone: "bg-white text-[#161a22]",
+  called: "bg-[#0b8457] text-white",
+  already_ready: "bg-[#3a3f48] text-[#ffd479]",
+  already_closed: "bg-[#3a3f48] text-[#ffd479]",
+  not_found: "bg-[#c4263a] text-white",
+  invalid: "bg-[#c4263a] text-white",
+  error: "bg-[#c4263a] text-white",
+  undone: "bg-white text-[#191b1f]",
 };
 
 export default function StaffCallerPage() {
@@ -129,16 +129,15 @@ export default function StaffCallerPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [press, submit]);
 
-  if (!ready || auth === "unknown") return <div className="min-h-dvh bg-[#161a22]" />;
+  if (!ready || auth === "unknown") return <div className="min-h-dvh bg-[#15171b]" />;
   if (auth === "needed" && demo) return <StaffAuthForm session={demo.session} backend={backend} msg={authMsg} setMsg={setAuthMsg} onOk={() => setAuth("ok")} />;
 
   if (!mode) {
     return (
-      <div className="min-h-dvh bg-[#161a22] px-5 py-8 text-white">
+      <div className="min-h-dvh bg-[#15171b] px-5 py-8 text-white">
         <div className="mx-auto max-w-2xl">
-          <p className="text-[13px] font-semibold opacity-70">매장 직원 기기 · 모의</p>
-          <h1 className="mt-2 text-[26px] font-bold">어느 매장의 기기인가요?</h1>
-          <p className="mt-1 text-[15px] leading-relaxed opacity-75">음식이 준비되면 영수증의 주문번호를 눌러 호출해요. 한 번 고르면 이 기기에 저장돼요.</p>
+          <h1 className="text-[22px] font-bold tracking-[-0.02em]">매장 선택</h1>
+          <p className="mt-1 text-[15px] text-white/60">음식이 나오면 영수증 번호를 눌러 호출해요</p>
           <ul className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-5">
             {brands.map((b) => (
               <li key={b.id}>
@@ -161,8 +160,8 @@ export default function StaffCallerPage() {
             }}
             className="mt-4 w-full rounded-2xl bg-white/5 px-5 py-3.5 text-left text-[15px] ring-1 ring-white/10 hover:bg-white/10"
           >
-            <b>시연용: 매장을 바꿔 가며 한 기기로</b>
-            <span className="block text-[13px] opacity-70">혼자서 10개 매장의 호출을 모두 해 볼 때</span>
+            <b>모든 매장 (시연)</b>
+            <span className="block text-[13px] text-white/55">한 기기에서 매장을 바꿔 가며 호출</span>
           </button>
         </div>
       </div>
@@ -171,11 +170,11 @@ export default function StaffCallerPage() {
 
   const shown = last && now - last.at < 8000 ? last : null;
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-[#161a22] text-white">
+    <div className="flex h-dvh flex-col overflow-hidden bg-[#15171b] text-white">
       <header className="flex shrink-0 items-center gap-3 border-b border-white/10 px-4 py-2.5">
         <div className="min-w-0 flex-1">
-          <p className="text-[11.5px] opacity-65">매장 직원 호출기 · 모의</p>
-          <p className="truncate text-[18px] leading-tight font-bold">{brand?.name ?? "매장"}</p>
+          <p className="truncate text-[18px] leading-6 font-bold tracking-[-0.015em]">{brand?.name ?? "매장"}</p>
+          <p className="text-[12px] text-white/50">호출기 · 모의</p>
         </div>
         {!isAll && (
           <button
@@ -218,16 +217,16 @@ export default function StaffCallerPage() {
       <main className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 pt-3 pb-3">
         <div className="flex w-full max-w-[420px] flex-1 flex-col">
           {/* display */}
-          <div className="rounded-2xl bg-[#0b0e14] px-4 py-3 ring-1 ring-white/10">
-            <p className="text-[12px] opacity-60">주문번호</p>
-            <p className="num h-[60px] text-right text-[54px] leading-[60px] font-[800] tracking-[-0.02em]" data-testid="pad-display" aria-live="polite">
-              {digits || <span className="text-[22px] font-semibold opacity-35">번호를 누르세요</span>}
+          <div className="rounded-2xl bg-[#0b0e14] px-4 py-3 ring-1 ring-white/10 [@media(max-height:640px)]:py-1.5">
+            <p className="text-[12px] text-white/50">영수증 번호</p>
+            <p className="num h-[60px] text-right text-[52px] leading-[60px] font-bold tracking-[-0.02em] [@media(max-height:640px)]:h-9 [@media(max-height:640px)]:text-[30px] [@media(max-height:640px)]:leading-9" data-testid="pad-display" aria-live="polite">
+              {digits || <span className="text-[20px] font-medium text-white/30">번호 입력</span>}
             </p>
           </div>
 
-          <div className="mt-2 min-h-[52px]" aria-live="polite">
+          <div className="mt-2 min-h-[52px] [@media(max-height:640px)]:min-h-0" aria-live="polite">
             {shown && (
-              <p role="status" className={`rounded-xl px-3.5 py-2.5 text-[14.5px] leading-snug font-semibold ${TONE[shown.outcome]}`}>
+              <p role="status" className={`rounded-xl px-3.5 py-3 text-[15px] leading-snug font-semibold ${TONE[shown.outcome]}`}>
                 {MESSAGE[shown.outcome](getBrand(shown.brandId)?.name ?? "", shown.number)}
               </p>
             )}
@@ -240,7 +239,7 @@ export default function StaffCallerPage() {
                 key={k}
                 onClick={() => press(k)}
                 aria-label={k === "back" ? "한 글자 지우기" : k === "clear" ? "모두 지우기" : `숫자 ${k}`}
-                className="num h-[60px] rounded-2xl bg-white/10 text-[26px] font-bold active:bg-white/25 sm:h-[66px]"
+                className="num h-[60px] rounded-2xl bg-white/[.08] text-[26px] font-semibold active:bg-white/25 sm:h-[66px] [@media(max-height:640px)]:h-10 [@media(max-height:640px)]:rounded-xl [@media(max-height:640px)]:text-[19px]"
               >
                 {k === "back" ? "⌫" : k === "clear" ? <span className="text-[16px]">지움</span> : k}
               </button>
@@ -249,14 +248,14 @@ export default function StaffCallerPage() {
           <button
             onClick={submit}
             disabled={!digits || busy}
-            className="mt-2 h-[66px] w-full shrink-0 rounded-2xl bg-[#2d6bff] text-[23px] font-[800] disabled:opacity-40"
+            className="mt-2 h-[64px] w-full shrink-0 rounded-2xl bg-[#1e62e6] text-[21px] font-bold disabled:opacity-35 [@media(max-height:640px)]:h-11 [@media(max-height:640px)]:text-[17px]"
           >
             {busy ? "호출하는 중…" : "호출"}
           </button>
 
           {/* demo helper */}
-          <div className="mt-3 rounded-xl bg-white/5 px-3 py-2.5">
-            <p className="text-[12px] opacity-65">시연 도움 · {brand?.name} 접수된 번호 (누르면 입력돼요)</p>
+          <div className="mt-4">
+            <p className="text-[12px] text-white/50">접수된 번호 (시연)</p>
             {pendingHere.length ? (
               <div className="mt-1.5 flex flex-wrap gap-1.5">
                 {pendingHere.slice(0, 12).map((o) => (
@@ -266,13 +265,13 @@ export default function StaffCallerPage() {
                 ))}
               </div>
             ) : (
-              <p className="mt-1 text-[13px] opacity-50">아직 없어요. 키오스크에서 주문해 보세요.</p>
+              <p className="mt-1 text-[13px] text-white/40">없음</p>
             )}
           </div>
 
           {history.length > 0 && (
             <div className="mt-3">
-              <p className="text-[12px] opacity-65">최근 호출</p>
+              <p className="text-[12px] text-white/50">최근 호출</p>
               <ul className="mt-1 divide-y divide-white/10">
                 {history.slice(0, 4).map((r) => {
                   const left = UNDO_MS - (now - r.at);
@@ -298,7 +297,7 @@ export default function StaffCallerPage() {
       </main>
 
       <footer className="flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-0.5 border-t border-white/10 px-4 py-2 text-[11.5px] text-white/60">
-        <span>실제 매장 기기의 모양·버튼·통신 방식은 확인 전이라 같은 역할만 재현해요</span>
+        <span>모의 호출기</span>
         <span className="whitespace-nowrap">
           {demo && <>세션 {demo.session} · </>}
           <Link href={`/staff/board${search}`} className="underline">

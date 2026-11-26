@@ -171,13 +171,13 @@ export default function SplitDemo() {
     [q],
   );
 
-  if (!srcOf) return <div className="min-h-dvh bg-[#0b1630]" />;
+  if (!srcOf) return <div className="min-h-dvh bg-[#15171b]" />;
 
   const groupOf = (s: Surface) => ORDER.filter((x) => layout.area[x] === layout.area[s]);
   const cur = STEPS[step];
 
   return (
-    <div className="flex h-dvh flex-col bg-[#0b1630] text-white" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+    <div className="flex h-dvh flex-col bg-[#15171b] text-white" style={{ paddingTop: "env(safe-area-inset-top)" }}>
       {/* guide */}
       <header className="flex shrink-0 items-center gap-3 px-3 pt-2.5 pb-2 sm:px-4">
         <Link href={`/?${q}`} className="flex shrink-0 items-center gap-2" aria-label="체험 홈으로">
@@ -269,7 +269,7 @@ export default function SplitDemo() {
               aria-label={SURFACES[s].label}
             >
               {mode !== "tabs" && (
-                <div className="flex h-9 shrink-0 items-center gap-1 bg-navy px-2 text-[12.5px]">
+                <div className="flex h-9 shrink-0 items-center gap-1 bg-[#22252b] px-2 text-[12.5px]">
                   {group.length > 1 ? (
                     <div className="flex gap-1" role="tablist" aria-label="화면 전환">
                       {group.map((g) => (

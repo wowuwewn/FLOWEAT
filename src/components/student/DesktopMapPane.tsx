@@ -20,10 +20,10 @@ export function DesktopMapPane() {
     return () => ro.disconnect();
   }, []);
   return (
-    <div className="fixed inset-y-0 right-[460px] left-0 hidden bg-floor lg:block" aria-label="식당 개념 지도">
+    <div className="fixed inset-y-0 right-[460px] left-0 hidden bg-canvas lg:block" aria-label="식당 지도">
       <div className="absolute top-5 left-6 z-10 flex items-center gap-3">
         <Wordmark size={19} />
-        <span className="rounded-full bg-white/90 px-3 py-1 text-[12.5px] font-semibold text-ink-2 shadow-sm">1947 COMMONS, 혜당관 1층</span>
+        <span className="t-sub font-medium text-ink-2">1947 COMMONS · 혜당관 1층</span>
       </div>
       <div ref={box} className="absolute inset-0">
         {world && size.w > 0 && (
@@ -33,11 +33,10 @@ export function DesktopMapPane() {
             layer={layer}
             width={size.w}
             height={size.h}
-            fitHalf={12.6}
-            padBottom={72}
-            pitch={size.h / size.w > 0.62 ? 76 : 70}
-            noticeTop={64}
+            padBottom={56}
+            noticeTop={80}
             highlightBrands={active.map((r) => r.order!.brandId)}
+            highlightLabels={Object.fromEntries(active.map((r) => [r.order!.brandId, String(r.order!.displayNumber)]))}
             onSelect={(id) => {
               setSelected(id);
               if (id && path !== "/app") router.push("/app");
@@ -45,7 +44,7 @@ export function DesktopMapPane() {
           />
         )}
       </div>
-      <p className="absolute bottom-4 left-6 rounded-full bg-white/90 px-3 py-1 text-[12px] text-ink-3 shadow-sm">정문 안내도 기반 개념 배치예요. 거리와 크기는 실측이 아니에요. 확대: 두 번 클릭 또는 Ctrl+스크롤</p>
+      <p className="t-micro absolute bottom-5 left-6 text-ink-3">거리와 크기는 실제와 달라요</p>
     </div>
   );
 }

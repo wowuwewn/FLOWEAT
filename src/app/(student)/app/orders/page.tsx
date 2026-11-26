@@ -27,8 +27,8 @@ export default function MyOrdersPage() {
       <PageHeader
         title="내 주문"
         right={
-          <Link href="/app/scan" className="flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-[14px] font-semibold text-white">
-            <IconScan className="size-5" />
+          <Link href="/app/scan" className="flex h-9 items-center gap-1.5 rounded-full bg-floor px-3.5 text-[14px] font-semibold text-ink">
+            <IconScan className="size-[18px]" />
             QR 스캔
           </Link>
         }
@@ -37,25 +37,23 @@ export default function MyOrdersPage() {
       <NotifyRow perm={perm} onAsk={async () => setPerm((await Notification.requestPermission()) as Perm)} />
 
       {tracked === null && refs.length > 0 ? (
-        <p className="px-5 py-10 text-center text-ink-3">주문 상태를 불러오는 중…</p>
+        <p className="t-body px-5 py-12 text-center text-ink-3">불러오는 중…</p>
       ) : active.length === 0 && ended.length === 0 ? (
-        <div className="mx-3 mt-2 rounded-[var(--radius-card)] bg-surface px-6 py-10 text-center">
-          <p className="text-[19px] font-bold">따라가는 주문이 없어요</p>
-          <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
-            키오스크에서 주문한 뒤 번호표의 QR을 찍으면, 음식이 준비됐을 때 여기에서 알려 드려요. 친구 번호표도 같이 찍어 두면 한 화면에서 볼 수 있어요.
-          </p>
-          <Link href="/app/scan" className="mt-5 inline-block rounded-2xl bg-navy px-6 py-3.5 font-semibold text-white">
-            QR 스캔하기
+        <div className="px-5 pt-16 text-center">
+          <p className="t-head">추적 중인 주문이 없어요</p>
+          <p className="t-body mt-1 text-ink-3">영수증의 QR을 찍으면 준비됐을 때 알려 드려요</p>
+          <Link href="/app/scan" className="mt-6 inline-flex h-12 items-center rounded-[var(--radius-tile)] bg-blue px-6 text-[16px] font-semibold text-white">
+            QR 스캔
           </Link>
         </div>
       ) : (
-        <div className="space-y-3 px-3">
+        <div className="space-y-3 px-4">
           {active.map((r) => (
             <OrderCard key={r.token} r={r} onClose={() => backend?.close(r.token)} onForget={() => removeMyOrder(r.token)} />
           ))}
           {ended.length > 0 && (
-            <details className="rounded-[var(--radius-card)] bg-surface px-5 py-3">
-              <summary className="cursor-pointer py-1 text-[15px] font-semibold text-ink-2">끝난 주문 {ended.length}건</summary>
+            <details className="pt-2">
+              <summary className="t-body cursor-pointer px-1 py-2 font-medium text-ink-3">끝난 주문 {ended.length}건</summary>
               <div className="mt-3 space-y-3 pb-2">
                 {ended.map((r) => (
                   <OrderCard key={r.token} r={r} onForget={() => removeMyOrder(r.token)} />
@@ -71,18 +69,18 @@ export default function MyOrdersPage() {
 
 function NotifyRow({ perm, onAsk }: { perm: Perm; onAsk: () => void }) {
   const text: Record<Perm, string> = {
-    granted: "다른 탭을 보고 있어도 브라우저 알림을 보내요. 화면을 완전히 닫으면 알림이 오지 않아요.",
-    default: "준비되면 이 화면에 배너로 알려 드려요. 다른 탭에 있을 때도 알림을 받으려면 브라우저 알림을 허용해 주세요. 소리·진동은 기기에 따라 안 될 수 있어요.",
-    denied: "브라우저 알림이 꺼져 있어요. 이 화면을 켜 두면 배너로 알려 드려요(소리·진동은 기기에 따라 안 될 수 있어요).",
-    unsupported: "이 브라우저는 알림을 지원하지 않아요. 이 화면을 켜 두면 배너로 알려 드려요(소리·진동은 기기에 따라 안 될 수 있어요).",
+    granted: "다른 탭에 있어도 알려 드려요",
+    default: "다른 탭에서도 알림 받기",
+    denied: "브라우저 알림 꺼짐 · 이 화면에서 알려 드려요",
+    unsupported: "이 화면을 열어 두면 알려 드려요",
   };
   return (
-    <div className="mx-3 mb-3 flex items-start gap-3 rounded-[var(--radius-card)] bg-ice px-4 py-3">
-      <IconBell className="mt-0.5 size-5 shrink-0 text-blue-ink" />
-      <p className="flex-1 text-[13.5px] leading-relaxed text-ink-2">{text[perm]}</p>
+    <div className="mx-5 mb-4 flex min-h-11 items-center gap-2.5 border-b border-line pb-3">
+      <IconBell className="size-[18px] shrink-0 text-ink-3" />
+      <p className="t-sub flex-1 text-ink-2">{text[perm]}</p>
       {perm === "default" && (
-        <button onClick={onAsk} className="shrink-0 rounded-full bg-blue px-3.5 py-1.5 text-[13px] font-semibold text-white">
-          허용
+        <button onClick={onAsk} className="h-8 shrink-0 rounded-full bg-ink px-3 text-[13px] font-semibold text-white">
+          켜기
         </button>
       )}
     </div>

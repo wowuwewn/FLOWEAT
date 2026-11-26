@@ -11,9 +11,9 @@ test("map-first home does not get in the way of menu, seats and order tracking",
   await expect(map).toHaveCSS("touch-action", "pan-y");
 
   // seats: one tap, both 4-seat and single-seat units are reported
-  await page.getByRole("tab", { name: "자리" }).click();
-  await expect(page.getByText("4인 테이블")).toBeVisible();
-  await expect(page.getByText("1인석", { exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "좌석" }).click();
+  await expect(page.getByText("빈 4인 테이블")).toBeVisible();
+  await expect(page.getByText(/1인석 \d+석 빔/)).toBeVisible();
 
   // menu: one tap to a searchable list with prep times
   await page.getByRole("link", { name: "메뉴" }).click();
@@ -22,11 +22,11 @@ test("map-first home does not get in the way of menu, seats and order tracking",
 
   // kiosk list is reachable and in sync with the map selection
   await page.getByRole("link", { name: "지금" }).click();
-  await page.getByRole("tab", { name: "주문 줄" }).click();
-  await page.getByRole("button", { name: /^오른쪽 가운데\s*줄/ }).click();
-  await expect(page.getByText("사람 수만 보면")).toBeVisible();
+  await page.getByRole("tab", { name: "대기열" }).click();
+  await page.getByRole("button", { name: /^오른쪽 가운데,/ }).click();
+  await expect(page.getByText(/한 건에 평균/)).toBeVisible();
 
   // zoom controls exist for people who cannot pinch
   await page.getByRole("button", { name: "지도 확대" }).click();
-  await expect(page.getByRole("button", { name: "정문 시점으로" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "처음 보기로" })).toBeVisible();
 });

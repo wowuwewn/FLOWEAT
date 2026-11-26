@@ -23,19 +23,18 @@ export default function HomePage() {
   return (
     <div>
       {/* phones: the map sits behind, the sheet scrolls over it */}
-      {/* seat positions are not verified, so the seats tab has no map: just the chips row */}
-      <div className={`lg:hidden ${layer === "seats" ? "relative h-[60px] bg-white" : `sticky top-0 z-0 overflow-hidden bg-canvas ${layer === "queue" ? "h-[36vh] max-h-[380px] min-h-[250px]" : "h-[46vh] min-h-[320px]"}`}`}>
+      <div className={`sticky top-0 z-0 overflow-hidden bg-canvas lg:hidden ${layer === "queue" ? "h-[36vh] max-h-[380px] min-h-[250px]" : "h-[44vh] min-h-[300px]"}`}>
         <div className="absolute top-0 right-0 left-0 z-10 flex items-center justify-between px-4 pt-[max(env(safe-area-inset-top),12px)]">
           <span className="rounded-full bg-white px-3 py-1.5 shadow-[0_1px_4px_rgba(16,24,40,.12)]">
             <Wordmark size={15} />
           </span>
           <ClockChip />
         </div>
-        {layer !== "seats" && <MobileMap />}
+        <MobileMap />
       </div>
 
-      <div className={`relative z-10 min-h-[60vh] bg-white lg:mt-0 lg:min-h-dvh lg:rounded-none lg:shadow-none ${layer === "seats" ? "" : "-mt-5 rounded-t-[var(--radius-sheet)] shadow-[0_-6px_24px_rgba(16,24,40,.07)]"}`}>
-        {layer !== "seats" && <div className="mx-auto h-1 w-9 translate-y-2 rounded-full bg-line-2 lg:hidden" aria-hidden />}
+      <div className="relative z-10 -mt-5 min-h-[60vh] rounded-t-[var(--radius-sheet)] bg-white shadow-[0_-6px_24px_rgba(16,24,40,.07)] lg:mt-0 lg:min-h-dvh lg:rounded-none lg:shadow-none">
+        <div className="mx-auto h-1 w-9 translate-y-2 rounded-full bg-line-2 lg:hidden" aria-hidden />
         {!world || !engine ? (
           <div className="space-y-3 p-5 pt-8" aria-busy="true" aria-label="불러오는 중">
             <div className="h-4 w-24 animate-pulse rounded bg-floor" />
@@ -105,6 +104,7 @@ function MobileMap() {
           highlightBrands={active.map((r) => r.order!.brandId)}
           highlightLabels={labels}
           focusBrand={brandFocus}
+          zones={world.zones}
         />
       )}
     </div>
@@ -244,7 +244,7 @@ function SeatLayer() {
   return (
     <section className="px-5 pt-5" aria-label="좌석">
       <div className="flex items-baseline justify-between">
-        <p className="t-sub text-ink-3">{live ? "영상 AI 추정" : "추정치"} · 자리 위치는 표시하지 않아요</p>
+        <p className="t-sub text-ink-3">{live ? "영상 AI 추정" : "추정치"} · 지도 배치는 개념도예요</p>
         <p className={`t-sub font-semibold ${lvl.text}`}>전체 {lvl.label}</p>
       </div>
 
@@ -296,29 +296,27 @@ function SeatSummary({ unit, label, caption, n, suffix }: { unit: "seat" | "tabl
 }
 
 /**
- * One mark per seating unit, shaped like what it is:
- * a single seat (cinema style: back + cushion) or a 4-seat table (table with four chairs).
+ * One cell per seating unit, cinema-seat-map style: free = green outline you could "pick",
+ * taken = filled grey, unsure = dashed. The glyph inside says what the unit is (one seat / a 4-seat table).
  */
 function UnitMark({ unit, state, small }: { unit: "seat" | "table"; state: Cell; small?: boolean }) {
-  const fill = state === "free" ? "bg-free" : state === "busy" ? "bg-[#cfd4db]" : "hatch bg-floor ring-1 ring-inset ring-[#c2c8d0]";
-  const chair = state === "free" ? "bg-free/45" : state === "busy" ? "bg-[#dfe3e8]" : "bg-[#d5dae1]";
-  if (unit === "seat") {
-    const sz = small ? "size-3.5" : "size-[22px]";
-    return (
-      <span className={`relative inline-block shrink-0 ${sz}`} aria-hidden>
-        <span className={`absolute inset-x-[12%] top-0 h-[22%] rounded-full ${chair}`} />
-        <span className={`absolute inset-x-0 top-[32%] bottom-0 rounded-[30%] ${fill}`} />
-      </span>
-    );
-  }
-  const sz = small ? "size-3.5" : "size-[30px]";
+  const tone =
+    state === "free" ? "border-2 border-free bg-free-bg text-free" : state === "busy" ? "border-2 border-transparent bg-[#d5d9df] text-[#8a919c]" : "border-2 border-dashed border-[#b9bfc8] bg-white text-[#a9afb8]";
+  const sz = small ? "size-4 rounded-[4px] !border-[1.5px]" : unit === "seat" ? "size-[30px] rounded-[8px]" : "size-[38px] rounded-[9px]";
   return (
-    <span className={`relative inline-block shrink-0 ${sz}`} aria-hidden>
-      <span className={`absolute inset-x-[30%] top-0 h-[12%] rounded-full ${chair}`} />
-      <span className={`absolute inset-x-[30%] bottom-0 h-[12%] rounded-full ${chair}`} />
-      <span className={`absolute inset-y-[30%] left-0 w-[12%] rounded-full ${chair}`} />
-      <span className={`absolute inset-y-[30%] right-0 w-[12%] rounded-full ${chair}`} />
-      <span className={`absolute inset-[18%] rounded-[22%] ${fill}`} />
+    <span className={`grid shrink-0 place-items-center ${sz} ${tone}`} aria-hidden>
+      {!small && (
+        <svg viewBox="0 0 20 20" className={unit === "seat" ? "size-4" : "size-5"}>
+          {unit === "seat" ? (
+            <path d="M6 4.5h8M5 9h10v4H5zM6.5 13v3M13.5 13v3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          ) : (
+            <g fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+              <rect x="6" y="6" width="8" height="8" rx="1.5" />
+              <path d="M8.5 3h3M8.5 17h3M3 8.5v3M17 8.5v3" />
+            </g>
+          )}
+        </svg>
+      )}
     </span>
   );
 }
@@ -343,7 +341,7 @@ function ZoneGrid({ z, single }: { z: ZoneView; single: boolean }) {
         </span>
       </div>
       <div
-        className={`mt-2.5 grid ${single ? "grid-cols-[repeat(auto-fill,22px)] gap-x-[7px] gap-y-2" : "grid-cols-[repeat(auto-fill,30px)] gap-1.5"}`}
+        className={`mt-2.5 grid ${single ? "grid-cols-[repeat(auto-fill,30px)] gap-1.5" : "grid-cols-[repeat(auto-fill,38px)] gap-1.5"}`}
         role="img"
         aria-label={`${z.name}: 비어 보임 ${z.apparentlyEmpty}, 사용 중 ${z.occupied}, 확인 어려움 ${z.uncertain}`}
       >
@@ -357,17 +355,17 @@ function ZoneGrid({ z, single }: { z: ZoneView; single: boolean }) {
 
 function SeatLegend() {
   return (
-    <p className="t-micro mt-4 flex flex-wrap gap-x-4 gap-y-1 text-ink-2">
+    <p className="t-micro mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-ink-2">
       <span className="flex items-center gap-1.5">
-        <span className="size-3 rounded-[3px] bg-free" />
+        <UnitMark unit="table" state="free" small />
         비어 보임
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="size-3 rounded-[3px] bg-[#cfd4db]" />
+        <UnitMark unit="table" state="busy" small />
         사용 중
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="hatch size-3 rounded-[3px] bg-floor ring-1 ring-inset ring-[#c2c8d0]" />
+        <UnitMark unit="table" state="unsure" small />
         짐만 있거나 가려져 확인 어려움
       </span>
     </p>

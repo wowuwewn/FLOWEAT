@@ -37,6 +37,7 @@ export function DesktopMapPane() {
             noticeTop={80}
             highlightBrands={active.map((r) => r.order!.brandId)}
             focusBrand={brandFocus}
+            zones={world.zones}
             highlightLabels={Object.fromEntries(active.map((r) => [r.order!.brandId, String(r.order!.displayNumber)]))}
             onSelect={(id) => {
               setSelected(id);
@@ -45,7 +46,6 @@ export function DesktopMapPane() {
           />
         )}
       </div>
-      <p className="t-micro absolute bottom-5 left-6 text-ink-3">거리와 크기는 실제와 달라요</p>
     </div>
   );
 }

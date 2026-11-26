@@ -1,0 +1,22 @@
+node_modules/
+.next/
+out/
+coverage/
+test-results/
+playwright-report/
+*.log
+.env
+.env.*
+!.env.example
+.vercel
+/public/ort/
+/data/cache/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+/data/videos/
+
+# field reference photos stay private (rights unconfirmed, may contain people/receipts)
+**/reference_private/
+*.HEIC
+*.MOV

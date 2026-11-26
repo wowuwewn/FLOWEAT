@@ -1,0 +1,1238 @@
+{
+  "as_of_kst": "2026-11-24",
+  "scope": "단국대학교 죽전캠퍼스 혜당관 1층 1947_commons",
+  "operator": {
+    "brand": "구시아푸드마켓",
+    "company": "주식회사 올리브홀딩스",
+    "source": "https://www.gusia.co.kr/stores/",
+    "campus_reference": "https://www.gusia.co.kr/spaces/"
+  },
+  "exact_live_menu_status": "미확인: 공식 대학 안내의 실시간 식단은 포털/모바일 앱 위젯에 있음. 공개 가격 목록은 매장 특정 자료이지만 게시·갱신일과 오늘 판매 여부 미확인.",
+  "live_menu": {
+    "source": "https://www.dankook.ac.kr/web/kor/1947_commons",
+    "portal_path": "포털 > 포틀릿설정 > 오늘의 식단 추가",
+    "app_path": "모바일App > 포털 > 금주의 식단 > 금주의 식단(죽전)"
+  },
+  "media": {
+    "naver_map_operator_link": "https://map.naver.com/p/entry/place/1859132665",
+    "operator_jukjeon_seating_photo": "https://www.gusia.co.kr/assets/retouched/eeaef3d11bd3b0fa-1200.webp",
+    "operator_jukjeon_seating_photo_source": "https://www.gusia.co.kr/spaces/",
+    "warning": "운영사 매장 카드에서 죽전 사진 크게 보기와 천안 파일명이 충돌. 현장 근거로 쓰지 않음.",
+    "operator_photograph": "https://www.gusia.co.kr/assets/retouched/eeaef3d11bd3b0fa-1200.webp",
+    "university_photographs": [
+      {
+        "subject": "외부 전면 출입구",
+        "url": "https://summer.dankook.ac.kr/documents/90119/0/%ED%95%99%EC%8B%9D%EB%8B%B9+%282%29.jpg/aa1694c0-18db-52d7-b223-9f9e8b6f7f40?version=1.0&t=1762301767469",
+        "capture_date": null,
+        "source": "https://summer.dankook.ac.kr/1.-accommodation"
+      },
+      {
+        "subject": "목재 칸막이·내부 스크린",
+        "url": "https://summer.dankook.ac.kr/documents/90119/0/157970+%281%29.jpg/09aef4e7-2bce-9773-bd48-6b375bb89021?version=1.0&t=1762301743934",
+        "capture_date": null,
+        "source": "https://summer.dankook.ac.kr/1.-accommodation"
+      },
+      {
+        "subject": "벽돌·격자창 쪽 좌석",
+        "url": "https://summer.dankook.ac.kr/documents/90119/0/%ED%95%99%EC%8B%9D%EB%8B%B9+%283%29.jpg/a50b8c91-5fbd-f3da-9636-7b09fe812fed?version=1.0&t=1762301793158",
+        "capture_date": null,
+        "source": "https://summer.dankook.ac.kr/1.-accommodation"
+      }
+    ],
+    "render_only": "https://grec.dankook.ac.kr/html_portlet_repositories/images/ExtImgFile/10158/10185/3360663/155940.png",
+    "video_chapters": [
+      {
+        "video_id": "XLXJ5kCpRYc",
+        "time_sec": 127,
+        "url": "https://www.youtube.com/watch?v=XLXJ5kCpRYc&t=127s",
+        "label": "입장",
+        "source_kind": "uploader_chapter_not_frame_verified"
+      },
+      {
+        "video_id": "XLXJ5kCpRYc",
+        "time_sec": 191,
+        "url": "https://www.youtube.com/watch?v=XLXJ5kCpRYc&t=191s",
+        "label": "중식대장 점주 인터뷰",
+        "source_kind": "uploader_chapter_not_frame_verified"
+      },
+      {
+        "video_id": "XLXJ5kCpRYc",
+        "time_sec": 276,
+        "url": "https://www.youtube.com/watch?v=XLXJ5kCpRYc&t=276s",
+        "label": "메뉴 소개",
+        "source_kind": "uploader_chapter_not_frame_verified"
+      },
+      {
+        "video_id": "XLXJ5kCpRYc",
+        "time_sec": 340,
+        "url": "https://www.youtube.com/watch?v=XLXJ5kCpRYc&t=340s",
+        "label": "개장 전 대비 변화",
+        "source_kind": "uploader_chapter_not_frame_verified"
+      },
+      {
+        "video_id": "XLXJ5kCpRYc",
+        "time_sec": 443,
+        "url": "https://www.youtube.com/watch?v=XLXJ5kCpRYc&t=443s",
+        "label": "시식",
+        "source_kind": "uploader_chapter_not_frame_verified"
+      }
+    ],
+    "video_without_verified_frame_timestamps": [
+      "https://www.youtube.com/watch?v=uzdUhyhCeEE",
+      "https://www.youtube.com/watch?v=0qhttHQPc8g",
+      "https://www.youtube.com/watch?v=pA8eERSGr_w",
+      "https://www.youtube.com/watch?v=WKDvzGZ3fuY"
+    ],
+    "google_maps_hyedang": {
+      "gallery_url": "https://www.google.com/maps/search/?api=1&query=Hyedang+Hall+Dankook+University&query_place_id=ChIJba45rVVXezURSllLP1rYctc",
+      "interior_photo_url": "https://www.google.com/maps/place/%EB%8B%A8%EA%B5%AD%EB%8C%80%ED%95%99%EA%B5%90+%ED%98%9C%EB%8B%B9%EA%B4%80/data=!3m8!1e2!3m6!1sCIHM0ogKEOzaqvzw79qx_AE!2e10!3e12!6shttps:%2F%2Flh3.googleusercontent.com%2Fgrass-cs%2FAABkmLfKLg7x2_OofgUMRm0ELGFCElmo9jGBLXt8w8r4J-KF6oshKkkTVRerUvjxAWtKLJyJYj3armTrE2wcvm0OZuLy0IfZVxOGkPjsU1lUwVpceC4LiknYWg8FNMIe8B6btJ_J5FrW1A%3Dw360-h270-k-no!7i4000!8i3000!4m5!3m4!1s0x357b5755ad39ae6d:0xd772d85a3f4b594a!10e5!16s%2Fg%2F11kj8_zkj8!20s8Q9984CH%2B49X?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D",
+      "thumbnail_url": "https://lh3.googleusercontent.com/grass-cs/AABkmLfKLg7x2_OofgUMRm0ELGFCElmo9jGBLXt8w8r4J-KF6oshKkkTVRerUvjxAWtKLJyJYj3armTrE2wcvm0OZuLy0IfZVxOGkPjsU1lUwVpceC4LiknYWg8FNMIe8B6btJ_J5FrW1A=w360-h270-k-no",
+      "gallery_displayed_period": "2025-05",
+      "source_status": "independent_uploaded_photo_visually_verified",
+      "verified_pov_observations": [
+        "흰 자갈 중앙 화단",
+        "카메라 왼쪽에 카운터처럼 보이는 창과 기둥 화면",
+        "중앙 칸막이 좌석",
+        "카메라 오른쪽 창가 고정 단독석",
+        "회색 타일·흰 펜던트"
+      ],
+      "entrance_relative_orientation": null,
+      "verified_video": null
+    },
+    "operator_hyedang_recap": {
+      "article_url": "https://goodnews.oopy.io/2db45244-ac0a-8034-b380-f11415f9fb9b",
+      "published_date": "2026-01-01",
+      "capture_date_exact": null,
+      "branch_caption": "단국대학교죽전캠퍼스 혜당관",
+      "source_status": "operator_photos_visually_verified",
+      "photographs": [
+        {
+          "id": "OP-SEAT",
+          "url": "https://oopy.lazyrockets.com/api/v2/notion/image?src=attachment%3Ac68c81a3-f319-4dc1-b8a6-a9c2204df077%3Aflow_2025-03-15_122555763.png&blockId=2db45244-ac0a-8057-87b0-eb0e5bda798f",
+          "observations": [
+            "긴 원목 공동 테이블",
+            "회색 바닥 타일",
+            "세로 골재 기둥",
+            "벽돌 벽·라인 조명"
+          ]
+        },
+        {
+          "id": "OP-ENTRY",
+          "url": "https://oopy.lazyrockets.com/api/v2/notion/image?src=attachment%3A273f7e20-71f1-4e8e-811b-7d002604c150%3Aflow_2025-03-15_122910112_%282%29.png&blockId=2db45244-ac0a-8133-aaea-dbb9b63a5642",
+          "observations": [
+            "카메라가 내부에서 유리 정문을 바라봄",
+            "중앙 목재 기둥",
+            "양측 대기 인원"
+          ],
+          "kiosks_per_side_verified_by_this_photo": null
+        },
+        {
+          "id": "OP-DISPLAY",
+          "url": "https://oopy.lazyrockets.com/api/v2/notion/image?src=attachment%3A64a8fbcf-4932-4aa3-af55-cd305002b8d6%3Aimage.png&blockId=2db45244-ac0a-8042-adeb-f369ac293b2e",
+          "observations": [
+            "기둥에 나란한 화면 2개",
+            "주문 번호 리스트 표기",
+            "매장별 번호 열"
+          ],
+          "current_position": null,
+          "current_count": null
+        }
+      ]
+    },
+    "instagram": {
+      "dku_onair_url": "https://www.instagram.com/dku_onair/",
+      "status": "no_matching_reel_verified_in_public_access",
+      "excluded_cheonan_url": "https://www.instagram.com/gusia_food/reel/Df6vHCrvEDr/"
+    }
+  },
+  "campus_branches": [
+    {
+      "label": "값찌개",
+      "operator_jukjeon_brand_listing": "확인",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/gap/",
+      "operator_generic_featured_menu": "순두부열라면",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": null,
+      "third_party_diningcode_items": [
+        {
+          "name": "참치김치찌개(밥포함)",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "우삼겹순두부(밥포함)",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "우삼겹된장찌개(밥포함)",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "스팸순두부(밥포함)",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "스팸김치찌개(밥포함)",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "순두부찌개(밥포함)",
+          "listed_krw": 6000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "바지락순두부(밥포함)",
+          "listed_krw": 6200,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "돼지김치찌개(밥포함)",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "공기밥",
+          "listed_krw": 1000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [],
+      "official_brand_media": {
+        "logo_url": "https://www.gusia.co.kr/assets/logos/gap.png",
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/b6794c11db0fa3d7-1100.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "경성카츠",
+      "operator_jukjeon_brand_listing": "확인",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/kyungsung/",
+      "operator_generic_featured_menu": "매운돈까스",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": null,
+      "third_party_diningcode_items": [
+        {
+          "name": "우동",
+          "listed_krw": 4900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "새우튀김 우동",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "고구마치즈돈카츠",
+          "listed_krw": 8300,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "김치냄비우동",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "등심돈카츠",
+          "listed_krw": 7500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "샐러드파스타+등심카츠",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "왕돈카츠",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [
+        {
+          "date": "2026-11-20 (상대 날짜 4일 전 환산)",
+          "menu_mentions": []
+        }
+      ],
+      "official_brand_media": {
+        "logo_url": "https://www.gusia.co.kr/assets/logos/kyungsung.png",
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/815d26ca623da3b0-1100.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "바비든든",
+      "operator_jukjeon_brand_listing": "확인",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/babi/",
+      "operator_generic_featured_menu": "소불고기든든",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": null,
+      "third_party_diningcode_items": [
+        {
+          "name": "춘천닭갈비덮밥(킹)",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "제육덮밥",
+          "listed_krw": 3900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "제육덮밥(킹)",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "고기든든(킹)",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "고기든든",
+          "listed_krw": 3900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "치킨마요덮밥(라지)",
+          "listed_krw": 4900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "햄볶음김치덮밥",
+          "listed_krw": 4900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "참치마요덮밥(라지)",
+          "listed_krw": 4900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "장어덮밥",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "스팸마요덮밥(라지)",
+          "listed_krw": 4900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [
+        {
+          "date": "2026-10-12",
+          "menu_mentions": []
+        },
+        {
+          "date": "2026-10-02",
+          "menu_mentions": []
+        },
+        {
+          "date": "2026-09-11",
+          "menu_mentions": []
+        }
+      ],
+      "official_brand_media": {
+        "logo_url": "https://www.gusia.co.kr/assets/logos/babi.png",
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/632f5b0db52355cb-1100.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "포포420",
+      "operator_jukjeon_brand_listing": "확인",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/popo/",
+      "operator_generic_featured_menu": "훈제닭다리쌀국수",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": null,
+      "third_party_diningcode_items": [
+        {
+          "name": "오징어링튀김",
+          "listed_krw": 1900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "반꿔이",
+          "listed_krw": 1800,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "돈불직화구이",
+          "listed_krw": 3000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "고수",
+          "listed_krw": 500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "쉬림프나시고랭",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "훈제닭다리쌀국수",
+          "listed_krw": 9900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰해산물쌀국수",
+          "listed_krw": 7500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "비빔쌀국수+직화구이",
+          "listed_krw": 8400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "쉬림프나시고랭+직화구이",
+          "listed_krw": 10800,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "비빔쌀국수",
+          "listed_krw": 5500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "포포쌀국수(고기없음)",
+          "listed_krw": 4900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "우삼겹쌀국수",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "우삼겹쌀국수 특",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "마라우삼겹쌀국수",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "마라우삼겹쌀국수 특",
+          "listed_krw": 8500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "마라쌀국수(고기없음)",
+          "listed_krw": 6300,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "새우빠스(2p)",
+          "listed_krw": 2500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "야채춘권(3p)",
+          "listed_krw": 1000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [
+        {
+          "date": "2026-11-19 (상대 날짜 5일 전 환산)",
+          "menu_mentions": [
+            "맵게 조리한 베트남 쌀국수",
+            "스프링롤"
+          ]
+        }
+      ],
+      "official_brand_media": {
+        "logo_url": "https://www.gusia.co.kr/assets/logos/popo.png",
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/94d737c17a0e1657-1100.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "비비고고",
+      "operator_jukjeon_brand_listing": "확인",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/bibi/",
+      "operator_generic_featured_menu": "마늘쫑우삼겹비빔밥",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": "사용자가 언급함",
+      "third_party_diningcode_items": [
+        {
+          "name": "오색비빔밥",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "불고기비빔밥",
+          "listed_krw": 7500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "육회비빔밥",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "기본카레",
+          "listed_krw": 4900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "불고기카레",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "치킨카레",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "새우카레",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [],
+      "official_brand_media": {
+        "logo_url": null,
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/5ab64c39795926ce-1100.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "광뚝",
+      "operator_jukjeon_brand_listing": "확인",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/gwangttuk/",
+      "operator_generic_featured_menu": "왕만두사골칼제비",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": null,
+      "third_party_diningcode_items": [
+        {
+          "name": "물만두",
+          "listed_krw": 1900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "고추장 불고기",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "왕만두 사골칼제비",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰 왕만두사골칼제비",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "뚝배기알밥",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "간장 불고기",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "콩나물불백",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "간장찜닭",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "사골칼제비",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "떡왕만두뚝배기",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰사골칼제비",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰떡왕만두뚝배기",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [
+        {
+          "date": "2026-09-08",
+          "menu_mentions": []
+        }
+      ],
+      "official_brand_media": {
+        "logo_url": "https://www.gusia.co.kr/assets/logos/gwangttuk.png",
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/f2ae0e0a5fafd495-1100.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "폭풍분식",
+      "operator_jukjeon_brand_listing": "확인",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/pokpung/",
+      "operator_generic_featured_menu": "라볶이",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": null,
+      "third_party_diningcode_items": [
+        {
+          "name": "로제떡볶이",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "훈제오리포케",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "훈제연어포케",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "폭풍라면",
+          "listed_krw": 3500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "폭풍김밥",
+          "listed_krw": 3500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "치즈라면",
+          "listed_krw": 4000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "치즈김밥",
+          "listed_krw": 3800,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "만두라면",
+          "listed_krw": 4500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "라볶이",
+          "listed_krw": 5000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "떡라면",
+          "listed_krw": 4000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "닭가슴살포케",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "라죽",
+          "listed_krw": 4000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "짜파게티",
+          "listed_krw": 4000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "참치김밥",
+          "listed_krw": 3800,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [
+        {
+          "date": "2026-09-28",
+          "menu_mentions": [
+            "포케"
+          ]
+        }
+      ],
+      "official_brand_media": {
+        "logo_url": "https://www.gusia.co.kr/assets/logos/pokpung.png",
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/b2be795080465eb5-1254.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "도쿄야",
+      "operator_jukjeon_brand_listing": "공식 브랜드별 입점 목록에 죽전 미기재",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/tokyoya/",
+      "operator_generic_featured_menu": "도쿄야함박스테이크",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": null,
+      "third_party_diningcode_items": [
+        {
+          "name": "베이컨크림오므라이스",
+          "listed_krw": 7400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "가정식 도쿄함바그",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "우아한 크림함바그",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "SO~HOT 함바그",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "음료",
+          "listed_krw": 0,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "됴쿄야오므라이스",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "59오므라이스",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "돈코츠라멘",
+          "listed_krw": 7400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "쇼유라멘",
+          "listed_krw": 7400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "카라이돈코츠라멘",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "네기라멘",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [],
+      "official_brand_media": {
+        "logo_url": "https://www.gusia.co.kr/assets/logos/tokyoya.png",
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/96cfba23b59228ba-1000.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "가오슝",
+      "operator_jukjeon_brand_listing": "공식 브랜드별 입점 목록에 죽전 미기재",
+      "operator_brand_url": "https://www.gusia.co.kr/brands/kaohsiung/",
+      "operator_generic_featured_menu": "대만식고기덮밥",
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": "사용자가 언급함",
+      "third_party_diningcode_items": [
+        {
+          "name": "가오슝 짬뽕",
+          "listed_krw": 7400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "고추잡채덮밥",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "대만식고기덮밥",
+          "listed_krw": 8400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "마파두부덮밥",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "마파참깨면",
+          "listed_krw": 7900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "마파참깨덮밥",
+          "listed_krw": 7400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "갈비튀김덮밥",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "마늘쫑민찌덮밥",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "자장면",
+          "listed_krw": 6400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "우육면",
+          "listed_krw": 7400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "동파육덮밥",
+          "listed_krw": 9400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [],
+      "official_brand_media": {
+        "logo_url": "https://www.gusia.co.kr/assets/logos/kaohsiung.png",
+        "representative_food_photo_url": "https://www.gusia.co.kr/assets/retouched/29dcfa9646ca43bd-1100.webp",
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    },
+    {
+      "label": "51장국밥",
+      "operator_jukjeon_brand_listing": "공식 공개 브랜드 페이지 미확인",
+      "operator_brand_url": null,
+      "operator_generic_featured_menu": null,
+      "operator_generic_menu_stock_dku": "미확인",
+      "local_user_observation": null,
+      "third_party_diningcode_items": [
+        {
+          "name": "편육한접시",
+          "listed_krw": 2500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "고기만국밥",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "물비빔냉면",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "닭칼국수",
+          "listed_krw": 5900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "닭곰탕(밥 포함)",
+          "listed_krw": 5500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "공기밥 추가",
+          "listed_krw": 1000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "순대국밥",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "물냉면",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "광주 크림순대국밥",
+          "listed_krw": 8400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "순대만국밥",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰 광주 크림순대국밥",
+          "listed_krw": 8900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰고기만국밥",
+          "listed_krw": 7500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰닭칼국수",
+          "listed_krw": 6900,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰닭곰탕",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "얼큰순대국밥",
+          "listed_krw": 7500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "손만두",
+          "listed_krw": 2000,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "물냉면+손만두",
+          "listed_krw": 8400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "물비빔냉면+손만두",
+          "listed_krw": 8400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "비빔냉면+손만두",
+          "listed_krw": 8400,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        },
+        {
+          "name": "비빔냉면",
+          "listed_krw": 6500,
+          "available_now": null,
+          "verification_status": "undated_local_listing"
+        }
+      ],
+      "operator_dated_review_evidence": [
+        {
+          "date": "2026-09-17",
+          "menu_mentions": [
+            "국밥"
+          ]
+        }
+      ],
+      "official_brand_media": {
+        "logo_url": null,
+        "representative_food_photo_url": null,
+        "scope": "운영사 공식 브랜드 일반 대표 요리 사진; 죽전점 해당 메뉴 판매·실물·가격을 확인하는 사진이 아님. 공개 시 이용권 확인."
+      },
+      "current_court_number": null,
+      "pickup_position": null
+    }
+  ],
+  "third_party_price_source": "https://www.diningcode.com/profile.php?rid=zouqpRLBZlrb",
+  "third_party_price_status": "혜당관점 목록에 표시된 참고 가격. 등록일과 당일 판매 여부 미확인. available_now=null은 미확인.",
+  "historical": {
+    "university_opening_date": "2025-03-10",
+    "outline": "리뉴얼 개장 시 10개 코트 및 카페, 1,505㎡, 최대 600명; 공개 공식 현황 페이지도 600석. 개장 당시 평일 08:00~19:30, 토요일 08:00~15:00; 현재 각 코트 운영 시간으로 단정 금지.",
+    "source": "https://cms.dankook.ac.kr/ko/web/sdgs/g2",
+    "campus_facilities_source": "https://cms.dankook.ac.kr/ko/web/kor/-525",
+    "babi_meal": "대학 공식 2025년 12월 19일 기사에서 바비든든 천원의 아침밥 운영 확인. 당해 2026년 11월 이용 가능 여부·메뉴와 동일하다고 가정 금지.",
+    "opening_court_brand_table": [
+      {
+        "historical_court_number": 1,
+        "brand": "바비든든",
+        "current_court_number": null
+      },
+      {
+        "historical_court_number": 2,
+        "brand": "포포420",
+        "current_court_number": null
+      },
+      {
+        "historical_court_number": 3,
+        "brand": "중식대장",
+        "current_court_number": null
+      },
+      {
+        "historical_court_number": 4,
+        "brand": "폭풍분식",
+        "current_court_number": null
+      },
+      {
+        "historical_court_number": 5,
+        "brand": "값찌개",
+        "current_court_number": null
+      },
+      {
+        "historical_court_number": 6,
+        "brand": "경성카츠",
+        "current_court_number": null
+      },
+      {
+        "historical_court_number": 7,
+        "brand": "51장국밥",
+        "current_court_number": null
+      },
+      {
+        "historical_court_number": 8,
+        "brand": "비비고고",
+        "current_court_number": null
+      },
+      {
+        "historical_court_number": 9,
+        "brand": "1847 SALWICH COFFEE",
+        "current_court_number": null
+      }
+    ],
+    "opening_table_source": "https://grec.dankook.ac.kr/html_portlet_repositories/images/ExtImgFile/10158/10185/3360663/156125.jpg",
+    "table_completeness_note": "2025 사전 안내 표의 9행. 개장 기사 10개 매장+카페와 숫자가 다름. 2026 번호/전체 수령 순서로 사용 금지."
+  },
+  "operator_dated_reviews": {
+    "source": "https://www.gusia.co.kr/voc/",
+    "filter": "단국대학교 죽전캠퍼스 혜당관점",
+    "checked_on": "2026-11-24 KST",
+    "review_count": 9,
+    "caution": "이용 후기 날짜이며 코트 편성·정확한 판매 상품명·당일 가격은 아님. 상대 날짜는 현재 날짜 기준 환산."
+  },
+  "space": {
+    "status": "non_scale_evidence_schematic",
+    "schematic_file": "FLOWEAT_space.png",
+    "actual_floor_plan_url": null,
+    "absolute_orientation": null,
+    "main_entrance": {
+      "status": "user_observed_and_official_exterior_photo",
+      "position": null,
+      "additional_entrances": null,
+      "reference": "정문 앞에서 식당 안을 바라본 기준"
+    },
+    "kiosks": {
+      "source": "user_field_observation",
+      "visual_left_right_anchor": "standing_at_main_entrance_facing_inside",
+      "count_observed": 6,
+      "left_count": 3,
+      "right_count": 3,
+      "queue_style": "individual_outward",
+      "public_labels": null,
+      "same_order_catalog_user_reported": true,
+      "equipment_orientation_degrees": null,
+      "side_coordinates": null,
+      "independent_photo_support": {
+        "scope": "양쪽 대기열만, 3+3 수·정확한 각도는 사진에서 확인 안 됨",
+        "evidence_id": "OP-ENTRY"
+      }
+    },
+    "accessible_kiosk": {
+      "status": "official_added_2026",
+      "count_within_observed_six": null,
+      "position": null,
+      "source": "https://www.dankook.ac.kr/web/kor/-550?_dku_bbs_web_BbsPortlet_action=view_message&_dku_bbs_web_BbsPortlet_bbsMessageId=170588&p_p_id=dku_bbs_web_BbsPortlet"
+    },
+    "pickup": {
+      "counter_order": null,
+      "positions": null,
+      "customer_flow": "키오스크 → 화면 주문번호 확인 → 매장 직접 수령",
+      "evidence_status": "third_party_report",
+      "source": "https://blog.naver.com/PostView.nhn?blogId=cutesong81&logNo=224438481976&redirect=Dlog&widgetTypeCall=true",
+      "single_counter_photo_reference": "값찌개 카운터 사진; 정문 기준 위치와 수령동선 미확인"
+    },
+    "seating": {
+      "total_seats_official": 600,
+      "seat_coordinates": null,
+      "zone_counts": null,
+      "visual_elements": [
+        "목재 칸막이형 식탁",
+        "긴 테이블",
+        "부스/식재 파티션",
+        "벽돌과 격자창",
+        "흰 자갈 식재 화단",
+        "창가 고정 분리 좌석",
+        "회색 타일·백색 펜던트"
+      ]
+    },
+    "displays": {
+      "entrance_overview_display_user_reported": false,
+      "some_wall_or_column_screens_visible": true,
+      "screen_function_from_photo": "매장별 주문 번호 리스트",
+      "order_number_screen_coordinates": null,
+      "active_system_integration": null,
+      "photo_evidence_id": "OP-DISPLAY",
+      "historical_screens_visible_in_single_frame": 2,
+      "current_count_total": null
+    },
+    "unverified_routing_fields": [
+      "정문 기준 수령대 나열 순서",
+      "카운터 위치와 통로 좌표",
+      "추가 출입구",
+      "모니터 정문 상대 위치",
+      "실시간 대기/좌석/호출 데이터 연동"
+    ]
+  },
+  "integration_safety": {
+    "render_live_values_only_if_verified": true,
+    "public_operator_contact_not_contacted": "olive10@oliveholdings.co.kr",
+    "facilities_public_numbers": [
+      "031-8005-2130",
+      "031-8005-2131"
+    ],
+    "external_outreach_performed": false,
+    "production_integration_verified": false
+  },
+  "dataset_revision": "2026-11-24-handoff"
+}

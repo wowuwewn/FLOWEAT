@@ -1,0 +1,67 @@
+{
+  "generatedAt": "2026-11-24T15:18:21.276Z",
+  "runtime": "onnxruntime-node CPU (4 vCPU, no GPU)",
+  "analysisFps": 5,
+  "results": [
+    {
+      "model": "yolox_nano",
+      "license": "Apache-2.0",
+      "sizeMB": 3.7,
+      "counter": {
+        "labelledFrames": 70,
+        "inUseAccuracy": 0.857,
+        "personCountMAE": 0.1,
+        "sessionsTrue": 6,
+        "sessionsDetected": 6,
+        "sessionsMatched": 6,
+        "sessionDurationMAEsec": 1.5,
+        "inferenceMsMean": 12
+      },
+      "tables": {
+        "labelledTableFrames": 64,
+        "confusion": {
+          "occ_occ": 56,
+          "occ_unc": 0,
+          "occ_empty": 0,
+          "empty_occ": 4,
+          "empty_unc": 4,
+          "empty_empty": 0
+        },
+        "occupiedShownEmptyRate": 0,
+        "occupiedRecall": 1,
+        "emptyShownEmpty": 0,
+        "inferenceMsMean": 25
+      }
+    },
+    {
+      "model": "yolox_tiny",
+      "license": "Apache-2.0",
+      "sizeMB": 20.2,
+      "counter": {
+        "labelledFrames": 70,
+        "inUseAccuracy": 0.843,
+        "personCountMAE": 0.114,
+        "sessionsTrue": 6,
+        "sessionsDetected": 6,
+        "sessionsMatched": 6,
+        "sessionDurationMAEsec": 1.53,
+        "inferenceMsMean": 29.5
+      },
+      "tables": {
+        "labelledTableFrames": 64,
+        "confusion": {
+          "occ_occ": 56,
+          "occ_unc": 0,
+          "occ_empty": 0,
+          "empty_occ": 4,
+          "empty_unc": 4,
+          "empty_empty": 0
+        },
+        "occupiedShownEmptyRate": 0,
+        "occupiedRecall": 1,
+        "emptyShownEmpty": 0,
+        "inferenceMsMean": 47.8
+      }
+    }
+  ]
+}

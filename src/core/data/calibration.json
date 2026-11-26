@@ -1,0 +1,130 @@
+{
+  "_about": "Simulation assumptions for 1947 COMMONS (NOT measurements). Every value marked source='assumed' is a placeholder to be replaced with field data; see docs/ai/calibration.md. The simulator, the prediction models' training history and the demo all read this file.",
+  "version": "2026-11-25-assumed-2",
+  "arrivals": {
+    "source": "assumed",
+    "basePerMin": 1.0,
+    "peak1PerMin": 4.1,
+    "peak1Center": "12:05",
+    "peak1SigmaMin": 26,
+    "peak2PerMin": 1.3,
+    "peak2Center": "13:05",
+    "peak2SigmaMin": 9,
+    "dayAmplitude": [
+      0.95,
+      1.08
+    ],
+    "dayShiftMin": 6,
+    "measure": "groups arriving at the entrance per minute, counted in 5-min bins over several days"
+  },
+  "groups": {
+    "source": "assumed",
+    "sizes": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "weights": [
+      0.42,
+      0.32,
+      0.16,
+      0.1
+    ],
+    "payTogether": 0.68,
+    "measure": "group size and how many kiosk transactions each group makes (observation sheet)"
+  },
+  "kiosk": {
+    "source": "assumed",
+    "txMedianSec": 40,
+    "perExtraPerson": 0.2,
+    "logSd": 0.33,
+    "hesitantShare": 0.08,
+    "hesitantFactor": 1.8,
+    "speed": {
+      "L1": 1.0,
+      "L2": 1.08,
+      "L3": 0.95,
+      "R1": 1.0,
+      "R2": 1.38,
+      "R3": 0.9
+    },
+    "measure": "transaction start/end per kiosk (kiosk log or stopwatch); speed = kiosk median / overall median"
+  },
+  "kitchen": {
+    "source": "assumed",
+    "cookBaseSec": {
+      "side": 90,
+      "rice_bowl": 150,
+      "curry": 120,
+      "stew": 330,
+      "noodle_soup": 270,
+      "cold_noodle": 180,
+      "fried": 390,
+      "wok": 300,
+      "snack": 180,
+      "grill": 360
+    },
+    "cookLogSd": 0.22,
+    "perExtraItemSec": 22,
+    "brands": {
+      "gapjjigae": {
+        "cooks": 6,
+        "eff": 1.0,
+        "popularity": 1.1
+      },
+      "gyeongseong": {
+        "cooks": 5,
+        "eff": 1.05,
+        "popularity": 0.9
+      },
+      "babi": {
+        "cooks": 4,
+        "eff": 0.9,
+        "popularity": 1.3
+      },
+      "popo420": {
+        "cooks": 5,
+        "eff": 1.0,
+        "popularity": 1.0
+      },
+      "bibigogo": {
+        "cooks": 3,
+        "eff": 0.85,
+        "popularity": 1.0
+      },
+      "gwangttuk": {
+        "cooks": 4,
+        "eff": 1.1,
+        "popularity": 0.7
+      },
+      "pokpung": {
+        "cooks": 4,
+        "eff": 0.95,
+        "popularity": 1.1
+      },
+      "tokyoya": {
+        "cooks": 4,
+        "eff": 1.0,
+        "popularity": 0.6
+      },
+      "kaohsiung": {
+        "cooks": 3,
+        "eff": 1.0,
+        "popularity": 0.8
+      },
+      "jang51": {
+        "cooks": 4,
+        "eff": 0.95,
+        "popularity": 0.8
+      }
+    },
+    "measure": "order accepted → ready per brand (KDS log or ticket timestamps); cooks = dishes a brand can cook at once"
+  },
+  "plausibility": {
+    "_about": "Sanity limits checked by unit tests for the default peak scenario; widen only with field evidence.",
+    "maxPeoplePerLine": 14,
+    "maxPeopleAllLines": 70,
+    "maxPrepP80Min": 25
+  }
+}
